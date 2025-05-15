@@ -3,21 +3,43 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --ebony-50: #f3f6fb;
+  --ebony-100: #e3ebf6;
+  --ebony-200: #cdddf0;
+  --ebony-300: #abc7e5;
+  --ebony-400: #83aad7;
+  --ebony-500: #668dcb;
+  --ebony-600: #5275be;
+  --ebony-700: #4863ad;
+  --ebony-800: #3f538e;
+  --ebony-900: #374771;
+  --ebony-950: #252d46;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-ebony-950: var(--ebony-950);
+  --color-ebony-900: var(--ebony-900);
+  --color-ebony-800: var(--ebony-800);
+  --color-ebony-700: var(--ebony-700);
+  --color-ebony-600: var(--ebony-600);
+  --color-ebony-500: var(--ebony-500);
+  --color-ebony-400: var(--ebony-400);
+  --color-ebony-300: var(--ebony-300);  
+  --color-ebony-200: var(--ebony-200);
+  --color-ebony-100: var(--ebony-100);
+  --color-ebony-50: var(--ebony-50);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+/*@media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+}*/
 
 body {
   background: var(--background);
