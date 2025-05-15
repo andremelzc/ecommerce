@@ -9,10 +9,12 @@ const Navbar = () => {
         {/*Izquierda*/}
         <div className="flex items-center space-x-8 sm:space-x-16 lg:space-x-24">
           <h1 className="text-white text-3xl">PCComponentes</h1>
-          <Menu className="text-white" size={40} />
+          <button className="cursor-pointer">
+            <Menu className="text-white" size={40} />
+          </button>
         </div>
         {/*Medio*/}
-        <div className="flex-1 ml-8 mr-24">
+        <div className="flex-1 ml-8 mr-24 sm:mr-16 lg:mr-8">
           <Searchbar />
         </div>
         {/*Derecha*/}
