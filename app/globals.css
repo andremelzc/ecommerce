@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -14,6 +15,7 @@
   --ebony-800: #3f538e;
   --ebony-900: #374771;
   --ebony-950: #252d46;
+  --rubik: "Rubik", sans-serif;
 }
 
 @theme inline {
@@ -32,6 +34,7 @@
   --color-ebony-50: var(--ebony-50);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-rubik: var(--rubik);
 }
 
 /*@media (prefers-color-scheme: dark) {
