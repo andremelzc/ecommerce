@@ -3,9 +3,10 @@ import { Menu, Search, User, ShoppingCart } from "lucide-react";
 import Searchbar from "@/app/components/ui/Searchbar";
 
 const Navbar = () => {
+
   return (
-    <nav className="bg-ebony-950">
-      <div className="max-w-7xl mx-auto px-8 py-3 flex items-center justify-between">
+    <nav  className="bg-ebony-950">
+      <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
         {/*Izquierda*/}
         <div className="flex items-center space-x-8 sm:space-x-16 lg:space-x-24">
           <h1 className="text-white text-3xl">PCComponentes</h1>
