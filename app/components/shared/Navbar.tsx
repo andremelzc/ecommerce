@@ -1,6 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Menu, Search, User, ShoppingCart } from "lucide-react";
+import {
+  Package,
+  ShoppingBag,
+  Tag,
+  Menu,
+  Search,
+  User,
+  ShoppingCart,
+} from "lucide-react";
 import Drawer from "../ui/Drawer";
 import Searchbar from "@/app/components/ui/Searchbar";
 
@@ -10,10 +18,16 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-ebony-950">
-        <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
           {/*Izquierda*/}
           <div className="flex items-center space-x-8 sm:space-x-16 lg:space-x-24">
-            <h1 className="text-white text-3xl">PCComponentes</h1>
+            <button className="flex space-x-4 items-center cursor-pointer">
+              <div className="bg-white flex space-x-4 rounded-full w-14 h-14 items-center justify-center">
+                <ShoppingBag className="text-ebony-950" size={40} />
+              </div>
+              <h1 className="text-white text-2xl font-bold">Nombre</h1>
+            </button>
+
             <button
               className="cursor-pointer"
               onClick={() => setDrawerOpen(true)}
