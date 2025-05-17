@@ -1,7 +1,9 @@
+import CarruselGaleria from './components/ui/CarruselGaleria';
+
 export default function Home() {
   return (
-    <div className="">
-      hola
-    </div>
+    <main>
+      <CarruselGaleria />
+    </main>
   );
 }
