@@ -25,7 +25,7 @@ const Navbar = () => {
               <div className="bg-white flex space-x-4 rounded-full w-14 h-14 items-center justify-center">
                 <ShoppingBag className="text-ebony-950" size={40} />
               </div>
-              <h1 className="text-white text-2xl font-bold">Nombre</h1>
+              <h1 className="text-white text-2xl font-bold">CompX</h1>
             </button>
 
             <button
