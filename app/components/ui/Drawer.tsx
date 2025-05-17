@@ -4,7 +4,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
-import {Transition} from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import type { CategoriaNivevl1 } from "@/app/types/categoria";
 
 type DrawerProps = {
@@ -85,11 +85,22 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
 
   // Activar el panel de subcategorías
   const [activeCat, setActiveCat] = useState<CategoriaNivevl1 | null>(null);
+  const [activeCat2, setActiveCat2] = useState<number | null>(null);
 
   // Cerrar el panel de subcategorías
   const handleCloseDrawer = () => {
     setActiveCat(null);
     onClose();
+  };
+
+  // Maneja el click en categorias nivel 2
+  const toggleSubcategoria = (id: number) => {
+    setActiveCat2(
+      (prev) =>
+        prev === id
+          ? null // Si ya está expandida, la cerramos
+          : id // Si no está expandida, la abrimos
+    );
   };
 
   if (!isOpen) return null;
@@ -135,7 +146,9 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                 <h2 className="text-xl text-black font-bold pl-2">
                   {activeCat.nombre}
                 </h2>
-                <a className="text-sm underline text-black">Ver todo</a>
+                <a className="text-sm underline text-black" href="">
+                  Ver todo
+                </a>
               </div>
 
               <div className="bg-black h-[1px] my-4"></div>
@@ -143,10 +156,40 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                 <ul>
                   {activeCat.subcategorias?.map((cat2) => (
                     <li key={cat2.id}>
-                      <button className="flex items-center justify-between w-full text-left text-lg p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black">
+                      <button
+                        className="flex items-center justify-between w-full text-left text-lg p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black"
+                        onClick={() =>
+                          cat2.subcategorias?.length
+                            ? toggleSubcategoria(cat2.id)
+                            : null
+                        }
+                      >
                         {cat2.nombre}
-                        <ChevronDown />
+                        {/* Si no tiene subcategorías (lo cual no pasa, pero por si acaso), no tiene flechita
+                            Si ya ha sido presionado, tiene la flechita para arriba, no para abajo*/}
+                        {cat2.subcategorias?.length ? (
+                          activeCat2 === cat2.id ? (
+                            <ChevronUp />
+                          ) : (
+                            <ChevronDown />
+                          )
+                        ) : null}
                       </button>
+                      {/* sub categorías de nivel 3 */}
+                      {activeCat2 === cat2.id && cat2.subcategorias && (
+                        <ul>
+                          {cat2.subcategorias.map((cat3) => (
+                            <li key={cat3.id}>
+                              <button className="flex items-center justify-between w-full text-left text-sm p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black">
+                                {cat3.nombre}
+                              </button>
+                            </li>
+                          ))}
+                          <a className="pl-2 text-sm underline text-black" href="">
+                            Ver todo
+                          </a>
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
