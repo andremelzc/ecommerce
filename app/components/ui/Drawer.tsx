@@ -6,11 +6,7 @@ import { createPortal } from "react-dom";
 import { X, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Transition } from "@headlessui/react";
 import type { CategoriaNivevl1 } from "@/app/types/categoria";
-
-type DrawerProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+import type { DrawerProps } from "@/app/types/Props";
 
 // Cambiar por un array que venga de la API
 const categoriasData: CategoriaNivevl1[] = [

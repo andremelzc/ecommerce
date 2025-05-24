@@ -10,10 +10,12 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import Drawer from "../ui/Drawer";
+import CartDrawer from "../ui/CartDrawer";
 import Searchbar from "@/app/components/ui/Searchbar";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <>
@@ -42,24 +44,26 @@ const Navbar = () => {
           {/*Derecha*/}
           <div className="flex items-center space-x-6">
             <button
-              className="flex items-center space-x-2 text-white text-lg cursor-pointer"
+              className="flex items-center space-x-2 text-white text-lg cursor-pointer p-2 hover:bg-gray-800 rounded-lg "
               aria-label="Mi cuenta"
             >
               <User className="text-white" size={25} />
               <span>Iniciar Sesión</span>
             </button>
             <button
-              className="flex items-center space-x-2 text-white text-lg cursor-pointer"
+              className="flex items-center space-x-2 text-white p-2 text-lg cursor-pointer hover:bg-gray-800 rounded-lg"
               aria-label="Mi cesta"
+              onClick={() => setCartOpen(true)}
             >
               <ShoppingCart className="text-white" size={25} />
-              <span>Mi cesta</span>
+              <span>Mi carrito</span>
             </button>
           </div>
         </div>
       </nav>
       {/* Drawer */}
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 };
