@@ -2,7 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import { X, Trash, SearchX } from "lucide-react";
-import type { DrawerProps } from "@/app/types/Props";
+import type { DrawerProps } from "@/app/types/props";
 import { createPortal } from "react-dom";
 
 const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
