@@ -1,16 +1,16 @@
-export interface CategoriaNivevl1 {
+export interface CategoriaNivel1 {
     id: number;
     nombre: string;
-    subcategorias?: CategoriaNivevl2[];
+    subcategorias?: CategoriaNivel2[];
 }
 
-export interface CategoriaNivevl2 {
+export interface CategoriaNivel2 {
     id: number;
     nombre: string;
-    subcategorias?: CategoriaNivevl3[];
+    subcategorias?: CategoriaNivel3[];
 }
 
-export interface CategoriaNivevl3 {
+export interface CategoriaNivel3 {
     id: number;
     nombre: string;
 }

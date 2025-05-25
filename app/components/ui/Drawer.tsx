@@ -5,73 +5,25 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Transition } from "@headlessui/react";
-import type { CategoriaNivevl1 } from "@/app/types/categoria";
+import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
 
-// Cambiar por un array que venga de la API
-const categoriasData: CategoriaNivevl1[] = [
-  {
-    id: 1,
-    nombre: "Periféricos",
-    subcategorias: [
-      {
-        id: 1,
-        nombre: "Monitores",
-        subcategorias: [], // sin nivel 3
-      },
-      {
-        id: 2,
-        nombre: "Teclados",
-        subcategorias: [], // sin nivel 3
-      },
-      {
-        id: 3,
-        nombre: "Ratones",
-      },
-      {
-        id: 4,
-        nombre: "Auriculares",
-      },
-    ],
-  },
-  {
-    id: 2,
-    nombre: "Componentes",
-    subcategorias: [
-      {
-        id: 6,
-        nombre: "Placas base",
-      },
-      {
-        id: 7,
-        nombre: "Tarjetas gráficas",
-      },
-      {
-        id: 8,
-        nombre: "Procesadores",
-        subcategorias: [
-          { id: 11, nombre: "Refrigeración líquida" },
-          { id: 12, nombre: "Ventiladores CPU" },
-          { id: 13, nombre: "Pasta térmica" },
-        ],
-      },
-      {
-        id: 9,
-        nombre: "Discos duros",
-        subcategorias: [
-          { id: 14, nombre: "HDD" },
-          { id: 15, nombre: "SSD" },
-        ],
-      },
-      {
-        id: 10,
-        nombre: "RAM",
-      },
-    ],
-  },
-];
-
 const Drawer = ({ isOpen, onClose }: DrawerProps) => {
+  // LLamada al api
+  // Cambiar por un array que venga de la API
+  const [categoriasData, setCategoriasData] = useState<CategoriaNivel1[]>([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/categorias") // o la ruta que tengas que te retorne toda la estructura anidada
+        .then((res) => res.json())
+        .then((data) => setCategoriasData(data))
+        .catch((error) => {
+          console.error("Error cargando categorías:", error);
+        });
+    }
+  }, [isOpen]);
+
   // Cerrar presionando la tecla escape
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -80,7 +32,7 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   }, [isOpen, onClose]);
 
   // Activar el panel de subcategorías
-  const [activeCat, setActiveCat] = useState<CategoriaNivevl1 | null>(null);
+  const [activeCat, setActiveCat] = useState<CategoriaNivel1 | null>(null);
   const [activeCat2, setActiveCat2] = useState<number | null>(null);
 
   // Cerrar el panel de subcategorías
@@ -181,7 +133,10 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                               </button>
                             </li>
                           ))}
-                          <a className="pl-2 text-sm underline text-black" href="">
+                          <a
+                            className="pl-2 text-sm underline text-black"
+                            href=""
+                          >
                             Ver todo
                           </a>
                         </ul>
