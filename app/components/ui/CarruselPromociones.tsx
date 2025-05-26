@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { Promocion } from '@/app/types/promocion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function CarruselPromociones() {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
@@ -22,14 +23,12 @@ export default function CarruselPromociones() {
   }, []);
 
   useEffect(() => {
-    if (promociones.length === 0) return;
+    if (!promociones.length) return;
     intervaloRef.current = setInterval(
       () => setIndiceActual((prev) => (prev + 1) % promociones.length),
       4000
     );
-    return () => {
-      if (intervaloRef.current) clearInterval(intervaloRef.current);
-    };
+    return () => void (intervaloRef.current && clearInterval(intervaloRef.current));
   }, [promociones]);
 
   const siguiente = () =>
@@ -37,14 +36,14 @@ export default function CarruselPromociones() {
   const anterior = () =>
     setIndiceActual((prev) => (prev - 1 + promociones.length) % promociones.length);
 
-  if (promociones.length === 0) {
+  if (!promociones.length) {
     return <p className="text-center text-gray-500 mt-10">Cargando promociones...</p>;
   }
 
   const promo = promociones[indiceActual];
 
   return (
-    <div className="w-[90vw] max-w-4xl mx-auto mt-10 select-none font-rubik">
+    <div className="w-[90vw] max-w-8xl mx-auto mt-10 select-none font-rubik">
       {/* Título arriba */}
       <h2 className="text-3xl font-semibold text-ebony-900 text-center">
         {promo.nombre}
@@ -53,7 +52,7 @@ export default function CarruselPromociones() {
       {/* Contenedor general que engloba imagen + botones */}
       <div className="relative mt-4">
         {/* Imagen */}
-        <div className="w-full h-[70vh] max-h-[90vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
+        <div className="w-full h-[70vh] max-h-[95vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
           <img
             src={promo.img_promocional}
             alt={promo.nombre}
@@ -68,14 +67,14 @@ export default function CarruselPromociones() {
           aria-label="Anterior"
           className="absolute top-1/2 -left-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
         >
-          ‹
+          <ChevronLeft size={24} />
         </button>
         <button
           onClick={siguiente}
           aria-label="Siguiente"
           className="absolute top-1/2 -right-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
         >
-          ›
+          <ChevronRight size={24} />
         </button>
 
         {/* Botón "Ver Todo" */}
