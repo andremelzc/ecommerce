@@ -23,23 +23,19 @@ export default function CarruselPromociones() {
 
   useEffect(() => {
     if (promociones.length === 0) return;
-
-    intervaloRef.current = setInterval(() => {
-      setIndiceActual((prev) => (prev + 1) % promociones.length);
-    }, 4000);
-
+    intervaloRef.current = setInterval(
+      () => setIndiceActual((prev) => (prev + 1) % promociones.length),
+      4000
+    );
     return () => {
       if (intervaloRef.current) clearInterval(intervaloRef.current);
     };
   }, [promociones]);
 
-  const siguiente = () => {
+  const siguiente = () =>
     setIndiceActual((prev) => (prev + 1) % promociones.length);
-  };
-
-  const anterior = () => {
+  const anterior = () =>
     setIndiceActual((prev) => (prev - 1 + promociones.length) % promociones.length);
-  };
 
   if (promociones.length === 0) {
     return <p className="text-center text-gray-500 mt-10">Cargando promociones...</p>;
@@ -48,39 +44,57 @@ export default function CarruselPromociones() {
   const promo = promociones[indiceActual];
 
   return (
-    <div className="relative w-[90vw] h-[70vh] max-w-4xl max-h-[90vh] mx-auto mt-10 select-none font-rubik">
-      {/* Contenedor de imagen con 90% ancho y alto relativo al contenedor */}
-      <div className="w-full h-full rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
-        <img
-          src={promo.img_promocional}
-          alt={promo.nombre}
-          className="w-full h-full object-contain"
-          draggable={false}
-        />
+    <div className="w-[90vw] max-w-4xl mx-auto mt-10 select-none font-rubik">
+      {/* Título arriba */}
+      <h2 className="text-3xl font-semibold text-ebony-900 text-center">
+        {promo.nombre}
+      </h2>
+
+      {/* Contenedor general que engloba imagen + botones */}
+      <div className="relative mt-4">
+        {/* Imagen */}
+        <div className="w-full h-[70vh] max-h-[90vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
+          <img
+            src={promo.img_promocional}
+            alt={promo.nombre}
+            className="w-full h-full object-contain"
+            draggable={false}
+          />
+        </div>
+
+        {/* Flechas fuera de la figura */}
+        <button
+          onClick={anterior}
+          aria-label="Anterior"
+          className="absolute top-1/2 -left-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
+        >
+          ‹
+        </button>
+        <button
+          onClick={siguiente}
+          aria-label="Siguiente"
+          className="absolute top-1/2 -right-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
+        >
+          ›
+        </button>
+
+        {/* Botón "Ver Todo" */}
+        <button
+          onClick={() => {
+            /* Navegar a la vista “Ver Todo” */
+          }}
+          className="absolute bottom-4 left-4 z-10 bg-ebony-200 bg-opacity-80 hover:bg-opacity-100 text-ebony-900 font-medium rounded-full px-4 py-2 shadow-md transition"
+        >
+          Ver Todo
+        </button>
       </div>
 
-      {/* Botones a los costados */}
-      <button
-        onClick={anterior}
-        aria-label="Anterior"
-        className="absolute top-1/2 left-4 -translate-y-1/2 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
-      >
-        ‹
-      </button>
-      <button
-        onClick={siguiente}
-        aria-label="Siguiente"
-        className="absolute top-1/2 right-4 -translate-y-1/2 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
-      >
-        ›
-      </button>
-
-      {/* Texto descriptivo abajo */}
+      {/* Descripción y fechas abajo */}
       <div className="mt-4 text-center">
-        <h2 className="text-3xl font-semibold text-ebony-900">{promo.nombre}</h2>
-        <p className="mt-2 text-ebony-700 max-w-xl mx-auto">{promo.descripcion}</p>
+        <p className="text-ebony-700 max-w-xl mx-auto">{promo.descripcion}</p>
         <p className="mt-1 text-sm text-ebony-600">
-          Vigencia: {new Date(promo.fecha_inicio).toLocaleDateString()} -{' '}
+          Vigencia:{' '}
+          {new Date(promo.fecha_inicio).toLocaleDateString()} –{' '}
           {new Date(promo.fecha_final).toLocaleDateString()}
         </p>
       </div>
