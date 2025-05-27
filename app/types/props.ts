@@ -2,3 +2,33 @@ export interface DrawerProps  {
   isOpen: boolean;
   onClose: () => void;
 };
+
+export interface ProductSectionProps {
+  title: string;
+  filterType: 'bestSellers' | 'newArrivals' | 'onSale' | 'byCategory' | 'byPromotion';
+  categoryId?: number;
+  categoryLevel?: number;
+  promotionId?: number;
+  asCarousel?:  boolean;
+  asGrid?: boolean;
+  gridColumns?: number;
+  limit: number;
+}
+
+export interface ProductCardProps {
+  id: number;
+  nombre: string;
+  descripcion?: string;
+  imagen_producto: string;
+  precio: number; // Opcional si no siempre se muestra el precio
+  descuento?: number; // Opcional si no siempre se muestra el descuento
+}
+
+export interface ProductListProps {
+  productos: ProductCardProps[];
+  horizontal?: boolean;
+}
+
+export interface ProductCarouselProps {
+  productos: ProductCardProps[];
+}
