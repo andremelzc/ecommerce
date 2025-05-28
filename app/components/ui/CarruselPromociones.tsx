@@ -28,7 +28,9 @@ export default function CarruselPromociones() {
       () => setIndiceActual((prev) => (prev + 1) % promociones.length),
       4000
     );
-    return () => void (intervaloRef.current && clearInterval(intervaloRef.current));
+    return () => {
+      if (intervaloRef.current) clearInterval(intervaloRef.current);
+    };
   }, [promociones]);
 
   const siguiente = () =>
@@ -49,19 +51,23 @@ export default function CarruselPromociones() {
         {promo.nombre}
       </h2>
 
-      {/* Contenedor general que engloba imagen + botones */}
       <div className="relative mt-4">
-        {/* Imagen */}
-        <div className="w-full h-[70vh] max-h-[95vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
+        {/* Contenedor con fondo azul */}
+        <div className="w-full h-[70vh] max-h-[90vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
+          {/* Imagen que llena toda la altura y mantiene relación de aspecto */}
           <img
             src={promo.img_promocional}
             alt={promo.nombre}
-            className="w-full h-full object-contain"
             draggable={false}
+            className="h-full w-auto object-contain rounded-xl"
+            style={{
+              maskImage: 'linear-gradient(to bottom, white 60%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, white 60%, transparent 100%)',
+            }}
           />
         </div>
 
-        {/* Flechas fuera de la figura */}
+        {/* Flechas fuera del contenedor */}
         <button
           onClick={anterior}
           aria-label="Anterior"
@@ -80,7 +86,7 @@ export default function CarruselPromociones() {
         {/* Botón "Ver Todo" */}
         <button
           onClick={() => {
-            /* Navegar a la vista “Ver Todo” */
+            /* Navegar a “Ver Todo” */
           }}
           className="absolute bottom-4 left-4 z-10 bg-ebony-200 bg-opacity-80 hover:bg-opacity-100 text-ebony-900 font-medium rounded-full px-4 py-2 shadow-md transition"
         >
@@ -88,7 +94,7 @@ export default function CarruselPromociones() {
         </button>
       </div>
 
-      {/* Descripción y fechas abajo */}
+      {/* Descripción y fechas debajo */}
       <div className="mt-4 text-center">
         <p className="text-ebony-700 max-w-xl mx-auto">{promo.descripcion}</p>
         <p className="mt-1 text-sm text-ebony-600">
