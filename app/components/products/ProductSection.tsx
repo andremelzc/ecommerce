@@ -75,7 +75,7 @@ const ProductSection = ({
 }: ProductSectionProps) => {
   return (
     <section>
-      <div className="flex flex-col container mx-auto px-4 md:px-6 lg:px-8 gap-8">
+      <div className="flex flex-col container mx-auto px-4 py-8 md:px-6 lg:px-8 gap-8">
         <h2 className="text-2xl font-bold">{title}</h2>
         {asCarousel ? (
           <ProductCarousel productos={sampleProducts} />
