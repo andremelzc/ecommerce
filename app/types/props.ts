@@ -32,3 +32,16 @@ export interface ProductListProps {
 export interface ProductCarouselProps {
   productos: ProductCardProps[];
 }
+
+export interface ProductDetailProps extends ProductCardProps {
+  SKU: string;
+  cantidad_stock: number;
+  imagen_producto: string;
+  descripcion: string; // sobreescribe la obligatoriedad de descripcion
+  especificaciones: string | null;
+  tipo_especificaciones: string | null;
+  nivel_1: string;
+  nivel_2: string | null;
+  nivel_3: string | null;
+  nombre_promocion: string;
+}

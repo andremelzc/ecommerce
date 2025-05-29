@@ -1,9 +1,15 @@
 // app/layout.tsx
+import "./globals.css";
+import Navbar from "./components/shared/Navbar";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="en">
       <head />
-      <body>{children}</body>
+      
+      <body>
+        <Navbar></Navbar>
+        {children}</body>
     </html>
   );
 }
+

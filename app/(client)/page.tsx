@@ -1,6 +1,6 @@
-import CarruselGaleria from '../components/ui/CarruselGaleria';
-import CarruselPromociones from '../components/ui/CarruselPromociones';
-import ProductSection from '../components/products/ProductSection';
+import CarruselGaleria from "../components/ui/CarruselGaleria";
+import CarruselPromociones from "../components/ui/CarruselPromociones";
+import ProductSection from "../components/products/ProductSection";
 
 export default function Home() {
   return (
@@ -12,6 +12,7 @@ export default function Home() {
         limit={2}
         asCarousel={true}
       />
+      
     </main>
   );
 }

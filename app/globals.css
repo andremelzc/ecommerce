@@ -15,6 +15,8 @@
   --ebony-800: #3f538e;
   --ebony-900: #374771;
   --ebony-950: #252d46;
+  --contador: #B0ABFA;
+  --button: #FF0000;
   --rubik: "Rubik", sans-serif;
 }
 
@@ -32,6 +34,8 @@
   --color-ebony-200: var(--ebony-200);
   --color-ebony-100: var(--ebony-100);
   --color-ebony-50: var(--ebony-50);
+  --color-button: var(--button);
+  --color-contador: var(--contador);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-rubik: var(--rubik);
