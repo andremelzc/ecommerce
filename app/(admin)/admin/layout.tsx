@@ -1,6 +1,7 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { ProductProvider } from "@/app/context/ProductContext"; // Ajusta la ruta según tu proyecto
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,23 +19,30 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
-    >
-      {/* Navbar admin */}
-      <header className="bg-white border-b shadow-sm px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold">🛒 CompX</span>
-          <span className="text-lg font-medium text-gray-600">Panel de administrador</span>
-        </div>
-        <nav className="space-x-4">
-          <Link href="/admin/add-products" className="text-blue-600 hover:underline">
-            ➕ Agregar producto
-          </Link>
-        </nav>
-      </header>
+    <ProductProvider>
+      <div
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
+      >
+        {/* Navbar admin */}
+        <header className="bg-white border-b shadow-sm px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-bold">🛒 CompX</span>
+            <span className="text-lg font-medium text-gray-600">
+              Panel de administrador
+            </span>
+          </div>
+          <nav className="space-x-4">
+            <Link
+              href="/admin/add-products"
+              className="text-blue-600 hover:underline"
+            >
+              ➕ Agregar producto
+            </Link>
+          </nav>
+        </header>
 
-      <main className="p-6">{children}</main>
-    </div>
+        <main className="p-6">{children}</main>
+      </div>
+    </ProductProvider>
   );
 }
