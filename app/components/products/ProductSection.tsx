@@ -69,18 +69,74 @@ const ProductSection = ({
   categoryLevel,
   promotionId,
   asCarousel,
-  asGrid,
-  gridColumns,
   limit,
 }: ProductSectionProps) => {
+  const [productos, setProductos] = useState<ProductCardProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const params = new URLSearchParams();
+
+        switch (filterType) {
+          case "bestSellers":
+            // Falta implementar la lógica para bestSellers
+            break;
+          case "newArrivals":
+            // Falta implementar la lógica para newArrivals
+            break;
+          case "onSale":
+            // Falta implementar la lógica para onSale
+            break;
+          case "byCategory":
+            if (categoryId) {
+              params.append("categoryId", categoryId.toString());
+              if (categoryLevel) {
+                params.append("categoryLevel", categoryLevel.toString());
+              }
+            }
+            break;
+          case "byPromotion":
+            if (promotionId) {
+              params.append("promotionId", promotionId.toString());
+            }
+            break;
+          case "onlyPromotions":
+            params.append("onlyPromo", "true");
+            break;
+          case "all":
+            // No se añaden parámetros específicos
+            break;
+        }
+
+        if (limit) {
+          params.append("limit", limit.toString());
+        }
+        const response = await fetch(`/api/productos?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error("Error al cargar los productos");
+        }
+        const data = await response.json();
+        setProductos(data);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+        setError("Error al cargar los productos");
+        setProductos([]);
+      }
+    }
+    fetchProducts();
+  }, [filterType, categoryId, categoryLevel, promotionId, limit]);
+
   return (
     <section>
       <div className="flex flex-col container mx-auto px-4 py-8 md:px-6 lg:px-8 gap-8">
         <h2 className="text-2xl font-bold">{title}</h2>
         {asCarousel ? (
-          <ProductCarousel productos={sampleProducts} />
+          <ProductCarousel productos={productos} />
         ) : (
-          <ProductList productos={sampleProducts} horizontal={false} />
+          <ProductList productos={productos} horizontal={false} />
         )}
       </div>
     </section>

@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
   const minPrecio = params.get("minPrecio") ?? "";
   const maxPrecio = params.get("maxPrecio") ?? "";
   const limit = params.get("limit") ?? "";
+  const categoryId = params.get("categoryId") ?? "";
+  const categoryLevel = params.get("categoryLevel") ?? "";
 
   // Si queremos productos que tengan alguna promoción o no
   const joinPromo =
@@ -19,6 +21,12 @@ export async function GET(request: NextRequest) {
   const limitSentence = limit
     ? `\nORDER BY p.id \nLIMIT ${parseInt(limit)}`
     : "";
+
+  const catId = parseInt(categoryId);
+  const catLevel = parseInt(categoryLevel);
+
+  const joinCategory =
+    "INNER JOIN producto_categoria as pc ON p.id = pc.id_producto";
 
   // La query
   let sql = `
@@ -32,7 +40,6 @@ export async function GET(request: NextRequest) {
 
     SELECT
       p.id                     AS producto_id,
-      pe.id                    AS producto_especifico_id,
       p.nombre,
       p.descripcion,
       pe.imagen_producto,
@@ -47,6 +54,8 @@ export async function GET(request: NextRequest) {
     AND pe.precio       = mp.precio_max
 
     ${joinPromo}
+
+    ${!isNaN(catLevel) && !isNaN(catId) ? `\n${joinCategory}` : ""}
       
     WHERE pe.id = (
       SELECT MIN(ID) 
@@ -63,15 +72,19 @@ export async function GET(request: NextRequest) {
     conditions.push(`ppe.id_promocion = ${db.escape(parseInt(promocionId))}`);
   }
   if (minPrecio) {
-     conditions.push(`pe.precio          >= ${db.escape(minPrecio)}`);
+    conditions.push(`pe.precio          >= ${db.escape(minPrecio)}`);
   }
   if (maxPrecio) {
     conditions.push(`pe.precio          <= ${db.escape(maxPrecio)}`);
   }
+  if (!isNaN(catLevel) && !isNaN(catId)) {
+    conditions.push(
+      `pc.id_cat_n${categoryLevel} = ${db.escape(parseInt(categoryId))}`
+    );
+  }
   if (conditions.length > 0) {
     sql += `\nAND ${conditions.join(" AND ")}`;
   }
-  
 
   sql += limitSentence;
 

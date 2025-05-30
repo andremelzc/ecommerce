@@ -7,9 +7,9 @@ export default function Home() {
     <main>
       <CarruselPromociones />
       <ProductSection
-        title="¡Conoce nuestros productos más vendidos!"
-        filterType="bestSellers"
-        limit={2}
+        title="¡Conoce nuestros productos con promociones!"
+        filterType="all"
+        limit={5}
         asCarousel={true}
       />
       

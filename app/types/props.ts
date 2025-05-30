@@ -5,23 +5,25 @@ export interface DrawerProps  {
 
 export interface ProductSectionProps {
   title: string;
-  filterType: 'bestSellers' | 'newArrivals' | 'onSale' | 'byCategory' | 'byPromotion';
+  filterType: 'bestSellers' | 'newArrivals' | 'onSale' | 'byCategory' | 'byPromotion' | 'onlyPromotions' | '' | 'all';
   categoryId?: number;
   categoryLevel?: number;
   promotionId?: number;
   asCarousel?:  boolean;
   asGrid?: boolean;
   gridColumns?: number;
-  limit: number;
+  limit?: number;
 }
 
 export interface ProductCardProps {
-  id: number;
+  producto_id?: number; 
+  id?: number;
   nombre: string;
   descripcion?: string;
   imagen_producto: string;
   precio: number; // Opcional si no siempre se muestra el precio
   descuento?: number; // Opcional si no siempre se muestra el descuento
+  porcentaje_desc?: number; // Opcional si no siempre se muestra el porcentaje de descuento
 }
 
 export interface ProductListProps {

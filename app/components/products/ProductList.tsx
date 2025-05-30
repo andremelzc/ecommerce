@@ -10,9 +10,7 @@ const ProductList = ({ productos, horizontal }: ProductListProps) => {
     : "grid grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-x-4 gap-y-8";
 
   return (
-    <div
-      className={containerClass}
-    >
+    <div className={containerClass}>
       {productos.map((producto) => (
         <ProductCard
           key={producto.id}

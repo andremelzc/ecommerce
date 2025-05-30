@@ -9,64 +9,64 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   const [cardWidth, setCardWidth] = useState(0);
   const [visibleProducts, setVisibleProducts] = useState(6);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // CONFIGURACIÓN RESPONSIVE: Productos visibles según tamaño de pantalla
   const getVisibleProductsCount = (width: number) => {
-    if (width < 640) return 1;      // móvil pequeño: 1 producto
-    if (width < 768) return 2;      // móvil: 2 productos  
-    if (width < 1024) return 3;     // tablet: 3 productos
-    if (width < 1280) return 4;     // desktop pequeño: 4 productos
-    if (width < 1536) return 5;     // desktop: 5 productos
-    return 6;                       // desktop grande: 6 productos
+    if (width < 640) return 1; // móvil pequeño: 1 producto
+    if (width < 768) return 2; // móvil: 2 productos
+    if (width < 1024) return 3; // tablet: 3 productos
+    if (width < 1280) return 4; // desktop pequeño: 4 productos
+    if (width < 1536) return 5; // desktop: 5 productos
+    return 6; // desktop grande: 6 productos
   };
-  
+
   // Calcular dimensiones y productos visibles
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        
+
         // Determinar cuántos productos mostrar según el ancho
         const newVisibleProducts = getVisibleProductsCount(containerWidth);
         setVisibleProducts(newVisibleProducts);
-        
+
         // Calcular el ancho que debe tener cada tarjeta
         const gapTotal = (newVisibleProducts - 1) * 16; // gaps de 16px
         const availableWidth = containerWidth - gapTotal;
         const calculatedCardWidth = availableWidth / newVisibleProducts;
-        
+
         setCardWidth(calculatedCardWidth);
-        
+
         // Ajustar el índice actual si es necesario (para evitar páginas vacías)
         const newTotalPages = Math.ceil(productos.length / newVisibleProducts);
         const newMaxIndex = Math.max(0, newTotalPages - 1);
-        
-        setCurrentIndex(prevIndex => Math.min(prevIndex, newMaxIndex));
+
+        setCurrentIndex((prevIndex) => Math.min(prevIndex, newMaxIndex));
       }
     };
 
     // Ejecutar al montar y con un pequeño delay
     const timer = setTimeout(updateDimensions, 100);
-    
+
     // Escuchar cambios de tamaño de ventana
-    window.addEventListener('resize', updateDimensions);
-    
+    window.addEventListener("resize", updateDimensions);
+
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener("resize", updateDimensions);
     };
   }, [productos.length]);
 
   // Calcular navegación basada en productos visibles actuales
   const totalPages = Math.ceil(productos.length / visibleProducts);
   const maxIndex = Math.max(0, totalPages - 1);
-  
+
   const goToPrevious = () => {
-    setCurrentIndex(prev => Math.max(0, prev - 1));
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
   };
 
   const goToNext = () => {
-    setCurrentIndex(prev => Math.min(maxIndex, prev + 1));
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
   // Calcular el desplazamiento
@@ -81,7 +81,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
       {showNavigation && (
         <button
           className={`absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 bg-white rounded-full shadow-md z-10 transition-opacity ${
-            currentIndex === 0 ? 'hidden' : 'hover:bg-gray-50 cursor-pointer'
+            currentIndex === 0 ? "hidden" : "hover:bg-gray-50 cursor-pointer"
           }`}
           onClick={goToPrevious}
           disabled={currentIndex === 0}
@@ -95,18 +95,24 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
       <div className="overflow-hidden">
         <div
           className="flex gap-2 sm:gap-4 transition-transform duration-300 ease-in-out"
-          style={{ 
+          style={{
             transform: `translateX(-${translateX}px)`,
           }}
         >
           {productos.map((producto) => (
-            <div 
-              key={producto.id} 
+            <div
+              key={producto.id}
               className="flex-shrink-0"
               style={{ width: `${cardWidth}px` }}
             >
               <div className="w-full h-full">
-                <ProductCard {...producto} />
+                <ProductCard
+                  id={producto.producto_id}
+                  nombre={producto.nombre}
+                  imagen_producto={producto.imagen_producto}
+                  precio={producto.precio}
+                  descuento={producto.porcentaje_desc}
+                />
               </div>
             </div>
           ))}
@@ -117,7 +123,9 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
       {showNavigation && (
         <button
           className={`absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 bg-white rounded-full shadow-md z-10 transition-opacity ${
-            currentIndex >= maxIndex ? 'hidden' : 'hover:bg-gray-50 cursor-pointer'
+            currentIndex >= maxIndex
+              ? "hidden"
+              : "hover:bg-gray-50 cursor-pointer"
           }`}
           onClick={goToNext}
           disabled={currentIndex >= maxIndex}
@@ -134,7 +142,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
             <button
               key={index}
               className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
-                index === currentIndex ? 'bg-gray-800' : 'bg-gray-300'
+                index === currentIndex ? "bg-gray-800" : "bg-gray-300"
               }`}
               onClick={() => setCurrentIndex(index)}
               aria-label={`Ir a la página ${index + 1}`}
@@ -142,7 +150,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
           ))}
         </div>
       )}
-      
+
       {/* Info responsive (solo en desarrollo) 
       {process.env.NODE_ENV === 'development' && (
         <div className="text-xs text-gray-500 mt-2 text-center">
