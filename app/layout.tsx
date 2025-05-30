@@ -8,9 +8,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head />  
       <body>
-        <Navbar></Navbar>
+        <Navbar/>
         {children}
-        <Footer></Footer>
+        <Footer/>
       </body>
     </html>
   );
