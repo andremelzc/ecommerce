@@ -78,11 +78,15 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   };
 
   // Calcular el desplazamiento - only apply transform after client hydration
-  const translateX = isClient ? currentIndex * visibleProducts * (cardWidth + 16) : 0;
+  const translateX = isClient
+    ? currentIndex * visibleProducts * (cardWidth + 16)
+    : 0;
 
   // Solo mostrar navegación si hay más productos que los visibles
   const showNavigation = productos.length > visibleProducts;
-
+  
+    console.log("Productos:", productos);
+  
   // Show a loading state or simplified version during SSR
   if (!isClient) {
     return (
@@ -134,7 +138,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
             <div
               key={producto.producto_id}
               className="flex-shrink-0"
-              style={{ width: cardWidth > 0 ? `${cardWidth}px` : 'auto' }}
+              style={{ width: cardWidth > 0 ? `${cardWidth}px` : "auto" }}
             >
               <div className="w-full h-full">
                 <ProductCard
@@ -142,7 +146,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
                   nombre={producto.nombre}
                   imagen_producto={producto.imagen_producto}
                   precio={producto.precio}
-                  descuento={producto.porcentaje_desc}
+                  porcentaje_desc={producto.porcentaje_desc}
                 />
               </div>
             </div>
