@@ -7,7 +7,7 @@ import { X, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
-import Loadingspinner from "@/app/components/ui/Loadingspinner";
+import Loadingspinner from "@/app/components/ui/LoadingSpinner";
 
 const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   // LLamada al api
