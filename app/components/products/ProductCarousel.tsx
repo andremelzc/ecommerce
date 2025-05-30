@@ -7,7 +7,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export default function ProductCarousel({ productos }: ProductCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardWidth, setCardWidth] = useState(0);
-  const [visibleProducts, setVisibleProducts] = useState(6);
+  const [visibleProducts, setVisibleProducts] = useState(6); // Default for server
+  const [isClient, setIsClient] = useState(false); // Track client-side hydration
   const containerRef = useRef<HTMLDivElement>(null);
 
   // CONFIGURACIÓN RESPONSIVE: Productos visibles según tamaño de pantalla
@@ -20,8 +21,15 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
     return 6; // desktop grande: 6 productos
   };
 
+  // Set client flag after hydration
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Calcular dimensiones y productos visibles
   useEffect(() => {
+    if (!isClient) return; // Don't run on server
+
     const updateDimensions = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
@@ -55,7 +63,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
       clearTimeout(timer);
       window.removeEventListener("resize", updateDimensions);
     };
-  }, [productos.length]);
+  }, [productos.length, isClient]);
 
   // Calcular navegación basada en productos visibles actuales
   const totalPages = Math.ceil(productos.length / visibleProducts);
@@ -69,11 +77,34 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
     setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
   };
 
-  // Calcular el desplazamiento
-  const translateX = currentIndex * visibleProducts * (cardWidth + 16);
+  // Calcular el desplazamiento - only apply transform after client hydration
+  const translateX = isClient ? currentIndex * visibleProducts * (cardWidth + 16) : 0;
 
   // Solo mostrar navegación si hay más productos que los visibles
   const showNavigation = productos.length > visibleProducts;
+
+  // Show a loading state or simplified version during SSR
+  if (!isClient) {
+    return (
+      <div className="relative w-full" ref={containerRef}>
+        <div className="overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-4">
+            {productos.slice(0, 6).map((producto) => (
+              <div key={producto.producto_id} className="w-full">
+                <ProductCard
+                  producto_id={producto.producto_id}
+                  nombre={producto.nombre}
+                  imagen_producto={producto.imagen_producto}
+                  precio={producto.precio}
+                  descuento={producto.porcentaje_desc}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -101,13 +132,13 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
         >
           {productos.map((producto) => (
             <div
-              key={producto.id}
+              key={producto.producto_id}
               className="flex-shrink-0"
-              style={{ width: `${cardWidth}px` }}
+              style={{ width: cardWidth > 0 ? `${cardWidth}px` : 'auto' }}
             >
               <div className="w-full h-full">
                 <ProductCard
-                  id={producto.producto_id}
+                  producto_id={producto.producto_id}
                   nombre={producto.nombre}
                   imagen_producto={producto.imagen_producto}
                   precio={producto.precio}
@@ -150,13 +181,6 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
           ))}
         </div>
       )}
-
-      {/* Info responsive (solo en desarrollo) 
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs text-gray-500 mt-2 text-center">
-          {visibleProducts} productos | Página {currentIndex + 1}/{totalPages} | Ancho: {Math.round(cardWidth)}px
-        </div>
-      )*/}
     </div>
   );
 }

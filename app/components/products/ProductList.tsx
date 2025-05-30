@@ -13,8 +13,8 @@ const ProductList = ({ productos, horizontal }: ProductListProps) => {
     <div className={containerClass}>
       {productos.map((producto) => (
         <ProductCard
-          key={producto.id}
-          id={producto.id}
+          key={producto.producto_id}
+          producto_id={producto.producto_id}
           nombre={producto.nombre}
           descripcion={producto.descripcion}
           imagen_producto={producto.imagen_producto}

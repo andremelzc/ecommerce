@@ -9,7 +9,7 @@ export default function Home() {
       <ProductSection
         title="¡Conoce nuestros productos con promociones!"
         filterType="all"
-        limit={5}
+        limit={10}
         asCarousel={true}
       />
       
