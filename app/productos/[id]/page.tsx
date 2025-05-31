@@ -1,5 +1,6 @@
 import ProductDetail from "@/app/components/products/ProductDetail";
 import ProductSection from "@/app/components/products/ProductSection";
+
 async function getProduct(id: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const res = await fetch(`${baseUrl}/api/productos/${id}`, {
@@ -15,7 +16,8 @@ export default async function ProductPage({
 }: {
   params: { id: string };
 }) {
-  const data = await getProduct(params.id);
+  const { id } = params;
+  const data = await getProduct(id);
   const product = Array.isArray(data) ? data[0] : data;
 
   return (
