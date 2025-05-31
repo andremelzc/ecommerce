@@ -5,7 +5,7 @@ import Footer from "./components/shared/Footer";
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Mi App',
+  title: 'Compx',
   description: 'Descripción de mi aplicación',
 }
 

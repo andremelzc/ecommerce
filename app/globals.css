@@ -60,7 +60,7 @@ body {
     margin-right: auto;
     max-width: 80rem; /* 1280px - equivalente a max-w-7xl */
     padding-left: 1rem;     
-    padding-right: rem;
+    padding-right: 1rem;
   }
   
   .container-padding-sm {

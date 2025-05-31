@@ -39,6 +39,8 @@ export interface ProductDetailProps extends ProductCardProps {
   SKU: string;
   cantidad_stock: number;
   imagen_producto: string;
+  marca: string | null; 
+  logo: string | null; 
   descripcion: string; // sobreescribe la obligatoriedad de descripcion
   especificaciones: string | null;
   tipo_especificaciones: string | null;

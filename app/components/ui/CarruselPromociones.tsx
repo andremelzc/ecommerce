@@ -63,7 +63,7 @@ export default function CarruselPromociones() {
 
   if (!promociones.length) {
     return (
-      <p className="text-center text-gray-500 mt-6 px-4">Cargando promociones...</p>
+      <p className="text-center text-gray-500 px-4">Cargando promociones...</p>
     );
   }
 
@@ -71,7 +71,7 @@ export default function CarruselPromociones() {
 
   return (
     <div
-      className="w-full max-w-[120rem] mx-auto select-none mt-6 md:mt-10 font-rubik"
+      className="w-full max-w-[120rem] mx-auto select-none  font-rubik"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >

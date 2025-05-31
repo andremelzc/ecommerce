@@ -5,12 +5,13 @@ import { RowDataPacket } from "mysql2";
 interface MarcaRow extends RowDataPacket {
   id: number;
   nombre: string;
+  imagen_logo: string;
 }
 
 export async function GET() {
   try {
     const [rows] = await db.query<MarcaRow[]>(
-      "SELECT id, nombre FROM ecommerce.marcas"
+      "SELECT id, nombre, imagen_logo FROM ecommerce.marcas"
     );
     return NextResponse.json(rows);
   } catch (error) {

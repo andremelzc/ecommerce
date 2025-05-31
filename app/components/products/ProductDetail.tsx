@@ -140,6 +140,7 @@ function ProductInfo({
   precio,
   descuento,
   descripcion,
+  marca,
   SKU,
   tipo_especificaciones,
   especificaciones,
@@ -147,7 +148,7 @@ function ProductInfo({
 }: any) {
   return (
     <section
-      className="w-full 2xl:lg:w-1/3 lg:w-2/5 px-2 sm:px-8 md:px-12 lg:px-16 xl:px-20 flex-col m-auto border border-gray-200 shadow-xl rounded-2xl pt-4 sm:pt-5"
+      className="w-full 2xl:lg:w-3/5 lg:w-2/5 px-2 sm:px-8 md:px-12 lg:px-16 xl:px-20 flex-col border border-gray-200 shadow-xl rounded-2xl pt-4 sm:pt-5"
       itemScope
       itemType="https://schema.org/Product"
     >
@@ -162,6 +163,7 @@ function ProductInfo({
       >
         {nombre}
       </h1>
+      
       <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5" />
       <div className="flex w-full justify-center items-center gap-2 my-3 sm:my-5">
         {descuento != null ? (
@@ -204,6 +206,7 @@ function ProductInfo({
         tipo_especificaciones={tipo_especificaciones}
         especificaciones={especificaciones}
         cantidad_stock={cantidad_stock}
+        marca={marca}
       />
       <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5 " />
       <div className="w-full">
@@ -223,6 +226,7 @@ function ProductSpecs({
   tipo_especificaciones,
   especificaciones,
   cantidad_stock,
+  marca,
 }: any) {
   return (
     <ul
@@ -231,6 +235,9 @@ function ProductSpecs({
       itemScope
       itemType="https://schema.org/PropertyValue"
     >
+      <li>
+        <strong>Marca</strong>: <span itemProp="value">{marca}</span>
+      </li>
       <li>
         <strong>SKU</strong>: <span itemProp="value">{SKU}</span>
       </li>
@@ -331,6 +338,7 @@ const ProductDetail = (props: ProductDetailProps) => {
       itemScope
       itemType="https://schema.org/Product"
     >
+
       <Breadcrumb {...props} isFullScreen={isFullScreen} />
       <div className="flex flex-col lg:flex-row bg-white py-6 sm:py-10 lg:py-15 relative align-middle justify-center font-sans md:gap-10 lg:gap-40">
         <ProductImage
