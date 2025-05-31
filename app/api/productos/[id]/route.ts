@@ -1,37 +1,59 @@
+// app/api/productos/[id]/route.ts
+
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  // Desestructuramos directamente `{ params }`. Next sabe internamente que
+  // `params` es una Promise<{ id: string }>, así que no lo anotamos con un tipo rígido.
+  { params }: { params: any }
 ) {
-  const id = params.id;
+  // Ahora hacemos await sobre `params` para extraer el id correctamente:
+  const { id } = await params;
 
-  let sql = `
-    select pe.id_producto as id, pe.SKU, pe.cantidad_stock, pe.imagen_producto, pe.precio, p.nombre, p.descripcion, vo.valor as especificaciones, v.nombre as tipo_especificaciones, c3.nombre_categoria as nivel_3, c2.nombre_categoria as nivel_2, c1.nombre_categoria as nivel_1, ppe.porcentaje_desc as descuento, pro.nombre as nombre_promocion
-    from producto_especifico as pe
-    join producto as p
-    on p.id = pe.id_producto
-    left join combinaciones_producto as cp
-    on pe.id_producto = cp.id_producto_especifico
-    left join variacion_opcion as vo
-    on cp.id_producto_especifico = vo.id_variacion
-    left join variacion as v
-    on v.id = vo.id_variacion
-    left join categoria_nivel_3 as c3
-    on v.id_categoria_3 = c3.id
-    left join categoria_nivel_2 as c2
-    on v.id_categoria_2 = c2.id
-    left join categoria_nivel_1 as c1
-    on v.id_categoria_1 = c1.id
-    left join promocion_producto_especifico as ppe
-    on ppe.id_producto_especifico = pe.id
-    left join promocion as pro
-    on pro.id = ppe.id_promocion
-    where p.id = ${db.escape(parseInt(id))}
-    order by pe.precio desc
-    limit 1;
-   `;
+  // Convertimos a entero y escapamos la entrada para evitar inyección SQL:
+  const productoId = db.escape(parseInt(id, 10));
+
+  const sql = `
+    SELECT
+      pe.id_producto     AS id,
+      pe.SKU,
+      pe.cantidad_stock,
+      pe.imagen_producto,
+      pe.precio,
+      p.nombre,
+      p.descripcion,
+      vo.valor            AS especificaciones,
+      v.nombre            AS tipo_especificaciones,
+      c3.nombre_categoria AS nivel_3,
+      c2.nombre_categoria AS nivel_2,
+      c1.nombre_categoria AS nivel_1,
+      ppe.porcentaje_desc AS descuento,
+      pro.nombre          AS nombre_promocion
+    FROM producto_especifico AS pe
+    JOIN producto AS p
+      ON p.id = pe.id_producto
+    LEFT JOIN combinaciones_producto AS cp
+      ON pe.id = cp.id_producto_especifico
+    LEFT JOIN variacion_opcion AS vo
+      ON cp.id_producto_especifico = vo.id_variacion
+    LEFT JOIN variacion AS v
+      ON v.id = vo.id_variacion
+    LEFT JOIN categoria_nivel_3 AS c3
+      ON v.id_categoria_3 = c3.id
+    LEFT JOIN categoria_nivel_2 AS c2
+      ON v.id_categoria_2 = c2.id
+    LEFT JOIN categoria_nivel_1 AS c1
+      ON v.id_categoria_1 = c1.id
+    LEFT JOIN promocion_producto_especifico AS ppe
+      ON ppe.id_producto_especifico = pe.id
+    LEFT JOIN promocion AS pro
+      ON pro.id = ppe.id_promocion
+    WHERE p.id = ${productoId}
+    ORDER BY pe.precio DESC
+    LIMIT 1;
+  `;
 
   try {
     const [rows] = await db.query(sql);

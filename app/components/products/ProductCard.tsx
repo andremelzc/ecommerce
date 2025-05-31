@@ -5,11 +5,11 @@ import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
 
 const ProductCard = ({
-  id,
+  producto_id,
   nombre,
   imagen_producto,
   precio,
-  descuento,
+  porcentaje_desc,
 }: ProductCardProps) => {
   // Manejar los estados de la imagen (hover y errores)
   const [isHovered, setIsHovered] = useState(false);
@@ -17,15 +17,15 @@ const ProductCard = ({
   const [imageError, setImageError] = useState(false);
 
   // Si hay descuento, calculamos el precio final y el porcentaje de descuento
-  const precioFinal = descuento ? precio * (1 - descuento) : precio;
-  const porcentajeDescuento = descuento ? Math.round(descuento * 100) : null;
+  const precioFinal = porcentaje_desc ? precio * (1 - porcentaje_desc) : precio;
+  const porcentajeDescuento = porcentaje_desc ? Math.round(porcentaje_desc * 100) : null;
 
   console.log("Producto:", {
-    id,
+    producto_id,
     nombre,
     imagen_producto,
     precio,
-    descuento,
+    porcentaje_desc,
   });
 
   // Al darle click al carrito de la imagen
@@ -85,7 +85,7 @@ const ProductCard = ({
       </div>
 
       {/* Etiqueta de descuento*/}
-      {descuento && (
+      {porcentaje_desc && (
         <div className="absolute top-0 left-0 bg-red-900 text-white text-xs p-2 border-2 rounded-lg">
           {porcentajeDescuento}% OFF
         </div>
@@ -97,7 +97,7 @@ const ProductCard = ({
           <h3 className="text-lg h-16">{nombre}</h3>
         </div>
         <div className="flex items-center gap-2">
-          {descuento != null ? (
+          {porcentaje_desc != null ? (
             <>
               <span className="text-2xl text-red-900 font-bold">
                 S/ {precioFinal.toFixed(2)}
