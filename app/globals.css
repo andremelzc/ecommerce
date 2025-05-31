@@ -139,7 +139,7 @@ body {
   /* Pantallas extremadamente grandes (5K+) */
   @media (min-width: 2560px) {
     .container-padding {
-      max-width: 140rem; /* 2560px */
+      max-width: 110rem; /* 2560px */
       padding-left: 8rem;
       padding-right: 8rem;
     }

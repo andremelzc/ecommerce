@@ -1,22 +1,23 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { Promocion } from '@/app/types/promocion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useState, useRef } from "react";
+import { Promocion } from "@/app/types/promocion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CarruselPromociones() {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
   const [indiceActual, setIndiceActual] = useState(0);
   const intervaloRef = useRef<NodeJS.Timeout | null>(null);
+  const [isHover, setIsHover] = useState(false);
 
   useEffect(() => {
     const fetchPromociones = async () => {
       try {
-        const res = await fetch('/api/promociones');
+        const res = await fetch("/api/promociones");
         const data = await res.json();
         setPromociones(data);
       } catch (error) {
-        console.error('Error al obtener promociones:', error);
+        console.error("Error al obtener promociones:", error);
       }
     };
     fetchPromociones();
@@ -33,76 +34,149 @@ export default function CarruselPromociones() {
     };
   }, [promociones]);
 
-  const siguiente = () =>
+  const resetearIntervalo = () => {
+    if (intervaloRef.current) {
+      clearInterval(intervaloRef.current);
+    }
+    intervaloRef.current = setInterval(
+      () => setIndiceActual((prev) => (prev + 1) % promociones.length),
+      4000
+    );
+  };
+
+  const siguiente = () => {
     setIndiceActual((prev) => (prev + 1) % promociones.length);
-  const anterior = () =>
-    setIndiceActual((prev) => (prev - 1 + promociones.length) % promociones.length);
+    resetearIntervalo();
+  };
+
+  const anterior = () => {
+    setIndiceActual(
+      (prev) => (prev - 1 + promociones.length) % promociones.length
+    );
+    resetearIntervalo();
+  };
+
+  const irASlide = (indice: number) => {
+    setIndiceActual(indice);
+    resetearIntervalo();
+  };
 
   if (!promociones.length) {
-    return <p className="text-center text-gray-500 mt-10">Cargando promociones...</p>;
+    return (
+      <p className="text-center text-gray-500 mt-6 px-4">Cargando promociones...</p>
+    );
   }
 
   const promo = promociones[indiceActual];
 
   return (
-    <div className="w-[90vw] max-w-8xl mx-auto mt-10 select-none font-rubik">
-      {/* Título arriba */}
-      <h2 className="text-3xl font-semibold text-ebony-900 text-center">
-        {promo.nombre}
-      </h2>
-
-      <div className="relative mt-4">
-        {/* Contenedor con fondo azul */}
-        <div className="w-full h-[70vh] max-h-[90vh] rounded-xl shadow-lg overflow-hidden bg-ebony-50 flex items-center justify-center">
-          {/* Imagen que llena toda la altura y mantiene relación de aspecto */}
+    <div
+      className="w-full max-w-[120rem] mx-auto select-none mt-6 md:mt-10 font-rubik"
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
+      {/* Contenedor del carrusel */}
+      <div className="relative">
+        {/* Contenedor de imagen responsive */}
+        <div className="w-full overflow-hidden flex items-center justify-center bg-gray-50 rounded-lg
+                        h-48 sm:h-64 md:h-80 lg:h-96 xl:h-[30rem] 2xl:h-[40rem]">
           <img
             src={promo.img_promocional}
             alt={promo.nombre}
             draggable={false}
-            className="h-full w-auto object-contain rounded-xl"
+            className="w-full h-full object-cover object-center rounded-lg
+                       sm:object-contain sm:max-w-none
+                       md:object-cover
+                       lg:w-auto lg:h-full lg:max-w-none
+                       xl:w-full xl:h-full
+                       2xl:w-full 2xl:h-[40rem] 2xl:object-cover"
             style={{
-              maskImage: 'linear-gradient(to bottom, white 60%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, white 60%, transparent 100%)',
+              maskImage:
+                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0.4) 85%, rgba(255,255,255,0) 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0.4) 85%, rgba(255,255,255,0) 100%)",
             }}
           />
         </div>
 
-        {/* Flechas fuera del contenedor */}
+        {/* Flechas de navegación */}
         <button
           onClick={anterior}
           aria-label="Anterior"
-          className="absolute top-1/2 -left-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
+          className={`absolute left-2 sm:left-4 lg:left-6 top-1/2 transform -translate-y-1/2 
+                     p-2 sm:p-3 bg-white rounded-full shadow-lg z-20 
+                     transition-all duration-300 hover:bg-gray-50 cursor-pointer 
+                     ${isHover ? "opacity-100" : "opacity-0 sm:opacity-70"}`}
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft className="color-black w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" size={20}/>
         </button>
+        
         <button
           onClick={siguiente}
           aria-label="Siguiente"
-          className="absolute top-1/2 -right-6 transform -translate-y-1/2 z-10 bg-ebony-200 bg-opacity-50 hover:bg-opacity-80 text-ebony-900 rounded-full p-2 shadow-md transition"
+          className={`absolute right-2 sm:right-4 lg:right-6 top-1/2 transform -translate-y-1/2 
+                     p-2 sm:p-3 bg-white rounded-full shadow-lg z-20 
+                     transition-all duration-300 hover:bg-gray-50 cursor-pointer
+                     ${isHover ? "opacity-100" : "opacity-0 sm:opacity-70"}`}
         >
-          <ChevronRight size={24} />
+          <ChevronRight className="color-black w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" size={20}/>
         </button>
 
-        {/* Botón "Ver Todo" */}
-        <button
-          onClick={() => {
-            /* Navegar a “Ver Todo” */
-          }}
-          className="absolute bottom-4 left-4 z-10 bg-ebony-200 bg-opacity-80 hover:bg-opacity-100 text-ebony-900 font-medium rounded-full px-4 py-2 shadow-md transition"
-        >
-          Ver Todo
-        </button>
+        {/* Indicadores circulares */}
+        <div className="absolute bottom-3 sm:bottom-4 lg:bottom-6 left-1/2 transform -translate-x-1/2 
+                        flex space-x-2 sm:space-x-3 z-10">
+          {promociones.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => irASlide(index)}
+              className={`w-1 h-1 sm:w-3 sm:h-3 lg:w-3 lg:h-3 rounded-full 
+                         transition-all duration-300 hover:scale-110
+                         ${index === indiceActual
+                          ? "bg-ebony-800 scale-110 shadow-lg"
+                          : "bg-gray-300 bg-opacity-60 hover:bg-opacity-80"
+                        }`}
+              aria-label={`Ir a promoción ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Botón "Ver Todo" - COMENTADO */}
+        {/* 
+        {promociones.length > 1 && (
+          <button
+            onClick={() => {
+              // Navegar a "Ver Todo" 
+            }}
+            className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 
+                       bg-gray-900 bg-opacity-80 hover:bg-opacity-100 text-white font-medium 
+                       rounded-full px-4 py-2 sm:px-6 sm:py-3 shadow-lg z-20
+                       transition-all duration-300 hover:scale-105
+                       text-sm sm:text-base
+                       ${isHover ? "opacity-100" : "opacity-0"}`}
+          >
+            Ver Todo
+          </button>
+        )}
+        */}
       </div>
 
-      {/* Descripción y fechas debajo */}
-      <div className="mt-4 text-center">
-        <p className="text-ebony-700 max-w-xl mx-auto">{promo.descripcion}</p>
-        <p className="mt-1 text-sm text-ebony-600">
-          Vigencia:{' '}
-          {new Date(promo.fecha_inicio).toLocaleDateString()} –{' '}
-          {new Date(promo.fecha_final).toLocaleDateString()}
+      {/* Información de la promoción - COMENTADA */}
+      {/* 
+      <div className="mt-4 sm:mt-6 text-center px-4">
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 mb-2">
+          {promo.nombre}
+        </h3>
+        <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto line-clamp-2">
+          {promo.descripcion}
         </p>
+        {promo.fecha_inicio && promo.fecha_final && (
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
+            Vigencia: {new Date(promo.fecha_inicio).toLocaleDateString()} –{" "}
+            {new Date(promo.fecha_final).toLocaleDateString()}
+          </p>
+        )}
       </div>
+      */}
     </div>
   );
 }
