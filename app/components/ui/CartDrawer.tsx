@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Trash, SearchX } from "lucide-react";
 import type { DrawerProps } from "@/app/types/props";
 import { createPortal } from "react-dom";
+import Link from 'next/link';
 
 const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
   const cartItems = []; // Cambiar por un array que venga de la API
@@ -37,9 +38,12 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
               <SearchX size={100} strokeWidth={0.8}/>
               <p className="font-bold text-lg">Tu carrito está vacío</p>
               <p className="px-5 text-center">Explora multitud de productos a buen precio desde nuestra página principal</p>
-              <button className="bg-ebony-950 text-white w-[calc(100%-3rem)] max-w-xs px-4 py-3 rounded-lg hover:bg-ebony-800 transition-colors cursor-pointer">
-                <span className="text-lg">Explorar productos</span>
-              </button>
+                <Link href="/cart">
+                  <button className="bg-ebony-950 text-white w-[calc(100%-3rem)] max-w-xs px-4 py-3 rounded-lg hover:bg-ebony-800 transition-colors cursor-pointer">
+                    <span className="text-lg">Explorar productos</span>
+                  </button>
+                </Link>
+
             </div>
           ) : (
             <></>
