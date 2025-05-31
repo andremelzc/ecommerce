@@ -28,6 +28,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
 
   // Calcular dimensiones y productos visibles
   useEffect(() => {
+    
     if (!isClient) return; // Don't run on server
 
     const updateDimensions = () => {
@@ -166,7 +167,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
           disabled={currentIndex >= maxIndex}
           aria-label="Productos siguientes"
         >
-          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" size={20} />
         </button>
       )}
 
