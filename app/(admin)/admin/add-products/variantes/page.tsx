@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useProduct } from '@/app/context/ProductContext';  // Ajusta ruta
+import { useProduct, ProductoEspecifico } from '@/app/context/ProductContext';
 
 interface Variacion {
   id: number;
@@ -14,34 +14,22 @@ interface ValorVariacion {
   id_variacion: number;
 }
 
-interface ProductoEspecifico {
-  sku: string;
-  precio: string;
-  stock: string;
-  imagen: string;
-  variaciones: { tipo: string; tipoId?: number; valor: string }[];
-}
-
 export default function VariantesPage() {
-  const { productoGeneral } = useProduct();
+  const { productosEspecificos, setProductosEspecificos, productoGeneral } = useProduct();
 
   const [variacionesDisponibles, setVariacionesDisponibles] = useState<Variacion[]>([]);
   const [valoresPorVariacion, setValoresPorVariacion] = useState<Record<number, ValorVariacion[]>>({});
 
-  const [productos, setProductos] = useState<ProductoEspecifico[]>([
-    {
-      sku: '',
-      precio: '',
-      stock: '',
-      imagen: '',
-      variaciones: [{ tipo: '', valor: '' }],
-    },
-  ]);
+  // Estado local para edición y sincronización con contexto
+  const [productos, setProductos] = useState<ProductoEspecifico[]>(productosEspecificos);
+
+  useEffect(() => {
+    setProductos(productosEspecificos);
+  }, [productosEspecificos]);
 
   // Traer variaciones cuando cambien las categorías
   useEffect(() => {
     const { categoria1, categoria2, categoria3 } = productoGeneral;
-
     if (!categoria1) return;
 
     const params = new URLSearchParams();
@@ -55,7 +43,7 @@ export default function VariantesPage() {
       .catch(() => setVariacionesDisponibles([]));
   }, [productoGeneral]);
 
-  // Al seleccionar una variación, cargar sus valores si no están ya cargados
+  // Cargar valores para variación
   const cargarValoresVariacion = (tipoNombre: string) => {
     const variacion = variacionesDisponibles.find(v => v.nombre === tipoNombre);
     if (!variacion) return;
@@ -72,51 +60,88 @@ export default function VariantesPage() {
     }
   };
 
-  const handleProductoChange = (i: number, field: 'sku' | 'precio' | 'stock' | 'imagen',  value: string) => {
+  // Manejo cambios productos
+  const handleProductoChange = (i: number, field: 'sku' | 'precio' | 'stock' | 'imagen', value: string) => {
     const nuevos = [...productos];
     nuevos[i][field] = value;
     setProductos(nuevos);
+    setProductosEspecificos(nuevos);
   };
 
+  // Manejo cambios variaciones
   const handleVariacionChange = (i: number, j: number, field: 'tipo' | 'valor', value: string) => {
     const nuevos = [...productos];
     if (field === 'tipo') {
       nuevos[i].variaciones[j].tipo = value;
       nuevos[i].variaciones[j].valor = '';
-      // Cargar valores al cambiar tipo
+      const tipoId = variacionesDisponibles.find(v => v.nombre === value)?.id;
+      nuevos[i].variaciones[j].tipoId = tipoId;
+      nuevos[i].variaciones[j].id_variacion_opcion = undefined;
       cargarValoresVariacion(value);
     } else {
       nuevos[i].variaciones[j].valor = value;
+      const tipoId = nuevos[i].variaciones[j].tipoId;
+      if (tipoId && valoresPorVariacion[tipoId]) {
+        const opcion = valoresPorVariacion[tipoId].find(val => val.valor === value);
+        if (opcion) {
+          nuevos[i].variaciones[j].id_variacion_opcion = opcion.id;
+        }
+      }
     }
     setProductos(nuevos);
+    setProductosEspecificos(nuevos);
   };
 
+  // Agregar y eliminar productos específicos
   const agregarProducto = () => {
     if (productos.length < 10) {
-      setProductos([
-        ...productos,
-        {
-          sku: '',
-          precio: '',
-          stock: '',
-          imagen: '',
-          variaciones: [{ tipo: '', valor: '' }],
-        },
-      ]);
+      const nuevos = [...productos, { sku: '', precio: '', stock: '', imagen: '', variaciones: [{ tipo: '', valor: '' }] }];
+      setProductos(nuevos);
+      setProductosEspecificos(nuevos);
     }
   };
 
   const eliminarProducto = (i: number) => {
     if (productos.length > 1) {
-      setProductos(productos.filter((_, idx) => idx !== i));
+      const nuevos = productos.filter((_, idx) => idx !== i);
+      setProductos(nuevos);
+      setProductosEspecificos(nuevos);
     }
   };
 
+  // Agregar variación a producto específico
   const agregarVariacion = (i: number) => {
     if (productos[i].variaciones.length < 10) {
       const nuevos = [...productos];
       nuevos[i].variaciones.push({ tipo: '', valor: '' });
       setProductos(nuevos);
+      setProductosEspecificos(nuevos);
+    }
+  };
+
+  // Guardar producto y variaciones (llamada fetch)
+  const guardarProducto = async () => {
+    try {
+      const res = await fetch('/api/productos/guardar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productoGeneral,
+          productosEspecificos: productos
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert(`Producto guardado correctamente. ID: ${data.idProducto}`);
+        // Aquí podrías limpiar el formulario o redirigir
+      } else {
+        alert('Error al guardar producto: ' + (data.message || 'Error desconocido'));
+      }
+    } catch (error) {
+      alert('Error en la conexión al guardar el producto.');
+      console.error(error);
     }
   };
 
@@ -169,12 +194,8 @@ export default function VariantesPage() {
 
           <div className="space-y-4">
             {producto.variaciones.map((v, j) => {
-              const variacionSeleccionada = variacionesDisponibles.find(
-                vari => vari.nombre === v.tipo
-              );
-              const valores = variacionSeleccionada
-                ? valoresPorVariacion[variacionSeleccionada.id] || []
-                : [];
+              const variacionSeleccionada = variacionesDisponibles.find(vari => vari.nombre === v.tipo);
+              const valores = variacionSeleccionada ? valoresPorVariacion[variacionSeleccionada.id] || [] : [];
 
               return (
                 <div key={j}>
@@ -231,6 +252,14 @@ export default function VariantesPage() {
           ➕ Agregar otro producto específico
         </button>
       )}
+
+      {/* Botón para guardar todo */}
+      <button
+        onClick={guardarProducto}
+        className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition"
+      >
+        Guardar producto
+      </button>
     </div>
   );
 }

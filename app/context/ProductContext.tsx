@@ -2,30 +2,44 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-// Tipos para las variaciones de productos específicos
-interface Variacion {
-  tipo: string;
-  valor: string;
+// Interfaces para manejo de variaciones desde DB
+export interface Variacion {
+  id: number;           // ID de la variación general (ej. 1 para "Color")
+  nombre: string;       // Nombre de la variación general (ej. "Color")
+}
+
+export interface ValorVariacion {
+  id: number;           // ID de la opción específica (ej. 4 para "Rojo")
+  valor: string;        // Nombre de la opción (ej. "Rojo")
+  id_variacion: number; // ID de la variación a la que pertenece esta opción
+}
+
+// Interface para variaciones seleccionadas en un producto específico
+export interface VariacionProducto {
+  tipo: string;              // Nombre de la variación (ej. "Color")
+  tipoId?: number;           // ID de la variación general (ej. 1)
+  valor: string;             // Valor elegido (ej. "Rojo")
+  id_variacion_opcion?: number; // ID del valor elegido (ej. 4)
 }
 
 // Producto general
-interface ProductoGeneral {
+export interface ProductoGeneral {
   nombre: string;
   descripcion: string;
   imagen_producto: string;
   categoria1: string;
   categoria2: string;
   categoria3: string;
-  marca : string;
+  marca: string;
 }
 
 // Producto específico
-interface ProductoEspecifico {
+export interface ProductoEspecifico {
   sku: string;
   precio: number | string;
   stock: number | string;
   imagen: string;
-  variaciones: Variacion[];
+  variaciones: VariacionProducto[];
 }
 
 // Tipo del contexto
@@ -44,7 +58,7 @@ const defaultProductoGeneral: ProductoGeneral = {
   categoria1: '',
   categoria2: '',
   categoria3: '',
-  marca : '',
+  marca: '',
 };
 
 const defaultProductosEspecificos: ProductoEspecifico[] = [
