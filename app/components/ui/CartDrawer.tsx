@@ -37,7 +37,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
       {/* Panel */}
       <aside>
         <div
-          className={`fixed right-0 top-0 w-full max-w-sm sm:max-w-md lg:max-w-ls h-full bg-white shadow-lg z-[70] flex flex-col px-8 py-10 transform transition-transform duration-300 ease-in-out ${
+          className={`fixed right-0 top-0 w-full max-w-full sm:max-w-sm lg:max-w-lg h-full bg-white shadow-lg z-[70] flex flex-col px-8 py-10 transform transition-transform duration-300 ease-in-out ${
             isAnimating ? "translate-x-0" : "translate-x-full"
           } `}
         >
@@ -51,10 +51,10 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
             </button>
           </div>
           {cartItems.length === 0 ? (
-            <div className="flex py-10 justify-center items-center flex-col gap-4 ">
+            <div className="h-full flex justify-center items-center flex-col gap-4 ">
               <ShoppingBag size={100} strokeWidth={0.8} />
               <p className="font-bold text-lg">Tu carrito está vacío</p>
-              <p className="px-5 text-center">
+              <p className="max-w-xs mx-auto px-5 text-center">
                 Explora multitud de productos a buen precio desde nuestra página
                 principal
               </p>
