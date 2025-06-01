@@ -1,5 +1,5 @@
 "use client";
-
+import Loadingspinner from "./LoadingSpinner";
 import { useEffect, useState, useRef } from "react";
 import { Promocion } from "@/app/types/promocion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -63,7 +63,9 @@ export default function CarruselPromociones() {
 
   if (!promociones.length) {
     return (
-      <p className="text-center text-gray-500 px-4">Cargando promociones...</p>
+      <div className="w-full max-w-[120rem] mx-auto select-none font-rubik">
+        <Loadingspinner />
+      </div>
     );
   }
 

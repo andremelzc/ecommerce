@@ -20,14 +20,6 @@ const ProductCard = ({
   const precioFinal = porcentaje_desc ? precio * (1 - porcentaje_desc) : precio;
   const porcentajeDescuento = porcentaje_desc ? Math.round(porcentaje_desc * 100) : null;
 
-  console.log("Producto:", {
-    producto_id,
-    nombre,
-    imagen_producto,
-    precio,
-    porcentaje_desc,
-  });
-
   // Al darle click al carrito de la imagen
   const handleAddToCart = () => {};
 

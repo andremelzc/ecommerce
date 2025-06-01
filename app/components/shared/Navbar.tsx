@@ -20,6 +20,7 @@ const Navbar = () => {
               <button
                 className="flex items-center gap-3 sm:gap-4 lg:gap-6 cursor-pointer"
                 aria-label="Inicio"
+                onClick={() => window.location.href = "/"}
               >
                 <div className="bg-white flex items-center justify-center rounded-full w-8 h-8 sm:w-10 sm:h-10 lg:w-14 lg:h-14">
                   <ShoppingBag className="text-ebony-950 w-4 h-4 sm:w-6 sm:h-6 lg:w-10 lg:h-10" />

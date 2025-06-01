@@ -8,8 +8,11 @@ import { Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
 import Loadingspinner from "@/app/components/ui/LoadingSpinner";
+import { useRouter } from "next/navigation";
+
 
 const Drawer = ({ isOpen, onClose }: DrawerProps) => {
+  const router = useRouter();
   // LLamada al api
   const [categoriasData, setCategoriasData] = useState<CategoriaNivel1[]>([]);
 
@@ -59,7 +62,36 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
     );
   };
 
-  if (!isOpen) return null;
+  // Estados para animar el panel de categorías
+  const [isVisible, setIsVisible] = useState(isOpen);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Efecto para manejar la visibilidad y animación del panel
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+      setTimeout(() => setIsAnimating(true), 10);
+    } else {
+      setIsAnimating(false);
+      setTimeout(() => setIsVisible(false), 300);
+    }
+  }, [isOpen]);
+
+  // Estado para animar el panel de subcategorías
+  const [showSubPanel, setShowSubPanel] = useState(false);
+  const [isSubPanelAnimating, setIsSubPanelAnimating] = useState(false);
+
+  useEffect(() => {
+    if (activeCat) {
+      setShowSubPanel(true);
+      setTimeout(() => setIsSubPanelAnimating(true), 10);
+    } else {
+      setIsSubPanelAnimating(false);
+      setTimeout(() => setShowSubPanel(false), 300);
+    }
+  }, [activeCat]);
+
+  if (!isVisible) return null;
 
   return createPortal(
     <>
@@ -69,7 +101,11 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
         onClick={handleCloseDrawer}
       ></div>
       {/* Panel */}
-      <aside className="fixed h-full inset-0 flex bg-ebony-950 h-full w-80 text-white px-8 py-10 shadow-lg flex flex-col z-70">
+      <aside
+        className={`fixed h-full inset-0 flex bg-ebony-950 h-full w-80 text-white px-8 py-10 shadow-lg flex flex-col z-70 transition-transform duration-300 ease-in-out ${
+          isAnimating ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         {/* Categorías*/}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold pl-2">Categorías</h2>
@@ -102,7 +138,11 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
             </ul>
             {/* Sub categorías*/}
             {activeCat && (
-              <div className="absolute flex left-80 inset-y-0 w-full bg-white transition-transform duration-200">
+              <div
+                className={`absolute flex left-80 inset-y-0 w-full bg-white z-80 transform transition-transform duration-300 ease-in-out ${
+                  isSubPanelAnimating ? "translate-x-0" : "-translate-x-0"
+                }`}
+              >
                 <div className="w-full px-8 py-10">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl text-black font-bold pl-2">
@@ -120,11 +160,14 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                         <li key={cat2.id}>
                           <button
                             className="flex items-center justify-between w-full text-left text-lg p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black"
-                            onClick={() =>
-                              cat2.subcategorias?.length
-                                ? toggleSubcategoria(cat2.id)
-                                : null
-                            }
+                            onClick={() => {
+                              if (cat2.subcategorias?.length) {
+                                toggleSubcategoria(cat2.id);
+                              } else {
+                                router.push(`/categoria/2/${cat2.id}`);
+                                onClose(); // Cierra el drawer después
+                              }
+                            }}
                           >
                             {cat2.nombre}
                             {/* Si no tiene subcategorías (lo cual no pasa, pero por si acaso), no tiene flechita
