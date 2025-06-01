@@ -13,7 +13,6 @@ export default function Home() {
         asCarousel={true}
       />
       <CarruselMarcas />
-      
     </main>
   );
 }

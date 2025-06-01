@@ -9,7 +9,7 @@ export default function CartPage() {
   const subtotal = cart.reduce((sum, i) => sum + i.precio * i.cantidad, 0);
 
   return (
-    <div className="flex flex-col lg:flex-row p-8 gap-6">
+    <div className="flex flex-col lg:flex-row container-padding gap-6">
       {/* Lista de productos */}
       <section className="flex-1 space-y-4">
         {cart.length === 0 ? (
