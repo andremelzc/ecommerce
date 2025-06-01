@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Combobox,
@@ -11,50 +12,52 @@ import {
 import { Search } from "lucide-react";
 import type { Producto } from "@/app/types/producto";
 
-// Cambiar por un array que venga de la API
-const productos: Producto[] = [
-  {
-    id: 1,
-    nombre: "Teclado mecánico compacto 65% con Bluetooth y USB-C",
-    descripcion:
-      "Teclado mecánico compacto 65% con retroiluminación RGB y conectividad Bluetooth y USB-C. Ideal para gamers y programadores.",
-    imagen_producto: "keychron_k6.png",
-  },
-  {
-    id: 2,
-    nombre: "Teclado mecánico TKL con retroiluminación RGB",
-    descripcion:
-      "Teclado mecánico TKL con retroiluminación RGB y conectividad USB-C. Ideal para gamers y programadores.",
-    imagen_producto: "keychron_k8.png",
-  },
-  {
-    id: 3,
-    nombre: "Teclado mecánico tamaño completo con conectividad inalámbrica",
-    descripcion:
-      "Teclado mecánico tamaño completo con retroiluminación RGB y conectividad inalámbrica. Ideal para gamers y programadores.",
-    imagen_producto: "keychron_k10.png",
-  },
-];
-
 const Searchbar = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Producto | null>(
-    productos[0]
-  );
+  const router = useRouter(); // Para redireccionar a la página de productos
+  const [productos, setProductos] = useState<Producto[]>([]); // Para almacenar los productos obtenidos de la API
+  const [isLoading, setIsLoading] = useState(true); // Para manejar el estado de carga
+  const [isError, setIsError] = useState(false); // Para manejar errores al obtener productos
+
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch("/api/productos");
+        const data = await res.json();
+        setProductos(data);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProductos();
+  }, []);
+
+  const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
   const [busqueda, setBusqueda] = useState("");
 
-  // Para probar el producto seleccionado
+  // Manejar selección de producto con navegación
   const handleSelectedProduct = (producto: Producto | null) => {
-    setSelectedProduct(producto);
-    console.log(producto);
+    if (producto) {
+      setSelectedProduct(producto);
+      console.log(producto);
+      setBusqueda("");
+      // Redireccionar a la página del producto seleccionado
+      router.push(`/productos/${producto.producto_id}`);
+    }
   };
 
   // Filtrar los productos según la búsqueda
-  const filteredProductos =
-    busqueda === ""
-      ? productos
-      : productos.filter((producto) => {
-          return producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
-        });
+  const filteredProductos = useMemo(
+    () =>
+      busqueda === ""
+        ? productos
+        : productos.filter((producto) =>
+            producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
+          ),
+    [productos, busqueda]
+  );
 
   return (
     <div className="w-full relative">
@@ -78,23 +81,21 @@ const Searchbar = () => {
             <Search className="text-ebony-950" size={30} />
           </ComboboxButton>
 
-          <ComboboxOptions className="flex flex-col absolute z-10 w-full bg-white rounded-lg shadow-lg max-h-60 p-4 gap-2 top-full mt-2 overflow-auto">
+          <ComboboxOptions className="flex flex-col absolute z-10 w-full bg-white rounded-lg shadow-lg max-h-60 p-5 gap-2 top-full mt-2 overflow-auto">
             {busqueda === "" ? (
               <div>
-                <p className="text-ebony-900 text-sm font-bold">
-                  Términos más buscados
-                </p>
+                <p className="text-gray-600 text-sm font-bold">Ingrese algo</p>
               </div>
             ) : filteredProductos.length > 0 ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4">
                 <p className="text-ebony-900 text-sm font-bold">
-                  Productos para {busqueda}
+                  Productos para "{busqueda}" ({filteredProductos.length})
                 </p>
-                {filteredProductos.map((producto) => (
+                {filteredProductos.slice(0, 3).map((producto) => (
                   <ComboboxOption
-                    key={producto.id}
+                    key={producto.producto_id}
                     value={producto}
-                    className="flex rounded-lg cursor-pointer items-center  hover:bg-gray-200"
+                    className="flex rounded-lg cursor-pointer items-center gap-4 px-2 py-1 hover:bg-gray-200"
                   >
                     <img
                       src={producto.imagen_producto}
