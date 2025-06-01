@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -63,7 +64,7 @@ export default function AddProductPage() {
 
   return (
     <div className="max-w-lg mx-auto mt-12 bg-white p-8 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-extrabold mb-8 text-center text-gray-900">Crear producto</h1>
+      <h1 className="text-3xl font-extrabold mb-8 text-center text-gray-900">Producto</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Nombre */}
@@ -95,7 +96,7 @@ export default function AddProductPage() {
             onChange={handleChange}
             placeholder="Descripción detallada del producto"
             className="w-full rounded-md border border-gray-300 px-4 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows={4}
+            rows={2}
             required
           />
         </div>
