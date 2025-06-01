@@ -65,11 +65,11 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
     <>
       {/* Backdrop */}
       <div
-        className="fixed h-full inset-0 flex bg-black/40 flex-1 z-20"
+        className="fixed h-full inset-0 flex bg-black/40 flex-1 z-60"
         onClick={handleCloseDrawer}
       ></div>
       {/* Panel */}
-      <aside className="fixed h-full inset-0 flex bg-ebony-950 h-full w-80 text-white px-8 py-10 shadow-lg flex flex-col z-30">
+      <aside className="fixed h-full inset-0 flex bg-ebony-950 h-full w-80 text-white px-8 py-10 shadow-lg flex flex-col z-70">
         {/* Categorías*/}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold pl-2">Categorías</h2>

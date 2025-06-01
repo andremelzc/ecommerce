@@ -71,7 +71,7 @@ export default function CarruselPromociones() {
 
   return (
     <div
-      className="w-full max-w-[120rem] mx-auto select-none  font-rubik"
+      className="w-full max-w-[120rem] mx-auto  select-none  font-rubik"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >

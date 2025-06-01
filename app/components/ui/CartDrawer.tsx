@@ -18,12 +18,12 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
     <>
       {/* Backdrop */}
       <div
-        className="fixed h-full inset-0 flex bg-black/40 flex-1 z-20"
+        className="fixed h-full inset-0 flex bg-black/40 flex-1 z-60"
         onClick={handleCloseDrawer}
       ></div>
       {/* Panel */}
       <aside>
-        <div className="fixed right-0 top-0 w-96 h-full bg-white shadow-lg z-30 flex flex-col px-8 py-10 px-8 py-10 shadow-lg flex flex-col">
+        <div className="fixed right-0 top-0 w-96 h-full bg-white shadow-lg z-70 flex flex-col px-8 py-10 px-8 py-10 shadow-lg flex flex-col">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold pl-2">Mi carrito</h2>
             <button
