@@ -1,4 +1,3 @@
-import CarruselGaleria from "../components/ui/CarruselGaleria";
 import CarruselPromociones from "../components/ui/CarruselPromociones";
 import ProductSection from "../components/products/ProductSection";
 import CarruselMarcas from "../components/ui/CarruselMarcas";
