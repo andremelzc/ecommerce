@@ -1,5 +1,5 @@
 "use client";
-
+import LoadingSpinner from "./LoadingSpinner";
 import { useEffect, useState, useRef } from "react";
 import { Marca } from "@/app/types/marca";
 
@@ -44,7 +44,9 @@ export default function CarruselMarcas() {
 
   if (marcas.length === 0) {
     return (
-      <p className="text-center text-gray-500 mt-10">Cargando marcas...</p>
+      <div className="w-full flex items-center justify-center py-6">
+        <LoadingSpinner />
+      </div>  
     );
   }
 
@@ -72,18 +74,20 @@ export default function CarruselMarcas() {
             <a
               href={`/productos?marca=${encodeURIComponent(marca.nombre)}`}
               title={marca.nombre}
-              className="flex flex-col items-center group"
+              className="flex flex-col items-center group w-full"
             >
-              <img
-                src={
-                  !marca.imagen_logo || marca.imagen_logo === "null"
-                    ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
-                    : marca.imagen_logo
-                }
-                alt={`Logo de ${marca.nombre}`}
-                className="h-12 w-auto sm:h-16 md:h-20 lg:h-24 2xl:h-28 object-contain mx-auto transition-transform group-hover:scale-110"
-                draggable={false}
-              />
+              <div className="aspect-square w-full flex items-center justify-center">
+                <img
+                  src={
+                    !marca.imagen_logo || marca.imagen_logo === "null"
+                      ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
+                      : marca.imagen_logo
+                  }
+                  alt={`Logo de ${marca.nombre}`}
+                  className="w-4/5 h-4/5 object-contain mx-auto transition-transform group-hover:scale-110"
+                  draggable={false}
+                />
+              </div>
             </a>
           </div>
         ))}

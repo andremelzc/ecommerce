@@ -7,7 +7,7 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
   if (isFullScreen) return null;
   return (
     <nav
-      className="absolute z-100 pt-22 text-sm text-gray-600 hidden lg:block"
+      className="absolute z-1 pt-22 text-sm text-gray-600 hidden lg:block"
       aria-label="Breadcrumb"
     >
       <ol
@@ -104,16 +104,18 @@ function ProductImage({
       aria-label="Imagen del producto"
     >
       <div className="relative flex w-full m-auto">
-        <img
-          src={
-            !imagen_producto || imagen_producto === "null"
-              ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
-              : imagen_producto
-          }
-          alt={`Imagen de ${nombre}`}
-          className="max-h-[400px] lg:max-w-2/3 2xl:max-w-5/6 object-contain m-auto"
-          itemProp="image"
-        />
+        <div className="aspect-square w-full max-w-[400px] m-auto bg-white flex items-center justify-center">
+          <img
+            src={
+              !imagen_producto || imagen_producto === "null"
+                ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
+                : imagen_producto
+            }
+            alt={`Imagen de ${nombre}`}
+            className="w-full h-full object-contain"
+            itemProp="image"
+          />
+        </div>
         {!isFullScreen && descuento && (
           <div className="absolute top-0 right-0 bg-red-900 text-white text-xs p-2 border-2 rounded-lg">
             {Math.round(descuento * 100)}% OFF
@@ -121,7 +123,7 @@ function ProductImage({
         )}
         {!isFullScreen && (
           <button
-            className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition-colors z-20"
+            className="absolute bottom-0 left-0 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition-colors z-20"
             title="Ver en pantalla completa"
             onClick={openFullScreen}
             type="button"
