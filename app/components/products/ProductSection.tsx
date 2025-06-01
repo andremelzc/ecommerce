@@ -5,7 +5,6 @@ import ProductList from "./ProductList";
 import ProductCarousel from "./ProductCarousel";
 import type { ProductSectionProps, ProductCardProps } from "@/app/types/props";
 
-
 const ProductSection = ({
   title,
   filterType,
@@ -75,13 +74,20 @@ const ProductSection = ({
 
   return (
     <section>
-      <div className="container-padding py-8 flex flex-col gap-8">
-        <h2 className="text-2xl font-bold">{title}</h2>
-        {asCarousel ? (
-          <ProductCarousel productos={productos} />
-        ) : (
-          <ProductList productos={productos} horizontal={false} />
-        )}
+      <div className="container-padding py-6 sm:py-8 lg:py-12 flex flex-col gap-8">
+        <div className="flex flex-col gap-6 sm:gap-8">
+          <h2 className="text-xl sm:text-1xl lg:text-2xl font-bold text-gray-900 text-center sm:text-left">
+            {title}
+          </h2>
+        </div>
+
+        <div className="w-full">
+          {asCarousel ? (
+            <ProductCarousel productos={productos} />
+          ) : (
+            <ProductList productos={productos} horizontal={false} />
+          )}
+        </div>
       </div>
     </section>
   );
