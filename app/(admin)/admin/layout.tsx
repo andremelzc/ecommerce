@@ -24,14 +24,16 @@ export default function AdminLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
         {/* Navbar admin */}
-        <header className="bg-white border-b shadow-sm px-6 py-4 flex items-center justify-between">
+        <header className="bg-white border-b shadow-sm py-5 flex items-center justify-around px-4 ">
+          
           <div className="flex items-center gap-3">
             <span className="text-2xl font-bold">🛒 CompX</span>
-            <span className="text-lg font-medium text-gray-600">
-              Panel de administrador
-            </span>
+            
           </div>
-          <nav className="space-x-4">
+          <div className="hidden md:block text-lg font-medium text-gray-600">
+            Panel de administrador
+          </div>
+          <nav className="hidden sm:block space-x-4">
             <Link
               href="/admin/add-products"
               className="text-blue-600 hover:underline"
@@ -41,7 +43,7 @@ export default function AdminLayout({
           </nav>
         </header>
 
-        <main className="p-6">{children}</main>
+        <main>{children}</main>
       </div>
     </ProductProvider>
   );
