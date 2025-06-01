@@ -8,8 +8,11 @@ import { Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
 import Loadingspinner from "@/app/components/ui/LoadingSpinner";
+import { useRouter } from "next/navigation";
+
 
 const Drawer = ({ isOpen, onClose }: DrawerProps) => {
+  const router = useRouter();
   // LLamada al api
   const [categoriasData, setCategoriasData] = useState<CategoriaNivel1[]>([]);
 
@@ -157,11 +160,14 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                         <li key={cat2.id}>
                           <button
                             className="flex items-center justify-between w-full text-left text-lg p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black"
-                            onClick={() =>
-                              cat2.subcategorias?.length
-                                ? toggleSubcategoria(cat2.id)
-                                : null
-                            }
+                            onClick={() => {
+                              if (cat2.subcategorias?.length) {
+                                toggleSubcategoria(cat2.id);
+                              } else {
+                                router.push(`/categoria/2/${cat2.id}`);
+                                onClose(); // Cierra el drawer después
+                              }
+                            }}
                           >
                             {cat2.nombre}
                             {/* Si no tiene subcategorías (lo cual no pasa, pero por si acaso), no tiene flechita
