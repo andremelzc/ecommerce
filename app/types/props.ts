@@ -29,6 +29,7 @@ export interface ProductCardProps {
 export interface ProductListProps {
   productos: ProductCardProps[];
   horizontal?: boolean;
+  itemsPage?: number; // Opcional, si se usa paginación
 }
 
 export interface ProductCarouselProps {
