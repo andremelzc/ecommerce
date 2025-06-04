@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const [rows] = await db.query(
       `SELECT id, nombre, descripcion, fecha_inicio, fecha_final, img_promocional 
-       FROM ecommerce.promocion;`
+       FROM Ecommerce.promocion;`
     );
     return NextResponse.json(rows);
   } catch (error) {
