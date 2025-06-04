@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
   // Si queremos productos que tengan alguna promoción o no
   const joinPromo =
     onlyPromo === "true"
-      ? "INNER JOIN ecommerce.promocion_producto_especifico AS ppe ON pe.id = ppe.id_producto_especifico"
-      : "LEFT JOIN ecommerce.promocion_producto_especifico AS ppe ON pe.id = ppe.id_producto_especifico";
+      ? "INNER JOIN Ecommerce.promocion_producto_especifico AS ppe ON pe.id = ppe.id_producto_especifico"
+      : "LEFT JOIN Ecommerce.promocion_producto_especifico AS ppe ON pe.id = ppe.id_producto_especifico";
 
   // Si se nos especifica el límite de productos a devolver
   const limitSentence = limit
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       SELECT 
         id_producto, 
         MAX(precio) AS precio_max
-      FROM ecommerce.producto_especifico
+      FROM Ecommerce.producto_especifico
       GROUP BY id_producto
     )
 
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
       pe.precio,               -- aquí es el precio máximo
       ppe.porcentaje_desc
 
-    FROM ecommerce.producto AS p
-    INNER JOIN ecommerce.producto_especifico AS pe 
+    FROM Ecommerce.producto AS p
+    INNER JOIN Ecommerce.producto_especifico AS pe 
     ON p.id = pe.id_producto
     INNER JOIN max_precios AS mp
     ON pe.id_producto = mp.id_producto
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       
     WHERE pe.id = (
       SELECT MIN(ID) 
-      FROM ecommerce.producto_especifico
+      FROM Ecommerce.producto_especifico
       WHERE id_producto = mp.id_producto
       AND precio = mp.precio_max
       )
