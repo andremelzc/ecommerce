@@ -1,3 +1,5 @@
+// /app/types/props.ts
+
 export interface DrawerProps  {
   isOpen: boolean;
   onClose: () => void;
@@ -5,14 +7,15 @@ export interface DrawerProps  {
 
 export interface ProductSectionProps {
   title: string;
-  filterType: 'bestSellers' | 'newArrivals' | 'onSale' | 'byCategory' | 'byPromotion' | 'onlyPromotions' | '' | 'all';
+  filterType: 'bestSellers' | 'newArrivals' | 'onSale' | 'byCategory' | 'byPromotion' | 'onlyPromotions' | '' | 'all'| 'byVariacion';
   categoryId?: number;
   categoryLevel?: number;
   promotionId?: number;
-  asCarousel?:  boolean;
+  asCarousel?: boolean;
   asGrid?: boolean;
   gridColumns?: number;
   limit?: number;
+  selectedVariations?: number[]; // <-- Aquí agregamos selectedVariations
 }
 
 export interface ProductCardProps {

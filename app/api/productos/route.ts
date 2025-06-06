@@ -10,7 +10,65 @@ export async function GET(request: NextRequest) {
   const limit = params.get("limit") ?? "";
   const categoryId = params.get("categoryId") ?? "";
   const categoryLevel = params.get("categoryLevel") ?? "";
+  const selectedVariations = params.getAll("variationIds"); // Recibe las variaciones seleccionadas
+  
+// Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
+  if (selectedVariations.length > 0) {
+    return await fetchProductsWithVariations(selectedVariations, categoryId, categoryLevel, limit);
+  }
 
+  // Si no se seleccionaron variaciones, se realizan las otras opciones
+  return await fetchProductsWithoutVariations(categoryId, categoryLevel, limit, onlyPromo, promocionId, minPrecio, maxPrecio);  
+}
+async function fetchProductsWithVariations(selectedVariations: string[],
+                                          categoryId: string, 
+                                          categoryLevel: string, 
+                                          limit: string) 
+{
+  try {
+    const sql = `
+      SELECT 
+        pe.id,
+        pe.nombre,
+        pe.precio,
+        pe.imagen_principal,
+        COUNT(DISTINCT vo.id) as matched_variations
+      FROM variacion v
+      JOIN categoria_nivel_${categoryLevel} cn ON cn.id = v.id_categoria_${categoryLevel}
+      JOIN variacion_opcion vo ON v.id = vo.id_variacion
+      JOIN combinaciones_producto cp ON cp.id_variacion_opcion = vo.id
+      JOIN producto_especifico pe ON pe.id = cp.id_producto_especifico
+      WHERE v.id_categoria_${categoryLevel} = ?
+      AND vo.id IN (${selectedVariations.map(() => '?').join(',')})
+      GROUP BY pe.id
+      HAVING COUNT(DISTINCT vo.id) = ?
+      LIMIT ?;
+    `;
+
+    const params = [
+      categoryId,
+      ...selectedVariations,
+      selectedVariations.length,
+      parseInt(limit) || 20
+    ];
+
+    //Se ejecuta la consulta
+    const [rows] = await db.query(sql, params);
+    return NextResponse.json(rows);
+
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    return NextResponse.json({ error: "Error al obtener productos con variaciones" }, { status: 500 });
+  }
+}
+async function fetchProductsWithoutVariations(categoryId: string, 
+                                              categoryLevel: string, 
+                                              limit: string, 
+                                              onlyPromo: string, 
+                                              promocionId: string, 
+                                              minPrecio: string, 
+                                              maxPrecio: string) 
+{
   // Si queremos productos que tengan alguna promoción o no
   const joinPromo =
     onlyPromo === "true"
@@ -39,7 +97,7 @@ export async function GET(request: NextRequest) {
     )
 
     SELECT
-      p.id                     AS producto_id,
+      p.id  AS producto_id,
       p.nombre,
       p.descripcion,
       pe.imagen_producto,
@@ -98,4 +156,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+
 }
+  
+

@@ -1,4 +1,6 @@
 // /app/api/variacion/[categoria]/[id_categoria]/route.ts
+// Trae todas las variaciones asociadas a una categoria, unica y exclusivamente 
+// de esa categoria.
 
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db"; // Asegúrate de que la ruta sea correcta

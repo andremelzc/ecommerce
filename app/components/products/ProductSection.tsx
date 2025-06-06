@@ -13,6 +13,7 @@ const ProductSection = ({
   promotionId,
   asCarousel,
   limit,
+  selectedVariations,
 }: ProductSectionProps) => {
   const [productos, setProductos] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,6 +50,21 @@ const ProductSection = ({
           case "onlyPromotions":
             params.append("onlyPromo", "true");
             break;
+          case "byVariacion":
+            if (categoryId) 
+              {
+                params.append("categoryId", categoryId.toString());
+                if (categoryLevel) {
+                  params.append("categoryLevel", categoryLevel.toString());
+                }
+                // Añadir variaciones si existen
+                if (selectedVariations && selectedVariations.length > 0) {
+                  selectedVariations.forEach(variationId => {
+                    params.append("variationIds", variationId.toString());
+                  });
+                }
+              }
+            break;
           case "all":
             // No se añaden parámetros específicos
             break;
@@ -70,7 +86,7 @@ const ProductSection = ({
       }
     }
     fetchProducts();
-  }, [filterType, categoryId, categoryLevel, promotionId, limit]);
+  },[filterType, categoryId, categoryLevel, promotionId, limit, selectedVariations]); 
 
   return (
     <section>
