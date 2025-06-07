@@ -59,9 +59,9 @@ const ProductSection = ({
                 }
                 // Añadir variaciones si existen
                 if (selectedVariations && selectedVariations.length > 0) {
-                  selectedVariations.forEach(variationId => {
-                    params.append("variationIds", variationId.toString());
-                  });
+                  const variationIdsString = selectedVariations.join(",");
+                  params.append("variationIds",variationIdsString.toString())
+                  ;
                 }
               }
             break;
@@ -73,7 +73,7 @@ const ProductSection = ({
         if (limit) {
           params.append("limit", limit.toString());
         }
-        const response = await fetch(`/api/productos?${params.toString()}`);
+        const response = await fetch(`/api/productos?${params.toString()}`); 
         if (!response.ok) {
           throw new Error("Error al cargar los productos");
         }
@@ -102,6 +102,7 @@ const ProductSection = ({
             <ProductCarousel productos={productos} />
           ) : (
             <ProductList productos={productos} horizontal={false} />
+            
           )}
         </div>
       </div>

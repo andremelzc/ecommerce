@@ -10,15 +10,34 @@ export async function GET(request: NextRequest) {
   const limit = params.get("limit") ?? "";
   const categoryId = params.get("categoryId") ?? "";
   const categoryLevel = params.get("categoryLevel") ?? "";
-  const selectedVariations = params.getAll("variationIds"); // Recibe las variaciones seleccionadas
+  const variationParam = params.get("variationIds") ?? ""; // 
+  const selectedVariations = variationParam
+  .split(",")
+  .map((v) => v.trim())
+  .filter((v) => v !== "");
   
 // Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
   if (selectedVariations.length > 0) {
-    return await fetchProductsWithVariations(selectedVariations, categoryId, categoryLevel, limit);
+    console.log("usando API con variaciones")
+    return await fetchProductsWithVariations(selectedVariations, 
+                                              categoryId, 
+                                              categoryLevel, 
+                                              limit);
+  }
+  else {
+    // Si no se seleccionaron variaciones, se realizan las otras opciones
+    console.log("usando API sin variaciones") 
+    return await fetchProductsWithoutVariations(categoryId, 
+                                              categoryLevel, 
+                                              limit, 
+                                              onlyPromo, 
+                                              promocionId, 
+                                              minPrecio, 
+                                              maxPrecio);
+     
   }
 
-  // Si no se seleccionaron variaciones, se realizan las otras opciones
-  return await fetchProductsWithoutVariations(categoryId, categoryLevel, limit, onlyPromo, promocionId, minPrecio, maxPrecio);  
+  
 }
 async function fetchProductsWithVariations(selectedVariations: string[],
                                           categoryId: string, 
@@ -29,15 +48,18 @@ async function fetchProductsWithVariations(selectedVariations: string[],
     const sql = `
       SELECT 
         pe.id,
-        pe.nombre,
+        pe.SKU,
         pe.precio,
-        pe.imagen_principal,
+        pe.imagen_producto,
+        p.descripcion,
+        p.nombre,
         COUNT(DISTINCT vo.id) as matched_variations
       FROM variacion v
       JOIN categoria_nivel_${categoryLevel} cn ON cn.id = v.id_categoria_${categoryLevel}
       JOIN variacion_opcion vo ON v.id = vo.id_variacion
       JOIN combinaciones_producto cp ON cp.id_variacion_opcion = vo.id
       JOIN producto_especifico pe ON pe.id = cp.id_producto_especifico
+      JOIN producto p ON pe.id_producto = p.id
       WHERE v.id_categoria_${categoryLevel} = ?
       AND vo.id IN (${selectedVariations.map(() => '?').join(',')})
       GROUP BY pe.id
@@ -45,11 +67,11 @@ async function fetchProductsWithVariations(selectedVariations: string[],
       LIMIT ?;
     `;
 
-    const params = [
+    const params: (string | number)[] = [
       categoryId,
       ...selectedVariations,
       selectedVariations.length,
-      parseInt(limit) || 20
+      parseInt(limit, 10) || 20,
     ];
 
     //Se ejecuta la consulta
@@ -57,7 +79,7 @@ async function fetchProductsWithVariations(selectedVariations: string[],
     return NextResponse.json(rows);
 
   } catch (error) {
-    console.error("Error al obtener productos:", error);
+    console.error("Error al obtener productos con variaciones:", error);
     return NextResponse.json({ error: "Error al obtener productos con variaciones" }, { status: 500 });
   }
 }
@@ -96,7 +118,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
       GROUP BY id_producto
     )
 
-    SELECT
+    SELECT DISTINCT
       p.id  AS producto_id,
       p.nombre,
       p.descripcion,
@@ -150,7 +172,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
     const [rows] = await db.query(sql);
     return NextResponse.json(rows);
   } catch (error) {
-    console.error("Error al obtener productos:", error);
+    console.error("Error al obtener productos sin variacion:", error);
     return NextResponse.json(
       { error: "Error al obtener productos" },
       { status: 500 }

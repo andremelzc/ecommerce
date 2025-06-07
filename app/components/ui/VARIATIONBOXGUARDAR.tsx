@@ -13,17 +13,15 @@ interface VariationBoxProps {
   setSelectedVariations: React.Dispatch<React.SetStateAction<number[]>>; // Para pasar las variaciones seleccionadas al parent
 }
 
-const VariationBox: React.FC<VariationBoxProps> = ({ categoryLevel, 
-                                                      categoryId,
-                                                      setSelectedVariations })=>
-{
+const VariationBox: React.FC<VariationBoxProps> = ({ categoryLevel, categoryId, setSelectedVariations }) => {
   const [variations, setVariations] = useState<Variacion[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Estado para controlar cuáles variaciones están “abiertas” (colapsadas) en el UI
   const [openVars, setOpenVars] = useState<{ [key: number]: boolean }>({});
-
+  const [selectedValues, setSelectedValues] = useState<{ [key: number]: number | undefined }>({});
+  
   useEffect(() => {
     async function fetchVariations() {
       setLoading(true);
@@ -59,21 +57,22 @@ const VariationBox: React.FC<VariationBoxProps> = ({ categoryLevel,
     setOpenVars((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const handleValueSelect = (variationId: number, valueId: number) => {
-    setSelectedVariations(prev => {
-      // 1. Obtenemos todos los valores de ESTA variación
-      const currentVariationValues = variations
-        .find(v => v.id_variacion === variationId)
-        ?.valores.map(v => v.id_valor) || [];
-
-      // 2. Verificamos si el valor ya está seleccionado
-      const isCurrentlySelected = prev.includes(valueId);
-
-      // 3. Filtramos cualquier valor de esta variación
-      const filtered = prev.filter(id => !currentVariationValues.includes(id));
-
-      // 4. Si estaba seleccionado, lo quitamos (deselección), sino lo añadimos
-      return isCurrentlySelected ? filtered : [...filtered, valueId];
+  const handleVariationSelect = (variacionId: number, valueId: number) => {
+    setSelectedVariations((prev) => {
+      // Si el valor ya está seleccionado, lo deseleccionamos (undefined), sino lo seleccionamos
+        const newValue = prev[variacionId] === valueId ? undefined : valueId;
+      // Creamos el nuevo estado de selecciones
+        const newSelections = {
+          ...prev,
+          [variacionId]: newValue
+        };
+        // Convertimos a array de IDs para el componente padre
+        const selectedIds = Object.values(newSelections)
+          .filter((val): val is number => val !== undefined);
+        
+        setSelectedVariations(selectedIds);
+        
+        return newSelections;
     });
   };
 
@@ -122,18 +121,15 @@ const VariationBox: React.FC<VariationBoxProps> = ({ categoryLevel,
           </button>
 
           {/* Lista de valores con checkboxes, solo si está “abierto” */}
-          {openVars[vario.id_variacion] && 
-          (
+          {openVars[vario.id_variacion] && (
             <ul className="mt-2 ml-2 space-y-1">
               {vario.valores.map((val) => (
                 <li key={val.id_valor} className="flex items-center">
                   <input
-                    type="radio"
-                    name={`variation-${vario.id_variacion}`}
-                    
-                    onChange={() => handleValueSelect(vario.id_variacion, val.id_valor)}
-                    className={`mr-2 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500 
-                    }`}
+                    type="checkbox"
+                    id={`val-${val.id_valor}`}
+                    className="mr-2 h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    onChange={() => handleVariationSelect(val.id_valor)}
                   />
                   <label
                     htmlFor={`val-${val.id_valor}`}

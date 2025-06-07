@@ -6,6 +6,7 @@ import VariationBox from "@/app/components/ui/VariationBox";
 import ProductSection from "@/app/components/products/ProductSection";
 import { categorias } from "@/lib/categorias";
 
+
 // Función que trae el nombre de los id's, permite hacer esto:  "Inicio/perifericos/monitor"
 function getBreadcrumb(level: number, id: number): string[] {
   const path: string[] = ["Inicio"];
@@ -36,7 +37,11 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
   const categoryLevel = Number(params.level);
   const categoryId = Number(params.id);
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
-
+  
+  //Para cambiar dinamicamente el filtro de ProductSection
+  const filterType = selectedVariations.length > 0 ? "byVariacion" : "byCategory";
+  // Usa una key única para forzar el remount de ProductSection
+  const productSectionKey = `${categoryId}-${categoryLevel}-${selectedVariations.join(',')}`;
   // Breadcrumb
   const breadcrumb = getBreadcrumb(categoryLevel, categoryId);
 
@@ -70,7 +75,8 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
         {/* Productos */}
         <ProductSection
           title="Productos en esta categoría"
-          filterType="byCategory"
+          key={productSectionKey}
+          filterType={filterType}
           categoryLevel={categoryLevel}
           categoryId={categoryId}
           limit={20}
