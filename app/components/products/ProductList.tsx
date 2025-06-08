@@ -23,6 +23,7 @@ const ProductList = ({ productos, horizontal, itemsPage }: ProductListProps) => 
           <ProductCard
             key={producto.producto_id}
             producto_id={producto.producto_id}
+            id_producto_especifico={producto.id_producto_especifico}
             nombre={producto.nombre}
             descripcion={producto.descripcion}
             imagen_producto={producto.imagen_producto}

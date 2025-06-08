@@ -6,6 +6,7 @@ import Loadingspinner from "../ui/LoadingSpinner";
 
 const ProductCard = ({
   producto_id,
+  id_producto_especifico,
   nombre,
   imagen_producto,
   precio,
@@ -16,6 +17,10 @@ const ProductCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  console.log(
+    `Producto específico: ${id_producto_especifico}, producto: ${producto_id}, nombre: ${nombre}, imagen: ${imagen_producto}, precio: ${precio}, descuento: ${porcentaje_desc}`
+  );
+
   // Si hay descuento, calculamos el precio final y el porcentaje de descuento
   const precioFinal = porcentaje_desc ? precio * (1 - porcentaje_desc) : precio;
   const porcentajeDescuento = porcentaje_desc
@@ -23,7 +28,11 @@ const ProductCard = ({
     : null;
 
   // Al darle click al carrito de la imagen
-  const handleAddToCart = () => {};
+  const handleAddToCart = () => {
+    console.log(
+      `Producto específico: ${id_producto_especifico}, prodcuto: ${producto_id} agregado al carrito`
+    );
+  };
 
   // Manejar el error de carga de imagen
   const handleImageError = () => {
@@ -96,11 +105,13 @@ const ProductCard = ({
         </div>
         <div className="flex items-center gap-2 mt-auto">
           {porcentaje_desc != null ? (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"> 
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <span className="text-lg sm:text-xl lg:text-2xl text-red-900 font-bold">
                 S/ {precioFinal.toFixed(2)}
               </span>
-              <span className="text-xs sm:text-sm text-gray-500 line-through">S/ {precio}</span>
+              <span className="text-xs sm:text-sm text-gray-500 line-through">
+                S/ {precio}
+              </span>
             </div>
           ) : (
             <>
