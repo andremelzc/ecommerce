@@ -1,7 +1,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Search, Package, Tag, X, Check, ArrowLeft, ChevronDown, ChevronRight, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Search,
+  Package,
+  Tag,
+  X,
+  Check,
+  ArrowLeft,
+  ChevronDown,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 import { usePromotion } from "@/app/context/PromotionContext"; // tu hook
 
 interface Subcategoria {
@@ -28,19 +39,27 @@ interface Producto {
 
 export default function PromocionProductSelector() {
   // 1️⃣ contexto para la selección
-  const { destino, setDestino, subcategoriasSeleccionadas, setSubcategoriasSeleccionadas, promotionDraft } = usePromotion();
+  const {
+    destino,
+    setDestino,
+    subcategoriasSeleccionadas,
+    setSubcategoriasSeleccionadas,
+    promotionDraft,
+  } = usePromotion();
 
   // 2️⃣ estado local para datos a cargar
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [productos, setProductos]   = useState<Producto[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // 3️⃣ búsquedas y UI
   const [busquedaProducto, setBusquedaProducto] = useState("");
   const [mostrarExclusiones, setMostrarExclusiones] = useState(false);
-  
+
   // 4️⃣ estado para categorías expandidas
-  const [categoriasExpandidas, setCategoriasExpandidas] = useState<Set<number>>(new Set());
+  const [categoriasExpandidas, setCategoriasExpandidas] = useState<Set<number>>(
+    new Set()
+  );
 
   // 5️⃣ Estados para confirmación y envío
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
@@ -75,7 +94,7 @@ export default function PromocionProductSelector() {
   // 8️⃣ Helpers de toggle
   const toggleCategoria = (id: number) => {
     if (destino.tipo !== "CATEGORIA") return;
-    
+
     // Solo toggle expansión de la categoría, NO la selección
     const nuevasExpandidas = new Set(categoriasExpandidas);
     if (nuevasExpandidas.has(id)) {
@@ -113,7 +132,10 @@ export default function PromocionProductSelector() {
   };
 
   // Función para renderizar solo subcategorías de nivel 2
-  const renderSubcategorias = (subcategorias: Subcategoria[], categoriaId: number) => {
+  const renderSubcategorias = (
+    subcategorias: Subcategoria[],
+    categoriaId: number
+  ) => {
     return subcategorias.map((sub) => {
       return (
         <div key={`sub-${sub.id}`}>
@@ -127,7 +149,9 @@ export default function PromocionProductSelector() {
           >
             <div className="flex items-center justify-between">
               <span className="font-medium text-sm">{sub.nombre}</span>
-              {subcategoriasSeleccionadas.has(sub.id) && <Check className="w-4 h-4" />}
+              {subcategoriasSeleccionadas.has(sub.id) && (
+                <Check className="w-4 h-4" />
+              )}
             </div>
           </div>
         </div>
@@ -139,7 +163,9 @@ export default function PromocionProductSelector() {
   const encontrarSubcategoria = (subcategoriaId: number) => {
     for (const categoria of categorias) {
       if (categoria.subcategorias) {
-        const subcategoria = categoria.subcategorias.find(s => s.id === subcategoriaId);
+        const subcategoria = categoria.subcategorias.find(
+          (s) => s.id === subcategoriaId
+        );
         if (subcategoria) {
           return { subcategoria, categoria };
         }
@@ -155,7 +181,7 @@ export default function PromocionProductSelector() {
   });
 
   const isValid = () =>
-    (destino.tipo === "PRODUCTO" && destino.ids.length > 0) || 
+    (destino.tipo === "PRODUCTO" && destino.ids.length > 0) ||
     (destino.tipo === "CATEGORIA" && subcategoriasSeleccionadas.size > 0);
 
   // 9️⃣ navegación de pasos (si tú manejas pasos fuera de aquí)
@@ -165,31 +191,40 @@ export default function PromocionProductSelector() {
   // Función para preparar datos de confirmación
   const prepararDatosConfirmacion = () => {
     // Obtener nombres de subcategorías seleccionadas
-    const subcategoriasConNombres = Array.from(subcategoriasSeleccionadas).map(subcategoriaId => {
-      const resultado = encontrarSubcategoria(subcategoriaId);
-      return resultado ? {
-        id: subcategoriaId,
-        nombre: resultado.subcategoria.nombre,
-        categoria_padre: resultado.categoria.nombre
-      } : null;
-    }).filter(Boolean);
+    const subcategoriasConNombres = Array.from(subcategoriasSeleccionadas)
+      .map((subcategoriaId) => {
+        const resultado = encontrarSubcategoria(subcategoriaId);
+        return resultado
+          ? {
+              id: subcategoriaId,
+              nombre: resultado.subcategoria.nombre,
+              categoria_padre: resultado.categoria.nombre,
+            }
+          : null;
+      })
+      .filter(Boolean);
 
     // NOTA: destino.ids actualmente se usa para:
     // - Si tipo === "PRODUCTO": IDs de productos seleccionados
     // - Si tipo === "CATEGORIA": Parece que no se usa para categorías principales
     //   porque la selección real está en subcategoriasSeleccionadas
-    
+
     // Obtener productos seleccionados (cuando tipo === "PRODUCTO")
-    const productosSeleccionados = destino.tipo === "PRODUCTO" 
-      ? destino.ids.map(prodId => {
-          const prod = productos.find(p => p.id === prodId);
-          return prod ? { id: prodId, nombre: prod.nombre, precio: prod.precio } : null;
-        }).filter(Boolean)
-      : [];
+    const productosSeleccionados =
+      destino.tipo === "PRODUCTO"
+        ? destino.ids
+            .map((prodId) => {
+              const prod = productos.find((p) => p.id === prodId);
+              return prod
+                ? { id: prodId, nombre: prod.nombre, precio: prod.precio }
+                : null;
+            })
+            .filter(Boolean)
+        : [];
 
     return {
       subcategoriasConNombres,
-      productosSeleccionados
+      productosSeleccionados,
     };
   };
 
@@ -201,8 +236,9 @@ export default function PromocionProductSelector() {
   // Función para confirmar y enviar
   const confirmarYEnviar = async () => {
     setEnviando(true);
-    
-    const { subcategoriasConNombres, productosSeleccionados } = prepararDatosConfirmacion();
+
+    const { subcategoriasConNombres, productosSeleccionados } =
+      prepararDatosConfirmacion();
 
     console.log("=== INFORMACIÓN COMPLETA DE LA PROMOCIÓN ===");
     console.log("📝 Datos básicos:");
@@ -211,29 +247,39 @@ export default function PromocionProductSelector() {
     console.log("  - Imagen:", promotionDraft.img_promocional);
     console.log("  - Fecha inicio:", promotionDraft.fecha_inicio);
     console.log("  - Fecha fin:", promotionDraft.fecha_fin);
-    
+    console.log(
+      "  - Porcentaje descuento:",
+      promotionDraft.porcentaje_descuento
+    );
+
     console.log("\n🎯 Aplicación:");
     console.log("  - Tipo:", destino.tipo);
-    
+
     if (destino.tipo === "CATEGORIA") {
       if (subcategoriasConNombres.length > 0) {
         console.log("  - Categorías seleccionadas:", subcategoriasConNombres);
       }
       if (subcategoriasConNombres.length > 0) {
-        console.log("  - Subcategorías seleccionadas:", subcategoriasConNombres);
+        console.log(
+          "  - Subcategorías seleccionadas:",
+          subcategoriasConNombres
+        );
       }
     } else {
       console.log("  - Productos seleccionados:", productosSeleccionados);
     }
-    
+
     console.log("\n📊 Resumen IDs:");
     console.log("  - IDs destino:", destino.ids);
-    console.log("  - IDs subcategorías:", Array.from(subcategoriasSeleccionadas));
+    console.log(
+      "  - IDs subcategorías:",
+      Array.from(subcategoriasSeleccionadas)
+    );
 
     // Simular envío
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // simular delay
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // simular delay
+
       // Aquí iría tu llamada real a la API
       // const response = await fetch('/api/promociones', {
       //   method: 'POST',
@@ -244,13 +290,27 @@ export default function PromocionProductSelector() {
       //     subcategorias: Array.from(subcategoriasSeleccionadas)
       //   })
       // });
-      
+
+      const response = await fetch("/api/promociones/guardar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: promotionDraft.nombre,
+          descripcion: promotionDraft.descripcion,
+          fecha_inicio: promotionDraft.fecha_inicio,
+          fecha_fin: promotionDraft.fecha_fin,
+          img_promocional: promotionDraft.img_promocional,
+          porcentaje_descuento: promotionDraft.porcentaje_descuento,
+          destino,
+          subcategorias: Array.from(subcategoriasSeleccionadas),
+        }),
+      });
+
       setEnviado(true);
       setTimeout(() => {
         setMostrarConfirmacion(false);
         setPaso(3);
       }, 1500);
-      
     } catch (error) {
       alert("Error al crear la promoción");
     } finally {
@@ -259,9 +319,9 @@ export default function PromocionProductSelector() {
   };
 
   // Función para limpiar selecciones al cambiar de tipo
-  const handleTipoChange = (nuevoTipo: 'CATEGORIA' | 'PRODUCTO') => {
+  const handleTipoChange = (nuevoTipo: "CATEGORIA" | "PRODUCTO") => {
     setDestino({ tipo: nuevoTipo, ids: [] });
-    if (nuevoTipo === 'PRODUCTO') {
+    if (nuevoTipo === "PRODUCTO") {
       // Limpiar subcategorías cuando cambiamos a productos específicos
       setSubcategoriasSeleccionadas(new Set());
     }
@@ -276,12 +336,15 @@ export default function PromocionProductSelector() {
       </div>
     );
 
-      const { subcategoriasConNombres, productosSeleccionados } = prepararDatosConfirmacion();
+  const { subcategoriasConNombres, productosSeleccionados } =
+    prepararDatosConfirmacion();
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white rounded shadow">
       <header className="flex items-center mb-6">
-        <h2 className="text-2xl font-bold">Seleccionar Productos para la Promoción</h2>
+        <h2 className="text-2xl font-bold">
+          Seleccionar Productos para la Promoción
+        </h2>
       </header>
 
       {/* Tipo */}
@@ -323,11 +386,13 @@ export default function PromocionProductSelector() {
                   }`}
                 >
                   <div className="flex items-center">
-                    {c.subcategorias && c.subcategorias.length > 0 && (
-                      categoriasExpandidas.has(c.id) ? 
-                        <ChevronDown className="w-4 h-4 mr-2" /> : 
+                    {c.subcategorias &&
+                      c.subcategorias.length > 0 &&
+                      (categoriasExpandidas.has(c.id) ? (
+                        <ChevronDown className="w-4 h-4 mr-2" />
+                      ) : (
                         <ChevronRight className="w-4 h-4 mr-2" />
-                    )}
+                      ))}
                     <span className="font-medium">{c.nombre}</span>
                   </div>
                   <p className="text-sm text-gray-500">
@@ -336,12 +401,16 @@ export default function PromocionProductSelector() {
                 </div>
 
                 {/* Subcategorías */}
-                {categoriasExpandidas.has(c.id) && c.subcategorias && c.subcategorias.length > 0 && (
-                  <div className="mt-4 pl-4 border-l-2 border-gray-200">
-                    <h4 className="text-sm font-medium text-gray-600 mb-2">Subcategorías:</h4>
-                    {renderSubcategorias(c.subcategorias, c.id)}
-                  </div>
-                )}
+                {categoriasExpandidas.has(c.id) &&
+                  c.subcategorias &&
+                  c.subcategorias.length > 0 && (
+                    <div className="mt-4 pl-4 border-l-2 border-gray-200">
+                      <h4 className="text-sm font-medium text-gray-600 mb-2">
+                        Subcategorías:
+                      </h4>
+                      {renderSubcategorias(c.subcategorias, c.id)}
+                    </div>
+                  )}
               </div>
             ))}
           </div>
@@ -351,16 +420,21 @@ export default function PromocionProductSelector() {
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium mb-2">Subcategorías seleccionadas:</h4>
               <div className="flex flex-wrap gap-2">
-                {Array.from(subcategoriasSeleccionadas).map(subcategoriaId => {
-                  const resultado = encontrarSubcategoria(subcategoriaId);
-                  if (!resultado) return null;
-                  
-                  return (
-                    <span key={subcategoriaId} className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
-                      {resultado.subcategoria.nombre}
-                    </span>
-                  );
-                })}
+                {Array.from(subcategoriasSeleccionadas).map(
+                  (subcategoriaId) => {
+                    const resultado = encontrarSubcategoria(subcategoriaId);
+                    if (!resultado) return null;
+
+                    return (
+                      <span
+                        key={subcategoriaId}
+                        className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm"
+                      >
+                        {resultado.subcategoria.nombre}
+                      </span>
+                    );
+                  }
+                )}
               </div>
             </div>
           )}
@@ -394,7 +468,9 @@ export default function PromocionProductSelector() {
               >
                 <span className="font-medium">{p.nombre}</span>
                 <p className="text-sm text-gray-500">${p.precio}</p>
-                {destino.ids.includes(p.id) && <Check className="ml-1 inline" />}
+                {destino.ids.includes(p.id) && (
+                  <Check className="ml-1 inline" />
+                )}
               </div>
             ))}
           </div>
@@ -422,45 +498,76 @@ export default function PromocionProductSelector() {
 
       {/* Modal de Confirmación */}
       {mostrarConfirmacion && (
-        <div 
+        <div
           className="fixed inset-0 flex items-center justify-center z-50"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         >
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             {!enviado ? (
               <>
                 <div className="flex items-center mb-4">
                   <AlertCircle className="w-6 h-6 text-orange-500 mr-2" />
-                  <h3 className="text-xl font-bold">Confirmar Creación de Promoción</h3>
+                  <h3 className="text-xl font-bold">
+                    Confirmar Creación de Promoción
+                  </h3>
                 </div>
 
                 <div className="space-y-4">
                   {/* Datos básicos */}
                   <div className="border rounded p-4">
-                    <h4 className="font-semibold mb-2 text-blue-600">📝 Datos Básicos</h4>
+                    <h4 className="font-semibold mb-2 text-blue-600">
+                      📝 Datos Básicos
+                    </h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div><strong>Nombre:</strong> {promotionDraft.nombre}</div>
-                      <div><strong>Descripción:</strong> {promotionDraft.descripcion}</div>
-                      <div><strong>Imagen:</strong> {promotionDraft.img_promocional || 'No especificada'}</div>
-                      <div><strong>Fecha inicio:</strong> {promotionDraft.fecha_inicio}</div>
-                      <div><strong>Fecha fin:</strong> {promotionDraft.fecha_fin}</div>
+                      <div>
+                        <strong>Nombre:</strong> {promotionDraft.nombre}
+                      </div>
+                      <div>
+                        <strong>Descripción:</strong>{" "}
+                        {promotionDraft.descripcion}
+                      </div>
+                      <div>
+                        <strong>Imagen:</strong>{" "}
+                        {promotionDraft.img_promocional || "No especificada"}
+                      </div>
+                      <div>
+                        <strong>Fecha inicio:</strong>{" "}
+                        {promotionDraft.fecha_inicio}
+                      </div>
+                      <div>
+                        <strong>Fecha fin:</strong> {promotionDraft.fecha_fin}
+                      </div>
+                      <div>
+                        <strong>Porcentaje descuento:</strong>{" "}
+                        {promotionDraft.porcentaje_descuento}%
+                      </div>
                     </div>
                   </div>
 
                   {/* Aplicación */}
                   <div className="border rounded p-4">
-                    <h4 className="font-semibold mb-2 text-green-600">🎯 Aplicación</h4>
+                    <h4 className="font-semibold mb-2 text-green-600">
+                      🎯 Aplicación
+                    </h4>
                     <div className="text-sm">
-                      <div className="mb-2"><strong>Tipo:</strong> {destino.tipo === 'CATEGORIA' ? 'Por Categoría' : 'Productos Específicos'}</div>
-                      
+                      <div className="mb-2">
+                        <strong>Tipo:</strong>{" "}
+                        {destino.tipo === "CATEGORIA"
+                          ? "Por Categoría"
+                          : "Productos Específicos"}
+                      </div>
+
                       {destino.tipo === "CATEGORIA" && (
-                        <>                          
+                        <>
                           {subcategoriasConNombres.length > 0 && (
                             <div>
                               <strong>Subcategorías seleccionadas:</strong>
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {subcategoriasConNombres.map(sub => (
-                                  <span key={sub!.id} className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
+                                {subcategoriasConNombres.map((sub) => (
+                                  <span
+                                    key={sub!.id}
+                                    className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
+                                  >
                                     {sub!.nombre} ({sub!.categoria_padre})
                                   </span>
                                 ))}
@@ -470,37 +577,46 @@ export default function PromocionProductSelector() {
                         </>
                       )}
 
-                      {destino.tipo === "PRODUCTO" && productosSeleccionados.length > 0 && (
-                        <div>
-                          <strong>Productos seleccionados:</strong>
-                          <div className="mt-1 space-y-1">
-                            {productosSeleccionados.map(prod => (
-                              <div key={prod!.id} className="flex justify-between text-xs bg-gray-50 p-2 rounded">
-                                <span>{prod!.nombre}</span>
-                                <span className="font-medium">${prod!.precio}</span>
-                              </div>
-                            ))}
+                      {destino.tipo === "PRODUCTO" &&
+                        productosSeleccionados.length > 0 && (
+                          <div>
+                            <strong>Productos seleccionados:</strong>
+                            <div className="mt-1 space-y-1">
+                              {productosSeleccionados.map((prod) => (
+                                <div
+                                  key={prod!.id}
+                                  className="flex justify-between text-xs bg-gray-50 p-2 rounded"
+                                >
+                                  <span>{prod!.nombre}</span>
+                                  <span className="font-medium">
+                                    ${prod!.precio}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
 
                   {/* Resumen IDs */}
                   <div className="border rounded p-4">
-                    <h4 className="font-semibold mb-2 text-purple-600">📊 Resumen Técnico</h4>
+                    <h4 className="font-semibold mb-2 text-purple-600">
+                      📊 Resumen Técnico
+                    </h4>
                     <div className="text-sm">
                       {destino.ids.length > 0 && (
                         <div className="mb-2">
-                          <strong>IDs seleccionados:</strong> {destino.ids.join(', ')}
+                          <strong>IDs seleccionados:</strong>{" "}
+                          {destino.ids.join(", ")}
                         </div>
                       )}
                       {subcategoriasSeleccionadas.size > 0 && (
                         <div className="mb-2">
-                          <strong>Subcategorías seleccionadas:</strong> {Array.from(subcategoriasSeleccionadas).join(', ')}
+                          <strong>Subcategorías seleccionadas:</strong>{" "}
+                          {Array.from(subcategoriasSeleccionadas).join(", ")}
                         </div>
                       )}
-                      
                     </div>
                   </div>
                 </div>
@@ -524,7 +640,7 @@ export default function PromocionProductSelector() {
                         Creando...
                       </>
                     ) : (
-                      'Confirmar y Crear Promoción'
+                      "Confirmar y Crear Promoción"
                     )}
                   </button>
                 </div>
@@ -532,8 +648,12 @@ export default function PromocionProductSelector() {
             ) : (
               <div className="text-center py-8">
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-green-600 mb-2">¡Promoción Creada Exitosamente!</h3>
-                <p className="text-gray-600">La promoción ha sido guardada correctamente.</p>
+                <h3 className="text-xl font-bold text-green-600 mb-2">
+                  ¡Promoción Creada Exitosamente!
+                </h3>
+                <p className="text-gray-600">
+                  La promoción ha sido guardada correctamente.
+                </p>
               </div>
             )}
           </div>

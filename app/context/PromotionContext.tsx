@@ -10,6 +10,7 @@ export interface PromotionDraft {
   img_promocional: string;
   fecha_inicio: string;
   fecha_fin: string;
+  porcentaje_descuento: number; // Opcional, si se maneja en otro contexto
 }
 
 /* ---------- Tipo del contexto ---------- */
@@ -32,6 +33,7 @@ const defaultPromotionDraft: PromotionDraft = {
   img_promocional: '',
   fecha_inicio: '',
   fecha_fin: '',
+  porcentaje_descuento: 0, 
 };
 
 // Definimos explícitamente el tipo para evitar errores en setDestino
