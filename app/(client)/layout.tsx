@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import Navbar from "../components/shared/Navbar";
 import Footer from "../components/shared/Footer";
 import type { Metadata } from "next";
+import { CartProvider } from "@/app/context/CartContext";
 
 export const metadata: Metadata = {
   title: "Compx",
@@ -17,9 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar></Navbar>
-        {children}
-        <Footer></Footer>
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
