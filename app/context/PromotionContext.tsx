@@ -21,6 +21,8 @@ interface PromotionContextType {
     ids: number[];
   };
   setDestino: React.Dispatch<React.SetStateAction<{ tipo: 'CATEGORIA' | 'PRODUCTO'; ids: number[] }>>;
+  subcategoriasSeleccionadas: Set<number>;
+  setSubcategoriasSeleccionadas: React.Dispatch<React.SetStateAction<Set<number>>>;
 }
 
 /* ---------- Valores por defecto ---------- */
@@ -46,9 +48,17 @@ export function PromotionProvider({ children }: { children: ReactNode }) {
   const [destino, setDestino] = useState<{ tipo: 'CATEGORIA' | 'PRODUCTO'; ids: number[] }>(
     defaultDestino
   );
+  const [subcategoriasSeleccionadas, setSubcategoriasSeleccionadas] = useState<Set<number>>(new Set());
 
   return (
-    <PromotionContext.Provider value={{ promotionDraft, setPromotionDraft, destino, setDestino }}>
+    <PromotionContext.Provider value={{ 
+      promotionDraft, 
+      setPromotionDraft, 
+      destino, 
+      setDestino,
+      subcategoriasSeleccionadas,
+      setSubcategoriasSeleccionadas
+    }}>
       {children}
     </PromotionContext.Provider>
   );
