@@ -21,6 +21,7 @@ export interface ProductSectionProps {
 export interface ProductCardProps {
   id?: number;
   producto_id?: number; 
+  id_producto_especifico?: number; // Opcional si no siempre se muestra
   nombre: string;
   descripcion?: string;
   imagen_producto: string;

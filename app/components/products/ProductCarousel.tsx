@@ -21,15 +21,9 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
     return 6; // desktop grande: 6 productos
   };
 
-  // Set client flag after hydration
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   // Calcular dimensiones y productos visibles
   useEffect(() => {
     
-    if (!isClient) return; // Don't run on server
 
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -86,30 +80,8 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   // Solo mostrar navegación si hay más productos que los visibles
   const showNavigation = productos.length > visibleProducts;
   
+  console.log("Productos:", productos);
   
-  // Show a loading state or simplified version during SSR
-  if (!isClient) {
-    return (
-      <div className="relative w-full" ref={containerRef}>
-        <div className="overflow-hidden">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-4">
-            {productos.slice(0, 6).map((producto) => (
-              <div key={producto.producto_id} className="w-full">
-                <ProductCard
-                  producto_id={producto.producto_id}
-                  nombre={producto.nombre}
-                  imagen_producto={producto.imagen_producto}
-                  precio={producto.precio}
-                  descuento={producto.porcentaje_desc}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative w-full" ref={containerRef}>
       {/* Botón anterior */}
@@ -143,6 +115,7 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
               <div className="w-full h-full">
                 <ProductCard
                   producto_id={producto.producto_id}
+                  id_producto_especifico={producto.id_producto_especifico}
                   nombre={producto.nombre}
                   imagen_producto={producto.imagen_producto}
                   precio={producto.precio}
