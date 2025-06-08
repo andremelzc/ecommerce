@@ -7,7 +7,7 @@ interface ValorVariacionRow extends RowDataPacket {
   valor: string;
   id_variacion: number;
 }
-
+// localhost:3000/
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

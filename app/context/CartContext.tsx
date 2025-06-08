@@ -10,6 +10,15 @@ import React, {
 } from 'react';
 import { CartItem } from '@/app/types/itemCarrito';
 
+import {
+  addOrUpdateItem,
+  removeItemById,
+  updateItemQuantity,
+  fetchCartItems,
+  clearAllCartItems,
+} from '@/app/utils/cartActions';
+
+
 type CartState = CartItem[];
 
 type CartAction =
@@ -82,16 +91,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const res = await fetch('/api/cart');
-        if (!res.ok) throw new Error('Error cargando carrito');
-        const data = await res.json();
-        dispatch({ type: 'SET_ITEMS', payload: data.items });
+        const items = await fetchCartItems();
+        dispatch({ type: 'SET_ITEMS', payload: items });
       } catch (err) {
         console.error(err);
       }
     };
     fetchCart();
   }, []);
+
 
   // 2) (Opcional) Guardar en localStorage para persistencia rápida
   useEffect(() => {
@@ -102,60 +110,46 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   // 3) Función para agregar (o sumar) un ítem
   const addItem = async (item: CartItem) => {
-    // 3.1. Optimistic update: despachamos inmediatamente
     dispatch({ type: 'ADD_ITEM', payload: item });
 
     try {
-      // 3.2. Llamamos al endpoint para que persista en DB
-      await fetch('/api/cart/addOrUpdate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
-      });
-      // Opcional: podrías chequear la respuesta JSON para ver si hubo error
+      await addOrUpdateItem(item);
     } catch (err) {
       console.error('Error agregando ítem en backend:', err);
-      // Aquí podrías revertir el cambio local si lo deseas (rollback),
-      // o simplemente notificar al usuario y mantener el estado local.
     }
   };
 
   // 4) Función para eliminar un ítem
   const removeItem = async (productId: number) => {
-    // 4.1. Optimistic update
     dispatch({ type: 'REMOVE_ITEM', payload: { productId } });
 
     try {
-      await fetch(`/api/cart/${productId}`, {
-        method: 'DELETE',
-      });
+      await removeItemById(productId);
     } catch (err) {
       console.error('Error eliminando ítem en backend:', err);
-      // Opcional rollback si se desea
     }
   };
 
   // 5) Función para actualizar cantidad
   const updateQuantity = async (productId: number, quantity: number) => {
-    // 5.1. Optimistic update
     dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
 
     try {
-      await fetch(`/api/cart/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity }),
-      });
+      await updateItemQuantity(productId, quantity);
     } catch (err) {
       console.error('Error actualizando cantidad en backend:', err);
-      // Opcional rollback
     }
   };
 
-  // 6) Función para vaciar el carrito (solo en memoria; si quieres persistir, habría que crear un endpoint adicional)
-  const clearCart = () => {
+  // 6) Función para vaciar el carrito
+  const clearCart = async () => {
     dispatch({ type: 'CLEAR_CART' });
-    // Si quieres eliminar todo en BD, tendrías que crear un DELETE /api/cart/all
+
+    try {
+      await clearAllCartItems();
+    } catch (err) {
+      console.error('Error vaciando carrito en backend:', err);
+    }
   };
 
   return (

@@ -1,8 +1,13 @@
-import ProductSection from "@/app/components/products/ProductSection";
-import CategoryBox from "@/app/components/ui/CategoryBox";
-import {categorias} from "@/lib/categorias";
+// /app/categoria/[categoryLevel]/[categoryId]/page.tsx
+'use client';
 
-//Funcion que trae el nombre de los id's, permite hacer esto:  "Inicio/perifericos/monitor"
+import React, { useState } from "react";
+import VariationBox from "@/app/components/ui/VariationBox";
+import ProductSection from "@/app/components/products/ProductSection";
+import { categorias } from "@/lib/categorias";
+
+
+// Función que trae el nombre de los id's, permite hacer esto:  "Inicio/perifericos/monitor"
 function getBreadcrumb(level: number, id: number): string[] {
   const path: string[] = ["Inicio"];
 
@@ -31,44 +36,54 @@ function getBreadcrumb(level: number, id: number): string[] {
 export default function CategoriaPage({ params }: { params: { level: string; id: string } }) {
   const categoryLevel = Number(params.level);
   const categoryId = Number(params.id);
-
+  const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
+  
+  //Para cambiar dinamicamente el filtro de ProductSection
+  const filterType = selectedVariations.length > 0 ? "byVariacion" : "byCategory";
+  // Usa una key única para forzar el remount de ProductSection
+  const productSectionKey = `${categoryId}-${categoryLevel}-${selectedVariations.join(',')}`;
   // Breadcrumb
   const breadcrumb = getBreadcrumb(categoryLevel, categoryId);
 
   return (
     <div className="flex gap-4 px-4 py-6">
-      {/* Lado izquierdo - Categorías */}
+      {/* Lado izquierdo - Variaciones */}
       <div className="w-64 shrink-0">
-        <CategoryBox />
+        <VariationBox
+          categoryLevel={categoryLevel}
+          categoryId={categoryId}
+          setSelectedVariations={setSelectedVariations} // Pasamos el setter a VariationBox
+        />
       </div>
 
       {/* Lado derecho - Breadcrumb y productos */}
-        <div className="flex-1 flex flex-col gap-4">
-            {/* Breadcrumb */}
-            <div className="flex justify-center">
-                <nav className="text-sm text-gray-600">
-                    {breadcrumb.map((item, i) => (
-                    <span key={i}>
-                        {i > 0 && " / "}
-                        <span className={i === breadcrumb.length - 1 ? "text-red-500" : ""}>
-                        {item}
-                        </span>
-                    </span>
-                    ))}
-                </nav>
-            </div>
-        
-
-            {/* Productos */}
-            <ProductSection
-            title="Productos en esta categoría"
-            filterType="byCategory"
-            categoryLevel={categoryLevel}
-            categoryId={categoryId}
-            limit={20}
-            asCarousel={false}
-            />
+      <div className="flex-1 flex flex-col gap-4">
+        {/* Breadcrumb */}
+        <div className="flex justify-center">
+          <nav className="text-sm text-gray-600">
+            {breadcrumb.map((item, i) => (
+              <span key={i}>
+                {i > 0 && " / "}
+                <span className={i === breadcrumb.length - 1 ? "text-red-500" : ""}>
+                  {item}
+                </span>
+              </span>
+            ))}
+          </nav>
         </div>
+
+        {/* Productos */}
+        <ProductSection
+          title="Productos en esta categoría"
+          key={productSectionKey}
+          filterType={filterType}
+          categoryLevel={categoryLevel}
+          categoryId={categoryId}
+          limit={20}
+          asCarousel={false}
+          selectedVariations={selectedVariations} // Pasamos las variaciones seleccionadas
+        />
+      </div>
     </div>
   );
 }
