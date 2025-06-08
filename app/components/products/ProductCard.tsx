@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import type { ProductCardProps } from "@/app/types/props";
 import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
+import { useCart } from "@/app/context/CartContext";
+import type { CartItem } from "@/app/types/itemCarrito";
 
 const ProductCard = ({
   producto_id,
@@ -17,10 +19,6 @@ const ProductCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  console.log(
-    `Producto específico: ${id_producto_especifico}, producto: ${producto_id}, nombre: ${nombre}, imagen: ${imagen_producto}, precio: ${precio}, descuento: ${porcentaje_desc}`
-  );
-
   // Si hay descuento, calculamos el precio final y el porcentaje de descuento
   const precioFinal = porcentaje_desc ? precio * (1 - porcentaje_desc) : precio;
   const porcentajeDescuento = porcentaje_desc
@@ -28,10 +26,29 @@ const ProductCard = ({
     : null;
 
   // Al darle click al carrito de la imagen
-  const handleAddToCart = () => {
-    console.log(
-      `Producto específico: ${id_producto_especifico}, prodcuto: ${producto_id} agregado al carrito`
-    );
+  const { addItem } = useCart(); 
+  
+  const handleAddToCart = async () => {
+    if (id_producto_especifico === undefined) {
+      console.error("producto_id es undefined, no se puede agregar al carrito.");
+      return;
+    }
+
+    const item: CartItem = {
+      productId: id_producto_especifico, 
+      nombre,
+      descripcion: "", 
+      image_producto: imagen_producto || "",
+      cantidad: 1,
+      precio,
+    };
+
+    try {
+      await addItem(item);
+      
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error);
+    }
   };
 
   // Manejar el error de carga de imagen
