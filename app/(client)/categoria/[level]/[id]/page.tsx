@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import VariationBox from "@/app/components/ui/VariationBox";
 import ProductSection from "@/app/components/products/ProductSection";
 import { categorias } from "@/lib/categorias";
+import CategoryGrid from "@/app/components/ui/CategoriaGrid";
+
 
 
 // Función que trae el nombre de los id's, permite hacer esto:  "Inicio/perifericos/monitor"
@@ -71,7 +73,8 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
             ))}
           </nav>
         </div>
-
+        {/* Categorías hijas */}
+        <CategoryGrid level={categoryLevel} id={categoryId} />
         {/* Productos */}
         <ProductSection
           title="Productos en esta categoría"
