@@ -22,8 +22,6 @@ export async function GET(
       "CALL obtener_categorias_json(?, ?)",
       [level, id]
     );
-    console.log(JSON.stringify(rows, null, 2));
-
 
     // El resultado del SP estará dentro del primer array → primer objeto → 'resultado'
     const jsonResult = rows[0][0]?.resultado;
