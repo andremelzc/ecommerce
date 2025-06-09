@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import type { ProductDetailProps } from "@/app/types/props";
 import { Expand, X } from "lucide-react";
+import ProductVariations from "./ProductVariations";
 
 function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
   if (isFullScreen) return null;
@@ -144,9 +145,10 @@ function ProductInfo({
   descripcion,
   marca,
   SKU,
-  tipo_especificaciones,
-  especificaciones,
   cantidad_stock,
+  especificaciones,
+  variations,
+  id_producto_especifico,
 }: any) {
   return (
     <section
@@ -165,7 +167,6 @@ function ProductInfo({
       >
         {nombre}
       </h1>
-      
       <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5" />
       <div className="flex w-full justify-center items-center gap-2 my-3 sm:my-5">
         {descuento != null ? (
@@ -205,10 +206,11 @@ function ProductInfo({
       </p>
       <ProductSpecs
         SKU={SKU}
-        tipo_especificaciones={tipo_especificaciones}
         especificaciones={especificaciones}
         cantidad_stock={cantidad_stock}
         marca={marca}
+        variations={variations}
+        id_producto_especifico={id_producto_especifico}
       />
       <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5 " />
       <div className="w-full">
@@ -225,10 +227,11 @@ function ProductInfo({
 
 function ProductSpecs({
   SKU,
-  tipo_especificaciones,
   especificaciones,
   cantidad_stock,
   marca,
+  variations,
+  id_producto_especifico,
 }: any) {
   return (
     <ul
@@ -243,19 +246,24 @@ function ProductSpecs({
       <li>
         <strong>SKU</strong>: <span itemProp="value">{SKU}</span>
       </li>
-      {tipo_especificaciones && especificaciones && (
-        <li>
-          <strong>
-            {tipo_especificaciones.charAt(0).toUpperCase()}
-            {tipo_especificaciones.slice(1).toLowerCase()}
-          </strong>
-          : {especificaciones.charAt(0).toUpperCase()}
-          {especificaciones.slice(1).toLowerCase()}
-        </li>
-      )}
+      {especificaciones &&
+        Object.entries(especificaciones).map(([key, value]) => (
+          <li key={key}>
+            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{" "}
+            {String(value)}
+          </li>
+        ))}
       <li>
         <strong>En stock: </strong> {cantidad_stock}
       </li>
+      {variations && variations.length > 0 && (
+        <li>
+          <ProductVariations
+            variations={variations}
+            selectedId={id_producto_especifico || null}
+          />
+        </li>
+      )}
     </ul>
   );
 }
@@ -329,7 +337,7 @@ function FullScreenModal({
   );
 }
 
-const ProductDetail = (props: ProductDetailProps) => {
+const ProductDetail = (props: ProductDetailProps & { variations?: any[] }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const openFullScreen = () => setIsFullScreen(true);
   const closeFullScreen = () => setIsFullScreen(false);
@@ -340,7 +348,6 @@ const ProductDetail = (props: ProductDetailProps) => {
       itemScope
       itemType="https://schema.org/Product"
     >
-
       <Breadcrumb {...props} isFullScreen={isFullScreen} />
       <div className="flex flex-col lg:flex-row bg-white py-6 sm:py-10 lg:py-15 relative align-middle justify-center font-sans md:gap-10 lg:gap-40">
         <ProductImage

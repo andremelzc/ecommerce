@@ -17,7 +17,7 @@ export async function GET(
 
   const sql = `
     SELECT
-      pe.id_producto     AS id,
+      pe.id     AS id_producto_especifico,
       pe.SKU,
       pe.cantidad_stock,
       pe.imagen_producto,
@@ -26,8 +26,7 @@ export async function GET(
       p.descripcion,
       m.nombre         AS marca,
       m.imagen_logo   AS logo,
-      vo.valor            AS especificaciones,
-      v.nombre            AS tipo_especificaciones,
+      JSON_OBJECTAGG(v.nombre, vo.valor) AS especificaciones,
       c3.nombre_categoria AS nivel_3,
       c2.nombre_categoria AS nivel_2,
       c1.nombre_categoria AS nivel_1,
@@ -57,9 +56,23 @@ export async function GET(
       ON ppe.id_producto_especifico = pe.id
     LEFT JOIN promocion AS pro
       ON pro.id = ppe.id_promocion
-    WHERE p.id = ${productoId}
-    ORDER BY pe.precio DESC
-    LIMIT 1;
+		WHERE pe.id = ${productoId} 
+    GROUP BY 
+    pe.id,
+    pe.SKU,
+    pe.cantidad_stock,
+    pe.imagen_producto,
+    pe.precio,
+    p.nombre,
+    p.descripcion,
+    m.nombre,
+    m.imagen_logo,
+    c3.nombre_categoria,
+    c2.nombre_categoria,
+    c1.nombre_categoria,
+    ppe.porcentaje_desc,
+    pro.nombre
+    ;
   `;
 
   try {
