@@ -5,6 +5,7 @@ import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
 import { useCart } from "@/app/context/CartContext";
 import type { CartItem } from "@/app/types/itemCarrito";
+import Link from "next/link";
 
 const ProductCard = ({
   producto_id,
@@ -26,18 +27,20 @@ const ProductCard = ({
     : null;
 
   // Al darle click al carrito de la imagen
-  const { addItem } = useCart(); 
-  
+  const { addItem } = useCart();
+
   const handleAddToCart = async () => {
     if (id_producto_especifico === undefined) {
-      console.error("producto_id es undefined, no se puede agregar al carrito.");
+      console.error(
+        "producto_id es undefined, no se puede agregar al carrito."
+      );
       return;
     }
 
     const item: CartItem = {
-      productId: id_producto_especifico, 
+      productId: id_producto_especifico,
       nombre,
-      descripcion: "", 
+      descripcion: "",
       image_producto: imagen_producto || "",
       cantidad: 1,
       precio,
@@ -45,7 +48,6 @@ const ProductCard = ({
 
     try {
       await addItem(item);
-      
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
     }
@@ -74,20 +76,22 @@ const ProductCard = ({
 
         {/* Imagen principal */}
         {!imageError && (
-          <img
-            className={`w-auto h-auto max-w-full max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 sm:group-hover:scale-110 ${
-              imageLoaded ? "opacity-100" : "opacity-0"
-            }`}
-            src={
-              !imagen_producto || imagen_producto === "null"
-                ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
-                : imagen_producto
-            }
-            alt={nombre}
-            onLoad={() => setImageLoaded(true)}
-            onError={handleImageError}
-            loading="lazy"
-          />
+          <Link href={`/productos/${id_producto_especifico}`} prefetch={true}>
+            <img
+              className={`w-auto h-auto max-w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 sm:group-hover:scale-110 cursor-pointer ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              src={
+                !imagen_producto || imagen_producto === "null"
+                  ? "https://img.freepik.com/vector-gratis/ilustracion-icono-doodle-engranaje_53876-5596.jpg?semt=ais_hybrid&w=740"
+                  : imagen_producto
+              }
+              alt={nombre}
+              onLoad={() => setImageLoaded(true)}
+              onError={handleImageError}
+              loading="lazy"
+            />
+          </Link>
         )}
 
         {/* Overlay con boton para agregar carrito */}

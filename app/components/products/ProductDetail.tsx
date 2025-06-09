@@ -3,8 +3,11 @@ import React, { useState } from "react";
 import type { ProductDetailProps } from "@/app/types/props";
 import { Expand, X } from "lucide-react";
 import ProductVariations from "./ProductVariations";
+import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import type { CartItem } from "@/app/types/itemCarrito";
 
-function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
+function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen, id_cat_n1, id_cat_n2, id_cat_n3 }: any) {
   if (isFullScreen) return null;
   return (
     <nav
@@ -21,9 +24,9 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
           itemScope
           itemType="https://schema.org/ListItem"
         >
-          <a href="/" itemProp="item">
+          <Link href="/" itemProp="item">
             <span itemProp="name">Inicio</span>
-          </a>
+          </Link>
           <meta itemProp="position" content="1" />
         </li>
         {nivel_1 && (
@@ -34,9 +37,9 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <a href="#" itemProp="item">
+              <Link href={`/categoria/${1}/${id_cat_n1}`}itemProp="item">
                 <span itemProp="name">{nivel_1}</span>
-              </a>
+              </Link>
               <meta itemProp="position" content="2" />
             </li>
           </>
@@ -49,11 +52,11 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <a href="#" itemProp="item">
+              <Link href={`/categoria/${2}/${id_cat_n2}`} itemProp="item">
                 <span itemProp="name">
                   {nivel_2.length > 12 ? nivel_2.slice(0, 7) + "..." : nivel_2}
                 </span>
-              </a>
+              </Link>
               <meta itemProp="position" content="3" />
             </li>
           </>
@@ -66,11 +69,11 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen }: any) {
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <a href="#" itemProp="item">
+              <Link href={`/categoria/${3}/${id_cat_n3}`} itemProp="item">
                 <span itemProp="name">
                   {nivel_3.length > 12 ? nivel_3.slice(0, 7) + "..." : nivel_3}{" "}
                 </span>
-              </a>
+              </Link>
               <meta itemProp="position" content="4" />
             </li>
           </>
@@ -149,6 +152,7 @@ function ProductInfo({
   especificaciones,
   variations,
   id_producto_especifico,
+  handleAddToCart,
 }: any) {
   return (
     <section
@@ -217,7 +221,8 @@ function ProductInfo({
         <Contador cantidad_stock={cantidad_stock} />
       </div>
       <div className="flex w-full my-3 sm:my-5">
-        <button className="w-full bg-button text-white font-bold mt-3 p-3 sm:p-4 text-lg sm:text-2xl lg:text-xl xl:text-1.5xl rounded-lg hover:bg-ebony-700 transition-colors">
+        <button onClick={handleAddToCart} 
+        className="w-full bg-button text-white font-bold mt-3 p-3 sm:p-4 text-lg sm:text-2xl lg:text-xl xl:text-1.5xl rounded-lg hover:bg-ebony-700 transition-colors cursor-pointer">
           Añadir al carrito
         </button>
       </div>
@@ -342,6 +347,34 @@ const ProductDetail = (props: ProductDetailProps & { variations?: any[] }) => {
   const openFullScreen = () => setIsFullScreen(true);
   const closeFullScreen = () => setIsFullScreen(false);
 
+
+const { addItem } = useCart();
+
+  const handleAddToCart = async () => {
+    if (props.id_producto_especifico === undefined) {
+      console.error(
+        "producto_id es undefined, no se puede agregar al carrito."
+      );
+      return;
+    }
+
+    const item: CartItem = {
+      productId: props.id_producto_especifico,
+      nombre:props.nombre,
+      descripcion: "",
+      image_producto: props.imagen_producto || "",
+      cantidad: 1,
+      precio: props.precio,
+    };
+
+    try {
+      await addItem(item);
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error);
+    }
+  };
+
+
   return (
     <main
       className="relative font-sans bg-white container-padding"
@@ -357,7 +390,7 @@ const ProductDetail = (props: ProductDetailProps & { variations?: any[] }) => {
           openFullScreen={openFullScreen}
           isFullScreen={isFullScreen}
         />
-        <ProductInfo {...props} />
+        <ProductInfo {...props} handleAddToCart= {handleAddToCart} />
         <FullScreenModal
           isFullScreen={isFullScreen}
           imagen_producto={props.imagen_producto}

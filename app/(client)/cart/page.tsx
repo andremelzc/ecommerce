@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useCart } from '@/app/context/CartContext';
-import { formatPrice } from '@/app/utils/formatPrice';
-import { Plus, Minus, Trash2 } from 'lucide-react';
+import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import { formatPrice } from "@/app/utils/formatPrice";
+import { Plus, Minus, Trash2 } from "lucide-react";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart();
@@ -15,24 +15,27 @@ export default function CartPage() {
       <section className="flex-1 ">
         {cart.length === 0 ? (
           <p className="text-center">
-            Tu carrito está vacío.{' '}
+            Tu carrito está vacío.{" "}
             <Link href="/" className="text-blue-600 hover:underline">
               Volver al catálogo
             </Link>
           </p>
         ) : (
           <ul className="space-y-2">
-            {cart.map(item => (
+            {cart.map((item) => (
               <li
                 key={item.productId}
                 className="flex items-center bg-gray-100 p-4 rounded-xl"
               >
                 <div className="w-24 h-24 flex-shrink-0">
-                  <img
-                    src={item.image_producto}
-                    alt={item.nombre}
-                    className="w-full h-full object-contain rounded-md"
-                  />
+                  <Link href={`/productos/${item.productId}`} prefetch={true}>
+                    <img
+                      src={item.image_producto}
+                      alt={item.nombre}
+                      className="w-full h-full object-contain rounded-md"
+                      style={{ cursor: "pointer" }}
+                    />
+                  </Link>
                 </div>
                 <div className="ml-4 flex-1">
                   <h3 className="font-medium text-lg">{item.nombre}</h3>

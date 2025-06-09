@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Combobox,
@@ -11,9 +10,9 @@ import {
 } from "@headlessui/react";
 import { Search } from "lucide-react";
 import type { Producto } from "@/app/types/producto";
+import Link from "next/link";
 
 const Searchbar = () => {
-  const router = useRouter(); // Para redireccionar a la página de productos
   const [productos, setProductos] = useState<Producto[]>([]); // Para almacenar los productos obtenidos de la API
   const [isLoading, setIsLoading] = useState(true); // Para manejar el estado de carga
   const [isError, setIsError] = useState(false); // Para manejar errores al obtener productos
@@ -41,10 +40,8 @@ const Searchbar = () => {
   const handleSelectedProduct = (producto: Producto | null) => {
     if (producto) {
       setSelectedProduct(producto);
-      console.log(producto);
       setBusqueda("");
-      // Redireccionar a la página del producto seleccionado
-      router.push(`/productos/${producto.producto_id}`);
+      // La navegación ahora se hará con <Link> en el render, no aquí
     }
   };
 
@@ -113,22 +110,27 @@ const Searchbar = () => {
                 </p>
                 <div>
                   {filteredProductos.slice(0, 3).map((producto) => (
-                    <ComboboxOption
+                    <Link
                       key={producto.producto_id}
-                      value={producto}
+                      href={`/productos/${producto.producto_id}`}
+                      prefetch={true}
                       className="flex rounded-lg cursor-pointer items-center gap-4 px-3 py-3 hover:bg-ebony-100 transition-colors duration-200"
+                      onClick={() => {
+                        setSelectedProduct(producto);
+                        setBusqueda("");
+                      }}
                     >
                       <div className="flex-shrink-0">
                         <img
                           src={producto.imagen_producto}
                           alt={`imagen de ${producto.nombre}`}
                           className="h-8 w-8 rounded-lg object-cover"
-                        ></img>
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <span>{producto.nombre}</span>
                       </div>
-                    </ComboboxOption>
+                    </Link>
                   ))}
                 </div>
                 <div className="pt-4 mt-4 border-t border-gray-200">

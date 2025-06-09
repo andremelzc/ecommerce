@@ -30,6 +30,9 @@ export async function GET(
       c3.nombre_categoria AS nivel_3,
       c2.nombre_categoria AS nivel_2,
       c1.nombre_categoria AS nivel_1,
+      pcat.id_cat_n1 AS id_cat_n1,
+      pcat.id_cat_n2 AS id_cat_n2,
+      pcat.id_cat_n3 AS id_cat_n3,
       ppe.porcentaje_desc AS descuento,
       pro.nombre          AS nombre_promocion
     FROM producto_especifico AS pe
@@ -70,6 +73,9 @@ export async function GET(
     c3.nombre_categoria,
     c2.nombre_categoria,
     c1.nombre_categoria,
+    pcat.id_cat_n1,
+    pcat.id_cat_n2,
+    pcat.id_cat_n3,
     ppe.porcentaje_desc,
     pro.nombre
     ;

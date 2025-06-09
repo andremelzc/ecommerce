@@ -53,4 +53,7 @@ export interface ProductDetailProps extends ProductCardProps {
   nivel_2: string | null;
   nivel_3: string | null;
   nombre_promocion: string;
+  id_cat_n1: number | null;
+  id_cat_n2: number | null;
+  id_cat_n3: number | null;
 }

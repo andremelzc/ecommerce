@@ -1,6 +1,7 @@
 // /app/components/products/ProductVariations.tsx
 "use client";
 import React from "react";
+import Link from "next/link";
 
 /**
  * Color swatch mapping: maps color names (case-insensitive) to hex codes.
@@ -60,24 +61,21 @@ const ProductVariations: React.FC<ProductVariationsProps> = ({
       aria-label="Variaciones de color"
     >
       {variations.map((v) => {
-        // Solo muestra el swatch si hay color definido
         const colorKey = (v.especificaciones.color || "").trim().toLowerCase();
         if (!colorKey) {
-          // Si no hay color, puedes omitir el swatch o mostrar un placeholder
           return null;
         }
         const color = COLOR_MAP[colorKey] || "#eee";
         const selected = currentId === v.id_producto_especifico;
         return (
-          <div
+          <Link
             key={v.id_producto_especifico}
-            role="radio"
-            aria-checked={selected}
-            tabIndex={0}
-            className={`flex flex-col items-center cursor-pointer focus:outline-none group`}
-            style={{ minWidth: 48 }}
+            href={`/productos/${v.id_producto_especifico}`}
             aria-label={v.especificaciones.color || undefined}
-            onClick={() => setCurrentId(v.id_producto_especifico)}
+            scroll={true}
+            prefetch={true}
+            className="flex flex-col items-center cursor-pointer focus:outline-none group"
+            style={{ minWidth: 48 }}
           >
             <div
               className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-200 ${
@@ -102,7 +100,7 @@ const ProductVariations: React.FC<ProductVariationsProps> = ({
             <span className="text-xs mt-1 text-gray-700 capitalize select-none">
               {v.especificaciones.color}
             </span>
-          </div>
+          </Link>
         );
       })}
     </div>
