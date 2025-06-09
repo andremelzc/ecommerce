@@ -1,5 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const {
@@ -8,7 +9,8 @@ export default function RegisterForm() {
     watch,
     formState: { errors },
   } = useForm();
-
+  //es para redirigir a otra URL
+  const Router = useRouter();
   const onSubmit = handleSubmit(async(data) => {
     try {
       const response = await fetch ("/api/auth/register",
@@ -22,7 +24,11 @@ export default function RegisterForm() {
       )
 
       const resJSON = await response.json();
-      console.log(resJSON);
+      console.log("debugging");
+      console.log(response);
+      if (response.ok){
+        Router.push('/auth/login');
+      }
     }
     catch {
 
