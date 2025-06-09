@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import type { ProductCardProps } from "@/app/types/props";
 import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
+import { useCart } from "@/app/context/CartContext";
+import type { CartItem } from "@/app/types/itemCarrito";
 
 const ProductCard = ({
   producto_id,
+  id_producto_especifico,
   nombre,
   imagen_producto,
   precio,
@@ -23,7 +26,30 @@ const ProductCard = ({
     : null;
 
   // Al darle click al carrito de la imagen
-  const handleAddToCart = () => {};
+  const { addItem } = useCart(); 
+  
+  const handleAddToCart = async () => {
+    if (id_producto_especifico === undefined) {
+      console.error("producto_id es undefined, no se puede agregar al carrito.");
+      return;
+    }
+
+    const item: CartItem = {
+      productId: id_producto_especifico, 
+      nombre,
+      descripcion: "", 
+      image_producto: imagen_producto || "",
+      cantidad: 1,
+      precio,
+    };
+
+    try {
+      await addItem(item);
+      
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error);
+    }
+  };
 
   // Manejar el error de carga de imagen
   const handleImageError = () => {
@@ -96,11 +122,13 @@ const ProductCard = ({
         </div>
         <div className="flex items-center gap-2 mt-auto">
           {porcentaje_desc != null ? (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"> 
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <span className="text-lg sm:text-xl lg:text-2xl text-red-900 font-bold">
                 S/ {precioFinal.toFixed(2)}
               </span>
-              <span className="text-xs sm:text-sm text-gray-500 line-through">S/ {precio}</span>
+              <span className="text-xs sm:text-sm text-gray-500 line-through">
+                S/ {precio}
+              </span>
             </div>
           ) : (
             <>

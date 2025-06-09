@@ -5,7 +5,10 @@ export async function GET() {
   try {
     const [rows] = await db.query(
       `SELECT id, nombre, descripcion, fecha_inicio, fecha_final, img_promocional 
-       FROM Ecommerce.promocion;`
+       FROM Ecommerce.promocion
+       WHERE fecha_inicio <= NOW()
+       AND fecha_final >= NOW()
+       ;`
     );
     return NextResponse.json(rows);
   } catch (error) {

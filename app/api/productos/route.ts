@@ -121,6 +121,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
 
     SELECT DISTINCT
       p.id  AS producto_id,
+      pe.id AS id_producto_especifico,
       p.nombre,
       p.descripcion,
       pe.imagen_producto,

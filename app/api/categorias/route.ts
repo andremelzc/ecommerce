@@ -10,8 +10,10 @@ type Data = RowDataPacket & {
   nombre_n1: string;
   id_n2: number | null;
   nombre_n2: string | null;
+  imagen_n2: string | null;
   id_n3: number | null;
   nombre_n3: string | null;
+  imagen_n3: string | null;
 };
 
 function anidarCategorias(rows: Data[]): CategoriaNivel1[] {
@@ -53,8 +55,8 @@ export async function GET() {
     const [rows] = await db.query<
       Data[]
     >(`SELECT n1.id as id_n1, n1.nombre_categoria AS nombre_n1,
-       n2.id AS id_n2, n2.nombre_categoria AS nombre_n2,
-       n3.id AS id_n3, n3.nombre_categoria AS nombre_n3
+       n2.id AS id_n2, n2.nombre_categoria AS nombre_n2,n2.imagen,
+       n3.id AS id_n3, n3.nombre_categoria AS nombre_n3, n3.imagen
        FROM categoria_nivel_1 n1
        LEFT JOIN categoria_nivel_2 n2 ON n2.id_categoria_nivel_1 = n1.id
        LEFT JOIN categoria_nivel_3 n3 ON n3.id_categoria_nivel_2 = n2.id

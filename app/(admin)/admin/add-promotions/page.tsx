@@ -132,6 +132,23 @@ export default function PromotionForm() {
           />
           {errorFecha && <p className="text-red-500 text-sm mt-1">{errorFecha}</p>}
         </div>
+        {/* Porcentaje Descuento */}
+        <div>
+          <label htmlFor="porcentaje_descuento" className="block mb-2 font-semibold">
+            Porcentaje Descuento
+          </label>
+          <input
+            id="porcentaje_descuento"
+            name="porcentaje_descuento"
+            type="number"
+            value={form.porcentaje_descuento}
+            onChange={handleChange}
+            required
+            min={0}
+            max={100}
+            className="w-full rounded-md border px-4 py-2"
+          />
+          </div>
 
         <button
           type="submit"
@@ -141,7 +158,8 @@ export default function PromotionForm() {
             !form.descripcion ||
             !form.img_promocional ||
             !form.fecha_inicio ||
-            !form.fecha_fin
+            !form.fecha_fin ||
+            form.porcentaje_descuento < 0
           }
           className="w-full mt-8 py-3 rounded-md font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
         >
