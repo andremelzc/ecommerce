@@ -1,4 +1,3 @@
-// app/admin/update-products/[id]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -25,58 +24,81 @@ export default function UpdateProductPage() {
   const [productosEspecificos, setProductosEspecificos] = useState<ProductoEspecifico[]>([]);
 
   useEffect(() => {
-  const fetchProducto = async () => {
-    const res = await fetch(`/api/admin/productos/${id}`);
-    const data = await res.json();
+    const fetchProducto = async () => {
+      const res = await fetch(`/api/admin/productos/${id}`);
+      const data = await res.json();
 
-    // Ya no accedemos a data[0], porque data YA ES el objeto
-    setProductoGeneral({
-      nombre: data.productoGeneral.nombre,
-      descripcion: data.productoGeneral.descripcion,
-      imagen_producto: data.productoGeneral.imagen_producto,
-      marca: data.productoGeneral.marca,
-    });
+      setProductoGeneral({
+        nombre: data.productoGeneral.nombre,
+        descripcion: data.productoGeneral.descripcion,
+        imagen_producto: data.productoGeneral.imagen_producto,
+        marca: data.productoGeneral.marca,
+      });
 
-    const especificos = data.productosEspecificos.map((item: any) => ({
-      id_especifico: item.id_especifico,
-      SKU: item.SKU,
-      cantidad_stock: item.stock,
-      imagen_producto: item.imagen,
-      precio: item.precio,
-    }));
+      const especificos = data.productosEspecificos.map((item: any) => ({
+        id_especifico: item.id_especifico,
+        SKU: item.SKU,
+        cantidad_stock: item.stock,
+        imagen_producto: item.imagen,
+        precio: item.precio,
+      }));
 
-    setProductosEspecificos(especificos);
+      setProductosEspecificos(especificos);
+    };
+
+    fetchProducto();
+  }, [id]);
+
+  const handleGuardarCambios = async () => {
+    if (!productoGeneral) return;
+
+    try {
+      const res = await fetch(`/api/admin/productos/${id}/update`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productoGeneral,
+          productosEspecificos
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Producto actualizado correctamente ✅");
+      } else {
+        alert("Error al actualizar ❌: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al conectarse con el servidor");
+    }
   };
 
-  fetchProducto();
-}, [id]);
+  const handleDisableProduct = async (id_especifico: number) => {
+    try {
+      const res = await fetch(`/api/admin/productos/${id_especifico}/disable`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-const handleGuardarCambios = async () => {
-  if (!productoGeneral) return;
+      const data = await res.json();
 
-  try {
-    const res = await fetch(`/api/admin/productos/${id}/update`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        productoGeneral,
-        productosEspecificos
-      }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("Producto actualizado correctamente ✅");
-    } else {
-      alert("Error al actualizar ❌: " + data.error);
+      if (res.ok) {
+        alert("Producto deshabilitado correctamente ✅");
+        // Actualizamos el estado para reflejar el cambio
+        const nuevosProductos = productosEspecificos.map(p => 
+          p.id_especifico === id_especifico ? { ...p, estado: 'deshabilitado' } : p
+        );
+        setProductosEspecificos(nuevosProductos);
+      } else {
+        alert("Error al deshabilitar el producto ❌: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al conectarse con el servidor");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error al conectarse con el servidor");
-  }
-};
-
+  };
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -162,8 +184,17 @@ const handleGuardarCambios = async () => {
             placeholder="Precio"
           />
           
+          <div className="text-right">
+            <button
+              onClick={() => handleDisableProduct(p.id_especifico)}
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 mt-4"
+            >
+              Deshabilitar
+            </button>
+          </div>
         </div>
       ))}
+      
       <div className="text-right mt-8">
         <button
           onClick={handleGuardarCambios}
