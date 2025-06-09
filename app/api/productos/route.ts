@@ -52,6 +52,7 @@ async function fetchProductsWithVariations(selectedVariations: string[],
         pe.precio,
         pe.imagen_producto,
         p.descripcion,
+        p.id,
         p.nombre,
         COUNT(DISTINCT vo.id) as matched_variations
       FROM variacion v
