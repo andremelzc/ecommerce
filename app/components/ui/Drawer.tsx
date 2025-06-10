@@ -3,13 +3,18 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronRight, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
+import {
+  X,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+} from "lucide-react";
 import { Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
-import Loadingspinner from "@/app/components/ui/LoadingSpinner";
+import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
 import { useRouter } from "next/navigation";
-
 
 const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   const router = useRouter();
@@ -125,7 +130,10 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
         <div className="bg-white h-[1px] my-3 sm:my-4"></div>
         {loading ? (
           <div className="flex justify-center items-center h-full">
-            <Loadingspinner />
+            <LoadingSpinner
+              color_icon="text-white"
+              color_bg="bg-transparent"
+            />
           </div>
         ) : (
           <>
@@ -146,7 +154,9 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
             {activeCat && (
               <div
                 className={`absolute flex sm:left-80 left-0 inset-y-0 w-full bg-white z-80 transform transition-transform duration-300 ease-in-out ${
-                  isSubPanelAnimating ? "translate-x-0" : "sm:-translate-x-0 translate-x-full"
+                  isSubPanelAnimating
+                    ? "translate-x-0"
+                    : "sm:-translate-x-0 translate-x-full"
                 }`}
               >
                 <div className="w-full px-4 sm:px-8 py-6 sm:py-10">
@@ -161,7 +171,10 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                     <h2 className="text-lg sm:text-xl text-black font-bold pl-2 flex-1">
                       {activeCat.nombre}
                     </h2>
-                    <a className="text-xs sm:text-sm underline text-black" href="">
+                    <a
+                      className="text-xs sm:text-sm underline text-black"
+                      href=""
+                    >
                       Ver todo
                     </a>
                   </div>

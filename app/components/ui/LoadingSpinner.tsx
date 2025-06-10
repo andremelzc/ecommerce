@@ -1,18 +1,23 @@
 import React from "react";
 import { ShoppingBag } from "lucide-react";
 
-const LoadingSpinner = () => {
+interface LoadingSpinnerProps {
+  color_icon?: string;
+  color_bg?: string;
+}
+
+const LoadingSpinner = ({ color_icon = "text-ebony-950", color_bg = "bg-transparent" }: LoadingSpinnerProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-6">
+    <div className={`flex flex-col items-center justify-center min-h-screen ${color_bg} gap-6`}>
       <div className="flex items-center justify-center">
         <ShoppingBag
-          className="w-20 h-20 animate-spin-slow text-ebony-950 drop-shadow-lg"
+          className={`w-20 h-20 animate-spin-slow ${color_icon} drop-shadow-lg`}
           style={{
             animation: "spin 1.2s linear infinite, pulse 2s ease-in-out infinite",
           }}
         />
       </div>
-      <span className="text-ebony-950 text-lg font-semibold tracking-wide animate-pulse">
+      <span className={`${color_icon} text-lg font-semibold tracking-wide animate-pulse`}>
         Cargando CompX...
       </span>
       <style jsx global>{`

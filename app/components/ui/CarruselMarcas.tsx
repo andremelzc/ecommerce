@@ -45,7 +45,7 @@ export default function CarruselMarcas() {
   if (marcas.length === 0) {
     return (
       <div className="w-full flex items-center justify-center py-6">
-        <LoadingSpinner />
+        <LoadingSpinner color_icon="text-ebony-950" color_bg="bg-transparent" />
       </div>  
     );
   }

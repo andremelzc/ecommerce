@@ -112,7 +112,7 @@ const Searchbar = () => {
                   {filteredProductos.slice(0, 3).map((producto) => (
                     <Link
                       key={producto.producto_id}
-                      href={`/productos/${producto.producto_id}`}
+                      href={`/productos/${producto.id_producto_especifico}`}
                       prefetch={true}
                       className="flex rounded-lg cursor-pointer items-center gap-4 px-3 py-3 hover:bg-ebony-100 transition-colors duration-200"
                       onClick={() => {

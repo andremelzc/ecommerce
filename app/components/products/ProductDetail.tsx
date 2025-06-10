@@ -7,7 +7,16 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import type { CartItem } from "@/app/types/itemCarrito";
 
-function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen, id_cat_n1, id_cat_n2, id_cat_n3 }: any) {
+function Breadcrumb({
+  nivel_1,
+  nivel_2,
+  nivel_3,
+  nombre,
+  isFullScreen,
+  id_cat_n1,
+  id_cat_n2,
+  id_cat_n3,
+}: any) {
   if (isFullScreen) return null;
   return (
     <nav
@@ -37,7 +46,7 @@ function Breadcrumb({ nivel_1, nivel_2, nivel_3, nombre, isFullScreen, id_cat_n1
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <Link href={`/categoria/${1}/${id_cat_n1}`}itemProp="item">
+              <Link href={`/categoria/${1}/${id_cat_n1}`} itemProp="item">
                 <span itemProp="name">{nivel_1}</span>
               </Link>
               <meta itemProp="position" content="2" />
@@ -153,6 +162,9 @@ function ProductInfo({
   variations,
   id_producto_especifico,
   handleAddToCart,
+  cantidad,
+  setCantidad,
+  stockDisponible,
 }: any) {
   return (
     <section
@@ -218,11 +230,17 @@ function ProductInfo({
       />
       <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5 " />
       <div className="w-full">
-        <Contador cantidad_stock={cantidad_stock} />
+        <Contador
+          cantidad_stock={stockDisponible}
+          cantidad={cantidad}
+          setCantidad={setCantidad}
+        />
       </div>
       <div className="flex w-full my-3 sm:my-5">
-        <button onClick={handleAddToCart} 
-        className="w-full bg-button text-white font-bold mt-3 p-3 sm:p-4 text-lg sm:text-2xl lg:text-xl xl:text-1.5xl rounded-lg hover:bg-ebony-700 transition-colors cursor-pointer">
+        <button
+          onClick={handleAddToCart}
+          className="w-full bg-button text-white font-bold mt-3 p-3 sm:p-4 text-lg sm:text-2xl lg:text-xl xl:text-1.5xl rounded-lg hover:bg-ebony-700 transition-colors cursor-pointer"
+        >
           Añadir al carrito
         </button>
       </div>
@@ -273,15 +291,21 @@ function ProductSpecs({
   );
 }
 
-function Contador({ cantidad_stock }: { cantidad_stock: number }) {
-  const [cantidad, setCantidad] = useState(1);
-
+function Contador({
+  cantidad_stock,
+  cantidad,
+  setCantidad,
+}: {
+  cantidad_stock: number;
+  cantidad: number;
+  setCantidad: (n: number) => void;
+}) {
   const incrementar = () => {
-    setCantidad((prev) => (prev < cantidad_stock ? prev + 1 : prev));
+    if (cantidad < cantidad_stock) setCantidad(cantidad + 1);
   };
 
   const decrementar = () => {
-    setCantidad((prev) => (prev > 1 ? prev - 1 : prev));
+    if (cantidad > 1) setCantidad(cantidad - 1);
   };
 
   return (
@@ -346,9 +370,17 @@ const ProductDetail = (props: ProductDetailProps & { variations?: any[] }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const openFullScreen = () => setIsFullScreen(true);
   const closeFullScreen = () => setIsFullScreen(false);
+  const { cart, addItem } = useCart();
 
+  // Calcular cuántos de este producto hay en el carrito
+  const cantidadEnCarrito =
+    cart.find((item) => item.productId === props.id_producto_especifico)
+      ?.cantidad || 0;
+  // Stock disponible = stock real - en carrito
+  const stockDisponible = (props.cantidad_stock || 0) - cantidadEnCarrito;
 
-const { addItem } = useCart();
+  // Estado de cantidad elevado aquí
+  const [cantidad, setCantidad] = useState(1);
 
   const handleAddToCart = async () => {
     if (props.id_producto_especifico === undefined) {
@@ -360,10 +392,10 @@ const { addItem } = useCart();
 
     const item: CartItem = {
       productId: props.id_producto_especifico,
-      nombre:props.nombre,
+      nombre: props.nombre,
       descripcion: "",
       image_producto: props.imagen_producto || "",
-      cantidad: 1,
+      cantidad, // Usar la cantidad seleccionada
       precio: props.precio,
     };
 
@@ -373,7 +405,6 @@ const { addItem } = useCart();
       console.error("Error al agregar al carrito:", error);
     }
   };
-
 
   return (
     <main
@@ -390,7 +421,13 @@ const { addItem } = useCart();
           openFullScreen={openFullScreen}
           isFullScreen={isFullScreen}
         />
-        <ProductInfo {...props} handleAddToCart= {handleAddToCart} />
+        <ProductInfo
+          {...props}
+          handleAddToCart={handleAddToCart}
+          cantidad={cantidad}
+          setCantidad={setCantidad}
+          stockDisponible={stockDisponible}
+        />
         <FullScreenModal
           isFullScreen={isFullScreen}
           imagen_producto={props.imagen_producto}

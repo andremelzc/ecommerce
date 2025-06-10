@@ -4,11 +4,13 @@ import { ShoppingBag, Menu, User, ShoppingCart, Search } from "lucide-react";
 import Drawer from "../ui/Drawer";
 import CartDrawer from "../ui/CartDrawer";
 import Searchbar from "@/app/components/ui/Searchbar";
+import { useCart } from "@/app/context/CartContext";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { cart } = useCart();
 
   return (
     <>
@@ -68,12 +70,17 @@ const Navbar = () => {
 
               {/* Carrito */}
               <button
-                className="flex items-center gap-1 sm:gap-2 text-white text-sm sm:text-base lg:text-lg cursor-pointer p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center gap-1 sm:gap-2 text-white text-sm sm:text-base lg:text-lg cursor-pointer p-2 hover:bg-gray-800 rounded-lg transition-colors relative"
                 aria-label="Mi cesta"
                 onClick={() => setCartOpen(true)}
               >
                 <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 lg:w-6 lg:h-6" />
-                <span className="hidden sm:inline lg:inline">Mi carrito</span>
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-700 text-white rounded-full text-xs px-1.5 py-0.5 font-bold z-10 border-2 border-white">
+                    {cart.reduce((sum, i) => sum + i.cantidad, 0)}
+                  </span>
+                )}
+                <span className="hidden sm:inline lg:inline">Mi cesta</span>
               </button>
             </div>
           </div>
