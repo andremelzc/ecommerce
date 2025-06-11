@@ -276,21 +276,21 @@ export default function PromocionProductSelector() {
       Array.from(subcategoriasSeleccionadas)
     );
 
+    const body = {
+      nombre: promotionDraft.nombre,
+      descripcion: promotionDraft.descripcion,
+      fecha_inicio: promotionDraft.fecha_inicio,
+      fecha_fin: promotionDraft.fecha_fin,
+      img_promocional: promotionDraft.img_promocional,
+      porcentaje_descuento: promotionDraft.porcentaje_descuento,
+      destino,
+      subcategorias: Array.from(subcategoriasSeleccionadas),
+    }
+
+    console.log("📤 Enviando datos:", JSON.stringify(body, null, 2));
+
     // Simular envío
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // simular delay
-
-      // Aquí iría tu llamada real a la API
-      // const response = await fetch('/api/promociones', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     ...promotionDraft,
-      //     destino,
-      //     subcategorias: Array.from(subcategoriasSeleccionadas)
-      //   })
-      // });
-
       const response = await fetch("/api/promociones/guardar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -305,6 +305,15 @@ export default function PromocionProductSelector() {
           subcategorias: Array.from(subcategoriasSeleccionadas),
         }),
       });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log("✅ Promoción creada exitosamente:", data);
+      } else {
+        console.error("❌ Error al crear la promoción:", data.error);
+        throw new Error(data.error || "Error desconocido");
+      }
 
       setEnviado(true);
       setTimeout(() => {
