@@ -11,9 +11,9 @@ export default function RegisterForm() {
   } = useForm();
   //es para redirigir a otra URL
   const Router = useRouter();
-  const onSubmit = handleSubmit(async(data) => {
+  const onSubmit = handleSubmit(async (data) => {
     try {
-      const response = await fetch ("/api/auth/register",
+      const response = await fetch("/api/auth/register",
         {
           method: 'POST',
           body: JSON.stringify(data),
@@ -26,7 +26,7 @@ export default function RegisterForm() {
       const resJSON = await response.json();
       console.log("debugging");
       console.log(response);
-      if (response.ok){
+      if (response.ok) {
         Router.push('/auth/login');
       }
     }
