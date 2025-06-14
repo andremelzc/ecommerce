@@ -1,9 +1,10 @@
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import { JWT } from "next-auth/jwt";
-import { Session, User, AuthOptions } from "next-auth";
+import { Session, User } from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 
 // Aqui se hacen las configuraciones necesarias
 // Aca se manejan proveedores, como github, google al momento de hacer login,
@@ -14,7 +15,7 @@ interface resultadoRow extends RowDataPacket {
     resultado: string // Para que lo arrojado por mi stored tenga un tipo de dato
 }
 
-const authOptions: AuthOptions = {
+const authOptions : NextAuthConfig = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -70,6 +71,6 @@ const authOptions: AuthOptions = {
 
 
 //esto nos arroja una funcion, geneerlmente un handler
-const handler = NextAuth(authOptions);
+const {handlers:{GET,POST},auth} = NextAuth(authOptions);
 //depende de que necesitamos se llamaria a la funcion
-export { handler as GET, handler as POST }
+export { GET, POST, auth };

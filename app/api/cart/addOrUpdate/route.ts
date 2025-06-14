@@ -2,9 +2,11 @@
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { auth } from '../../auth/[...nextauth]/route';
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
     // 1) Obtenemos el body con los datos del item
     const {
       productId,
@@ -15,8 +17,8 @@ export async function POST(req: Request) {
       precio,
     } = await req.json();
 
-    // 2) Simulamos userId = 1 (más adelante, tomarás de la sesión)
-    const userId = 1;
+    // 2) Simulamos userId 
+    const userId = session?.user.id;
 
     // 3) Obtenemos el id del carrito para este usuario. Asumimos que
     //    en carrito_compras ya existe una fila c.id para c.id_usuario = 1.
