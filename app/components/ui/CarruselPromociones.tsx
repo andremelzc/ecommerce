@@ -96,9 +96,9 @@ export default function CarruselPromociones() {
                        2xl:w-full 2xl:h-[40rem] 2xl:object-cover"
             style={{
               maskImage:
-                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0.4) 85%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0.95) 80%, rgba(255,255,255,0.8) 92%, rgba(255,255,255,0.3) 100%)",
               WebkitMaskImage:
-                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.8) 70%, rgba(255,255,255,0.4) 85%, rgba(255,255,255,0) 100%)",
+                "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 60%, rgba(255,255,255,0.95) 80%, rgba(255,255,255,0.8) 92%, rgba(255,255,255,0.3) 100%)",
             }}
           />
         </div>
