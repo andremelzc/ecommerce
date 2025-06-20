@@ -99,7 +99,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
               </div>
               
               <Link href="/" onClick={handleCloseDrawer}>
-                <button className="bg-ebony-950 text-white px-6 py-3 rounded-lg hover:bg-ebony-900 transition-all duration-200 font-medium shadow-lg hover:scale-105">
+                <button className="bg-ebony-950 text-white px-6 py-3 rounded-lg hover:bg-ebony-900 transition-all cursor-pointer duration-200 font-medium shadow-lg hover:scale-105">
                   Explorar productos
                 </button>
               </Link>

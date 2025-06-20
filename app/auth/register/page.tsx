@@ -9,7 +9,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col">
       <div className="flex flex-col md:flex-row flex-1">
         {/* Lado izquierdo visual */}
-        <div className="w-full md:w-1/2 relative bg-ebony-800 to-indigo-800 text-white p-10 overflow-hidden">
+        <div className="w-full md:w-1/2 relative bg-ebony-950 to-indigo-800 text-white p-10 overflow-hidden">
           {/* Logo arriba */}
           <button
             className="flex items-center gap-2 mb-12 cursor-pointer hover:transform hover:scale-105 transition-transform duration-300"
