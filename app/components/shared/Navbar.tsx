@@ -1,16 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ShoppingBag, Menu, User, ShoppingCart, Search } from "lucide-react";
 import Drawer from "../ui/Drawer";
 import CartDrawer from "../ui/CartDrawer";
 import Searchbar from "@/app/components/ui/Searchbar";
 import { useCart } from "@/app/context/CartContext";
 import { useSession, signOut } from "next-auth/react";
+import UserMenu from "../ui/UserMenu";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null!);
   const { cart } = useCart();
   const { data: session } = useSession();
 
@@ -61,25 +64,23 @@ const Navbar = () => {
 
               {/* Usuario */}
               {session?.user ? (
-                <div className="flex items-center gap-2 text-white text-sm sm:text-base lg:text-lg">
-                  <span className="hidden sm:inline">
-                    Hola,{" "}
-                    {session.user.name?.split(" ")[0] || session.user.email}
-                  </span>
-                  <button
-                    onClick={() => signOut({ callbackUrl: "/" })}
-                    className="text-red-400 hover:text-red-600 transition"
-                  >
-                    Cerrar sesión
-                  </button>
-                </div>
+                <button ref={buttonRef} onClick={() => setUserOpen(!userOpen)}>
+                  <div className="group flex items-center gap-1 sm:gap-2 text-white text-sm sm:text-base lg:text-lg cursor-pointer p-2 sm:px-3 sm:py-2 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-105 border border-transparent hover:border-white/20">
+                    <User className="w-5 h-5 sm:w-6 sm:h-6 lg:w-6 lg:h-6" />
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <span className="hidden sm:inline">Hola,</span>
+                      <span>
+                        {session.user.name?.split(" ")[0] || session.user.email}
+                      </span>
+                    </div>
+                  </div>
+                </button>
               ) : (
                 <button
                   className="group flex items-center gap-1 sm:gap-2 text-white text-sm sm:text-base lg:text-lg cursor-pointer p-2 sm:px-3 sm:py-2 hover:bg-white/10 rounded-xl transition-all duration-200 hover:scale-105 border border-transparent hover:border-white/20"
                   aria-label="Mi cuenta"
                   onClick={() => (window.location.href = "/auth/login")}
                 >
-                  <link></link>
                   <User className="w-5 h-5 sm:w-6 sm:h-6 lg:w-6 lg:h-6" />
                   <span className="hidden sm:inline">Iniciar Sesión</span>
                 </button>
@@ -91,12 +92,14 @@ const Navbar = () => {
                 aria-label="Mi cesta"
                 onClick={() => setCartOpen(true)}
               >
-                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 lg:w-6 lg:h-6" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-700 text-white rounded-full text-xs px-1.5 py-0.5 font-bold z-10 border-2 border-white">
-                    {cart.reduce((sum, i) => sum + i.cantidad, 0)}
-                  </span>
-                )}
+                <div className="relative">
+                  <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 lg:w-6 lg:h-6" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full text-[10px] min-w-[18px] h-[18px] flex items-center justify-center px-1 font-bold border-2 border-white shadow-sm z-10">
+                      {cart.reduce((sum, i) => sum + i.cantidad, 0)}
+                    </span>
+                  )}
+                </div>
                 <span className="hidden sm:inline lg:inline">Mi cesta</span>
               </button>
             </div>
@@ -118,6 +121,11 @@ const Navbar = () => {
       {/* Cajones laterales */}
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+      <UserMenu
+        isOpen={userOpen}
+        onClose={() => setUserOpen(false)}
+        anchorRef={buttonRef}
+      />
     </>
   );
 };
