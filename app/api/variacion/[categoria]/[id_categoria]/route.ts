@@ -1,9 +1,7 @@
 // /app/api/variacion/[categoria]/[id_categoria]/route.ts
-// Trae todas las variaciones asociadas a una categoria, unica y exclusivamente 
-// de esa categoria.
 
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db"; // Asegúrate de que la ruta sea correcta
+import { db } from "@/lib/db"; 
 import { RowDataPacket } from "mysql2";
 import { Categoria, Variacion, Valor } from "@/app/types/valorVariacion";
 
@@ -15,6 +13,8 @@ type Data = RowDataPacket & {
   valor_opcion: string;
 };
 
+// Trae todas las variaciones asociadas a una categoria, unica y exclusivamente 
+// de esa categoria.
 export async function GET(request: Request, { params }: { params: { categoria: string; id_categoria: string } }) {
   const categoria = parseInt(params.categoria);
   const id_categoria = parseInt(params.id_categoria);

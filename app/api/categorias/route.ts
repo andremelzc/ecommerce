@@ -17,6 +17,7 @@ interface ResultadoRow extends RowDataPacket {
   resultado: string; // Tu SP retorna JSON como string
 }
 
+// Se utiliza para carga el contenido al Drawer
 export async function GET() {
   try {
     const [rows] = await db.query<ResultadoRow[]>(

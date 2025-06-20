@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db"; // Asegúrate que esté bien importado
+import { db } from "@/lib/db"; 
 import { RowDataPacket } from "mysql2";
 
 interface ResultadoRow extends RowDataPacket {
   resultado: string; // Tu SP retorna JSON como string
 }
 
+// Se utiliza para saber las subcategorias de una categoria
 export async function GET(
   request: Request,
   { params }: { params: { level: string; id: string } }
