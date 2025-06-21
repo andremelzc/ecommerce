@@ -94,7 +94,6 @@ export default function PromotionForm() {
           <input
             id="img_promocional"
             name="img_promocional"
-            type="url"
             value={form.img_promocional}
             onChange={handleChange}
             required
@@ -146,6 +145,7 @@ export default function PromotionForm() {
             required
             min={0}
             max={100}
+            step="0.01"
             className="w-full rounded-md border px-4 py-2"
           />
           </div>

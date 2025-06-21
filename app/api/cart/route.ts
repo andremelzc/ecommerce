@@ -2,12 +2,16 @@
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db'; // Usamos tu helper `db` en lugar de `pool`
+import { auth } from '../auth/[...nextauth]/route';
 
 export async function GET() {
+  //Traemos la session actual, tiene formato JSON
+  const session = await auth();
+  
   try {
-    // Por ahora simulamos usuario con id = 1; más adelante reemplazarás esto
+    
     // con el ID real extraído de la sesión/autenticación.
-    const userId = 1;
+    const userId = session?.user.id;
 
     // Query SQL original adaptada para incluir productId (pe.id)
     const query = `

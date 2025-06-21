@@ -1,11 +1,13 @@
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { auth } from '../../auth/[...nextauth]/route';
 
 export async function DELETE() {
   try {
+    const session = await auth();
     // Simulamos usuario autenticado con id = 1
-    const userId = 1;
+    const userId = session?.user.id;
 
     // 1) Obtener el ID del carrito del usuario
     const [carritoRows] = await db.query(

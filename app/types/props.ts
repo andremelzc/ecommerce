@@ -3,6 +3,7 @@
 export interface DrawerProps  {
   isOpen: boolean;
   onClose: () => void;
+  anchorRef?: React.RefObject<HTMLButtonElement>;
 };
 
 export interface ProductSectionProps {

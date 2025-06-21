@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { auth } from '../../auth/[...nextauth]/route';
 
 /**
  * Definimos una interfaz explícita para el contexto que recibimos.
@@ -18,15 +19,16 @@ export async function DELETE(
   request: Request,
   context: Context
 ) {
+  const session = await auth();
   try {
     // Extraemos params haciendo await sobre context.params
     const paramsData = await context.params;
     const productId = parseInt(paramsData.productId, 10);
 
-    // Simulamos usuario autenticado con id = 1
-    const userId = 1;
+    // Simulamos usuario autenticado con id 
+    const userId = session?.user.id;
 
-    // 1) Obtener el id del carrito para userId = 1
+    // 1) Obtener el id del carrito para userId 
     const [carritoRows] = await db.query(
       `SELECT id FROM carrito_compras WHERE id_usuario = ?`,
       [userId]

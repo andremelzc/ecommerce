@@ -24,7 +24,7 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
-      fetch("/api/categorias") // o la ruta que tengas que te retorne toda la estructura anidada
+      fetch("/api/categorias")
         .then((res) => res.json())
         .then((data) => {
           setCategoriasData(data);
@@ -62,8 +62,8 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
     setActiveCat2(
       (prev) =>
         prev === id
-          ? null // Si ya está expandida, la cerramos
-          : id // Si no está expandida, la abrimos
+          ? null
+          : id
     );
   };
 
@@ -106,132 +106,153 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
 
   return createPortal(
     <>
-      {/* Backdrop */}
+      {/* Backdrop mejorado con blur */}
       <div
-        className="fixed h-full inset-0 flex bg-black/40 flex-1 z-60"
+        className="fixed h-full inset-0 flex bg-black/50 backdrop-blur-sm flex-1 z-60 transition-all duration-300"
         onClick={handleCloseDrawer}
       ></div>
-      {/* Panel */}
+      
+      {/* Panel principal mejorado */}
       <aside
-        className={`fixed h-full inset-0 flex bg-ebony-950 h-full w-80 sm:w-80 w-full text-white px-4 sm:px-8 py-6 sm:py-10 shadow-lg flex flex-col z-70 transition-transform duration-300 ease-in-out ${
+        className={`fixed h-full inset-0 flex bg-ebony-950 h-full w-80 sm:w-80 w-full text-white shadow-2xl flex flex-col z-70 transition-all duration-300 ease-out ${
           isAnimating ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Categorías*/}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-bold pl-2">Categorías</h2>
-          <button
-            className="hover:scale-110 transition-transform cursor-pointer"
-            onClick={handleCloseDrawer}
-          >
-            <X size={24} className="sm:w-8 sm:h-8" />
-          </button>
-        </div>
-        <div className="bg-white h-[1px] my-3 sm:my-4"></div>
-        {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <LoadingSpinner
-              color_icon="text-white"
-              color_bg="bg-transparent"
-            />
+        {/* Header mejorado */}
+        <div className="px-6 py-5 border-b border-white/10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white tracking-wide">Categorías</h2>
+            <button
+              className="group hover:bg-white/10 p-2 rounded-full transition-all duration-200 hover:scale-105"
+              onClick={handleCloseDrawer}
+            >
+              <X size={20} className="text-white/70 group-hover:text-white transition-colors" />
+            </button>
           </div>
-        ) : (
-          <>
-            <ul className="space-y-1">
-              {categoriasData.map((cat1) => (
-                <li key={cat1.id}>
-                  <button
-                    className="flex items-center justify-between w-full text-left text-base sm:text-lg p-2 sm:p-2 hover:bg-gray-800 rounded-lg cursor-pointer"
-                    onClick={() => setActiveCat(cat1)}
-                  >
-                    {cat1.nombre}
-                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-            {/* Sub categorías*/}
-            {activeCat && (
-              <div
-                className={`absolute flex sm:left-80 left-0 inset-y-0 w-full bg-white z-80 transform transition-transform duration-300 ease-in-out ${
-                  isSubPanelAnimating
-                    ? "translate-x-0"
-                    : "sm:-translate-x-0 translate-x-full"
-                }`}
-              >
-                <div className="w-full px-4 sm:px-8 py-6 sm:py-10">
-                  <div className="flex items-center justify-between">
-                    {/* Botón de volver solo en móvil */}
+        </div>
+
+        {/* Contenido principal */}
+        <div className="flex-1 overflow-hidden">
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <LoadingSpinner
+                color_icon="text-white"
+                color_bg="bg-transparent"
+              />
+            </div>
+          ) : (
+            <div className="p-4 h-full overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5">
+              <ul className="space-y-2">
+                {categoriasData.map((cat1) => (
+                  <li key={cat1.id}>
                     <button
-                      className="sm:hidden hover:bg-gray-100 p-1 rounded-lg mr-2"
-                      onClick={handleBackToMain}
+                      className="group flex items-center justify-between w-full text-left p-4 hover:bg-white/10 rounded-xl cursor-pointer transition-all duration-200 border border-transparent hover:border-white/20 hover:shadow-lg hover:shadow-black/20"
+                      onClick={() => setActiveCat(cat1)}
                     >
-                      <ArrowLeft className="w-5 h-5 text-black" />
+                      <span className="text-base font-medium text-white/90 group-hover:text-white transition-colors">
+                        {cat1.nombre}
+                      </span>
+                      <ChevronRight className="w-5 h-5 text-white/60 group-hover:text-white transition-all duration-200 group-hover:translate-x-1" />
                     </button>
-                    <h2 className="text-lg sm:text-xl text-black font-bold pl-2 flex-1">
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Sub categorías mejoradas */}
+        {activeCat && (
+          <div
+            className={`absolute flex sm:left-80 left-0 inset-y-0 w-full bg-white z-80 shadow-2xl transform transition-all duration-300 ease-out ${
+              isSubPanelAnimating
+                ? "translate-x-0 opacity-100"
+                : "sm:translate-x-0 translate-x-full opacity-0"
+            }`}
+          >
+            <div className="w-full flex flex-col h-full">
+              {/* Header del subpanel */}
+              <div className="px-6 py-5 border-b border-black/10">
+                <div className="flex items-center">
+                  {/* Botón de volver solo en móvil */}
+                  <button
+                    className="sm:hidden group hover:bg-gray-100 p-2 rounded-full mr-3 transition-all duration-200"
+                    onClick={handleBackToMain}
+                  >
+                    <ArrowLeft className="w-5 h-5 text-black group-hover:text-black transition-colors" />
+                  </button>
+                  
+                  <div className="flex-1 flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-black tracking-wide">
                       {activeCat.nombre}
                     </h2>
                     <a
-                      className="text-xs sm:text-sm underline text-black"
+                      className="text-sm font-medium text-black hover:text-black/70 hover:underline transition-colors px-3 py-1 rounded-lg hover:bg-black/5"
                       href=""
                     >
                       Ver todo
                     </a>
                   </div>
-
-                  <div className="bg-black h-[1px] my-3 sm:my-4"></div>
-                  <div className="flex flex-col w-full overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-none">
-                    <ul className="space-y-1">
-                      {activeCat.subcategorias?.map((cat2) => (
-                        <li key={cat2.id}>
-                          <button
-                            className="flex items-center justify-between w-full text-left text-base sm:text-lg p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black"
-                            onClick={() => {
-                              if (cat2.subcategorias?.length) {
-                                toggleSubcategoria(cat2.id);
-                              } else {
-                                router.push(`/categoria/2/${cat2.id}`);
-                                onClose(); // Cierra el drawer después
-                              }
-                            }}
-                          >
-                            {cat2.nombre}
-                            {/* Si no tiene subcategorías (lo cual no pasa, pero por si acaso), no tiene flechita
-                            Si ya ha sido presionado, tiene la flechita para arriba, no para abajo*/}
-                            {cat2.subcategorias?.length ? (
-                              activeCat2 === cat2.id ? (
-                                <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
-                              )
-                            ) : null}
-                          </button>
-                          {/* sub categorías de nivel 3 */}
-                          {activeCat2 === cat2.id && cat2.subcategorias && (
-                            <ul className="ml-2 sm:ml-4 space-y-1 mt-2">
-                              {cat2.subcategorias.map((cat3) => (
-                                <li key={cat3.id}>
-                                  <button className="flex items-center justify-between w-full text-left text-sm p-2 hover:bg-gray-100 rounded-lg cursor-pointer text-black">
-                                    {cat3.nombre}
-                                  </button>
-                                </li>
-                              ))}
-                              <a
-                                className="pl-2 text-xs sm:text-sm underline text-black inline-block mt-2"
-                                href=""
-                              >
-                                Ver todo
-                              </a>
-                            </ul>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
-            )}
-          </>
+
+              {/* Contenido del subpanel */}
+              <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-black/20 scrollbar-track-black/5">
+                <ul className="space-y-2">
+                  {activeCat.subcategorias?.map((cat2) => (
+                    <li key={cat2.id} className="border-b border-black/5 last:border-b-0 pb-2 last:pb-0">
+                      <button
+                        className="group flex items-center justify-between w-full text-left p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition-all duration-200 border border-transparent hover:border-gray-200 hover:shadow-md"
+                        onClick={() => {
+                          if (cat2.subcategorias?.length) {
+                            toggleSubcategoria(cat2.id);
+                          } else {
+                            router.push(`/categoria/2/${cat2.id}`);
+                            onClose();
+                          }
+                        }}
+                      >
+                        <span className="text-base font-medium text-black group-hover:text-black transition-colors">
+                          {cat2.nombre}
+                        </span>
+                        {cat2.subcategorias?.length ? (
+                          activeCat2 === cat2.id ? (
+                            <ChevronUp className="w-4 h-4 text-black/60 group-hover:text-black transition-all duration-200" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-black/60 group-hover:text-black transition-all duration-200" />
+                          )
+                        ) : null}
+                      </button>
+                      
+                      {/* Sub categorías de nivel 3 mejoradas */}
+                      {activeCat2 === cat2.id && cat2.subcategorias && (
+                        <div className="mt-2 ml-4 p-3 bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
+                          <ul className="space-y-1">
+                            {cat2.subcategorias.map((cat3) => (
+                              <li key={cat3.id}>
+                                <button className="group flex items-center justify-between w-full text-left text-sm p-2 hover:bg-white hover:shadow-sm rounded-md cursor-pointer transition-all duration-150 border border-transparent hover:border-gray-200">
+                                  <span className="text-black group-hover:text-black font-medium transition-colors">
+                                    {cat3.nombre}
+                                  </span>
+                                  <ChevronRight className="w-3 h-3 text-black/60 group-hover:text-black transition-all duration-150 group-hover:translate-x-0.5" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                          <a
+                            className="inline-block mt-3 text-xs font-semibold text-black hover:text-black/70 hover:underline transition-colors px-2 py-1 rounded hover:bg-white/50"
+                            href=""
+                          >
+                            Ver todo en {cat2.nombre}
+                          </a>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
         )}
       </aside>
     </>,
