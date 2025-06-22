@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { crearDireccion } from "../../utils/direccionHandlers"; // ajusta la ruta
+import { updateDireccionHandler } from "../../utils/updateDireccionHandler";
+
 
 interface Distrito {
   id: number;
@@ -104,21 +107,41 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const url = direccion ? `/api/direccion/${direccion.id}` : "/api/direccion/añadir";
-    const method = direccion ? "PUT" : "POST";
+  e.preventDefault();
 
-    const body = direccion ? { ...formData } : { ...formData, usuario_id: session?.user?.id };
+  if (!session?.user?.id) {
+    console.error("Usuario no autenticado");
+    return;
+  }
 
-    const res = await fetch(url, {
-      method,
-      body: JSON.stringify(body),
-      headers: { "Content-Type": "application/json" },
+  const usuarioId = Number(session.user.id);
+  if (isNaN(usuarioId)) {
+    console.error("ID de usuario inválido");
+    return;
+  }
+
+  let resultado;
+  if (direccion?.id) {
+    resultado = await updateDireccionHandler({
+      direccion_id: direccion.id,
+      usuario_id: usuarioId,
+      piso: formData.piso || "",
+      lote: formData.lote || "",
+      calle: formData.calle || "",
+      distrito: formData.distrito || "",
+      codigo_postal: formData.codigo_postal || "",
+      isPrimary: formData.isPrimary,
     });
+  } else {
+    resultado = await crearDireccion(formData, usuarioId);
+  }
 
-    if (res.ok) onClose();
-    else console.error("Error al guardar la dirección.");
-  };
+  if (resultado && typeof resultado !== "string" && resultado.ok) {
+    onClose();
+  } else {
+    alert(typeof resultado === "string" ? resultado : resultado?.mensaje || "Ocurrió un error.");
+  }
+};
 
   const provincias = ubicaciones.find(d => d.id === departamentoId)?.provincias || [];
   const distritos = provincias.find(p => p.id === provinciaId)?.distritos || [];
@@ -160,7 +183,17 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
               <option key={dist.id} value={dist.nombre}>{dist.nombre}</option>
             ))}
           </select>
-
+          <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="isPrimary"
+              name="isPrimary"
+              checked={formData.isPrimary}
+              onChange={(e) => setFormData(prev => ({ ...prev, isPrimary: e.target.checked }))}
+              className="mr-2"
+            />
+            <label htmlFor="isPrimary" className="text-sm">Establecer como dirección principal</label>
+          </div>
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-500">
             {direccion ? "Guardar Cambios" : "Añadir Dirección"}
           </button>

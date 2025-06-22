@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { MapPin } from "lucide-react";
 import FormularioDireccion from "../../../components/ui/FormularioDireccion"; // Importa el componente del modal
+import { deleteDireccionHandler } from "../../../utils/deleteDireccionHandler";
+
+
 
 // Definimos la interfaz para la dirección
 interface Direccion {
@@ -114,7 +117,23 @@ export default function MisDireccionesPage() {
                 <button onClick={() => handleEditClick(direction)} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500">
                   Editar
                 </button>
-                <button className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500">
+                <button
+                  onClick={async () => {
+                    if (!session?.user?.id || !direction.id) return;
+
+                    const confirmacion = confirm("¿Seguro que deseas eliminar esta dirección?");
+                    if (!confirmacion) return;
+
+                    const resultado = await deleteDireccionHandler(direction.id, Number(session.user.id));
+                    if (resultado.ok) {
+                      // Elimina visualmente la dirección de la lista sin recargar
+                      setDirections(prev => prev.filter(d => d.id !== direction.id));
+                    } else {
+                      alert(resultado.mensaje);
+                    }
+                  }}
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500"
+                  >
                   Eliminar
                 </button>
               </div>
