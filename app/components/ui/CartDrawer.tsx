@@ -61,7 +61,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                   <ShoppingCart className="w-6 h-6 text-ebony-950" />
                   {totalItems > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
-                      {totalItems > 99 ? '99+' : totalItems}
+                      {totalItems > 99 ? "99+" : totalItems}
                     </span>
                   )}
                 </div>
@@ -97,7 +97,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                   comenzar tu experiencia de compra
                 </p>
               </div>
-              
+
               <Link href="/" onClick={handleCloseDrawer}>
                 <button className="bg-ebony-950 text-white px-6 py-3 rounded-lg hover:bg-ebony-900 transition-all cursor-pointer duration-200 font-medium shadow-lg hover:scale-105">
                   Explorar productos
@@ -127,7 +127,10 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                       </Link>
                     </div>
                     <div className="flex-1">
-                      <Link href={`/productos/${item.productId}`} onClick={handleCloseDrawer}>
+                      <Link
+                        href={`/productos/${item.productId}`}
+                        onClick={handleCloseDrawer}
+                      >
                         <h3 className="font-semibold text-sm text-ebony-950 hover:text-ebony-800 transition-colors mb-1">
                           {item.nombre}
                         </h3>
@@ -182,7 +185,8 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
               <div className="border-t border-gray-200 px-6 py-6">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-base font-medium text-gray-700">
-                    Subtotal ({totalItems} {totalItems === 1 ? 'producto' : 'productos'})
+                    Subtotal ({totalItems}{" "}
+                    {totalItems === 1 ? "producto" : "productos"})
                   </span>
                   <span className="text-lg font-bold text-ebony-950">
                     {formatPrice(subtotal)}
