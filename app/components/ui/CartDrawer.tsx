@@ -49,7 +49,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
       {/* Panel */}
       <aside>
         <div
-          className={`fixed right-0 top-0 w-full max-w-full sm:max-w-sm lg:max-w-lg h-full bg-white shadow-xl z-[70] flex flex-col transform transition-transform duration-300 ease-in-out ${
+          className={`fixed right-0 top-0 w-full max-w-full sm:max-w-sm lg:max-w-lg h-full bg-ebony-50 shadow-xl z-[70] flex flex-col transform transition-transform duration-300 ease-in-out ${
             isAnimating ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -61,7 +61,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                   <ShoppingCart className="w-6 h-6 text-ebony-950" />
                   {totalItems > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold">
-                      {totalItems > 99 ? '99+' : totalItems}
+                      {totalItems > 99 ? "99+" : totalItems}
                     </span>
                   )}
                 </div>
@@ -80,7 +80,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
 
           {cart.length === 0 ? (
             <div className="h-full flex justify-center items-center flex-col gap-6 px-6">
-              <div className="w-32 h-32 mx-auto bg-ebony-50 rounded-full flex items-center justify-center shadow-inner">
+              <div className="w-32 h-32 mx-auto bg-ebony rounded-full flex items-center justify-center shadow-inner">
                 <ShoppingBag
                   size={64}
                   strokeWidth={1.2}
@@ -97,7 +97,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                   comenzar tu experiencia de compra
                 </p>
               </div>
-              
+
               <Link href="/" onClick={handleCloseDrawer}>
                 <button className="bg-ebony-950 text-white px-6 py-3 rounded-lg hover:bg-ebony-900 transition-all cursor-pointer duration-200 font-medium shadow-lg hover:scale-105">
                   Explorar productos
@@ -111,7 +111,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                 {cart.map((item) => (
                   <div
                     key={item.productId}
-                    className="flex items-start gap-4 bg-ebony-50 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
+                    className="flex items-start gap-4 bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
                   >
                     <div className="w-16 h-16 flex-shrink-0">
                       <Link
@@ -127,7 +127,10 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                       </Link>
                     </div>
                     <div className="flex-1">
-                      <Link href={`/productos/${item.productId}`} onClick={handleCloseDrawer}>
+                      <Link
+                        href={`/productos/${item.productId}`}
+                        onClick={handleCloseDrawer}
+                      >
                         <h3 className="font-semibold text-sm text-ebony-950 hover:text-ebony-800 transition-colors mb-1">
                           {item.nombre}
                         </h3>
@@ -142,7 +145,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                               updateQuantity(item.productId, item.cantidad - 1)
                             }
                             disabled={item.cantidad <= 1}
-                            className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            className="p-1.5 rounded-md hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
                             aria-label="Disminuir cantidad"
                           >
                             <Minus className="w-3.5 h-3.5 text-gray-700" />
@@ -154,7 +157,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                             onClick={() =>
                               updateQuantity(item.productId, item.cantidad + 1)
                             }
-                            className="p-1.5 rounded-md hover:bg-gray-100 hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            className="p-1.5 rounded-md hover:bg-gray-100 hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
                             aria-label="Aumentar cantidad"
                           >
                             <Plus className="w-3.5 h-3.5 text-gray-700" />
@@ -166,7 +169,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                           </span>
                           <button
                             onClick={() => removeItem(item.productId)}
-                            className="p-2 hover:bg-red-50 rounded-lg hover:scale-110 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 group"
+                            className="p-2 hover:bg-red-50 rounded-lg hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 group"
                             aria-label="Eliminar producto"
                           >
                             <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500 transition-colors" />
@@ -182,7 +185,8 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
               <div className="border-t border-gray-200 px-6 py-6">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-base font-medium text-gray-700">
-                    Subtotal ({totalItems} {totalItems === 1 ? 'producto' : 'productos'})
+                    Subtotal ({totalItems}{" "}
+                    {totalItems === 1 ? "producto" : "productos"})
                   </span>
                   <span className="text-lg font-bold text-ebony-950">
                     {formatPrice(subtotal)}

@@ -60,7 +60,7 @@ const ProductCard = ({
   };
 
   return (
-    <div className="group flex flex-col bg-white w-full max-w-xs mx-auto relative gap-1 rounded-lg hover: transition-all duration-300 overflow-hidden p-2 sm:p-3 lg:p-4">
+    <div className="group flex flex-col bg-white shadow-md hover:shadow-xl w-full max-w-xs mx-auto relative gap-1 rounded-xl transition-all duration-300 overflow-hidden p-2 sm:p-3 lg:p-4">
       {/* Container de la imagen */}
       <div
         className="w-full h-48 sm:h-56 lg:h-64 flex justify-center items-center relative cursor-pointer overflow-hidden p-2 sm:p-3 lg:p-4"
@@ -103,7 +103,7 @@ const ProductCard = ({
           <button
             onClick={handleAddToCart}
             title="Agregar al carrito"
-            className="p-1.5 sm:p-2 bg-ebony-950 rounded-full hover:bg-ebony-800 cursor-pointer transition-colors duration-300"
+            className="p-1.5 sm:p-2 bg-slate-800 hover:bg-slate-700 rounded-full cursor-pointer transition-colors duration-300 shadow-lg"
           >
             <ShoppingCart size={24} color="white" />
           </button>
@@ -112,7 +112,7 @@ const ProductCard = ({
 
       {/* Etiqueta de descuento*/}
       {porcentaje_desc && (
-        <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-red-900 text-white text-xs sm:text-sm p-1.5 sm:p-2 border-2 rounded-md sm:rounded-lg">
+        <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-red-600 text-white text-xs sm:text-sm p-1.5 sm:p-2 rounded-md sm:rounded-lg shadow-md">
           <span className="font-semibold">{porcentajeDescuento}% OFF</span>
         </div>
       )}
@@ -120,14 +120,14 @@ const ProductCard = ({
       {/* Datos */}
       <div className="flex flex-col w-full px-1 sm:px-2">
         <div className="mb-2">
-          <h3 className="text-sm sm:text-base lg:text-lg font-medium h-12 sm:h-14 lg:h-16 overflow-hidden line-clamp-3">
+          <h3 className="text-sm sm:text-base lg:text-lg font-medium h-12 sm:h-14 lg:h-16 overflow-hidden line-clamp-3 text-gray-800">
             {nombre}
           </h3>
         </div>
         <div className="flex items-center gap-2 mt-auto">
           {porcentaje_desc != null ? (
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-              <span className="text-lg sm:text-xl lg:text-2xl text-red-900 font-bold">
+              <span className="text-lg sm:text-xl lg:text-2xl text-red-600 font-bold">
                 S/ {precioFinal.toFixed(2)}
               </span>
               <span className="text-xs sm:text-sm text-gray-500 line-through">
@@ -136,7 +136,7 @@ const ProductCard = ({
             </div>
           ) : (
             <>
-              <span className="text-lg sm:text-xl lg:text-2xl text-ebony-950 font-bold">
+              <span className="text-lg sm:text-xl lg:text-2xl text-slate-800 font-bold">
                 S/ {precio}
               </span>
             </>
