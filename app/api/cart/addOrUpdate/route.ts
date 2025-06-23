@@ -7,7 +7,6 @@ import { auth } from '../../auth/[...nextauth]/route';
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    // 1) Obtenemos el body con los datos del item
     const {
       productId,
       nombre,
@@ -17,18 +16,38 @@ export async function POST(req: Request) {
       precio,
     } = await req.json();
 
-    // 2) Simulamos userId 
     const userId = session?.user.id;
 
-    // 3) Obtenemos el id del carrito para este usuario. Asumimos que
-    //    en carrito_compras ya existe una fila c.id para c.id_usuario = 1.
-    //    Si no existe, tendrías que crearla primero con INSERT.
+    // 1. Obtener stock actual del producto
+    const [stockRows] = await db.query(
+      `SELECT Cantidad_stock FROM producto_especifico WHERE id = ?`,
+      [productId]
+    );
+
+    if ((stockRows as any[]).length === 0) {
+      return NextResponse.json(
+        { error: 'Producto no encontrado' },
+        { status: 404 }
+      );
+    }
+
+    const stockDisponible = (stockRows as any[])[0].Cantidad_stock as number;
+
+    // 2. Verificar si hay stock disponible
+    if (stockDisponible === 0) {
+      return NextResponse.json(
+        { error: 'NO HAY STOCK' },
+        { status: 400 }
+      );
+    }
+
+    // 3. Obtener o crear carrito del usuario
     const [carritoRows] = await db.query(
       `SELECT id FROM carrito_compras WHERE id_usuario = ?`,
       [userId]
     );
+
     if ((carritoRows as any[]).length === 0) {
-      // Si el usuario no tiene carrito, lo creamos:
       const [insertResult] = await db.query(
         `INSERT INTO carrito_compras (id_usuario) VALUES (?)`,
         [userId]
@@ -36,25 +55,38 @@ export async function POST(req: Request) {
       // @ts-ignore
       carritoRows.push({ id: (insertResult as any).insertId });
     }
+
     const carritoId = (carritoRows as any[])[0].id as number;
 
-    // 4) Verificamos si ya existe un registro en carrito_compras_producto_especifico
+    // 4. Verificar si el producto ya está en el carrito
     const [existingRows] = await db.query(
       `SELECT cantidad FROM carrito_compras_producto_especifico
        WHERE id_carrito = ? AND id_producto_especifico = ?`,
       [carritoId, productId]
     );
 
+    const cantidadActual = (existingRows as any[])[0]?.cantidad || 0;
+    const nuevaCantidad = cantidadActual + cantidad;
+
+    // 5. Validar que no se supere el stock
+    if (nuevaCantidad > stockDisponible) {
+      return NextResponse.json(
+        {
+          error: `No puedes agregar más de ${stockDisponible} unidades de este producto.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // 6. Insertar o actualizar la cantidad en el carrito
     if ((existingRows as any[]).length > 0) {
-      // Ya existe → actualizamos la cantidad sumando
       await db.query(
         `UPDATE carrito_compras_producto_especifico
-         SET cantidad = cantidad + ?
+         SET cantidad = ?
          WHERE id_carrito = ? AND id_producto_especifico = ?`,
-        [cantidad, carritoId, productId]
+        [nuevaCantidad, carritoId, productId]
       );
     } else {
-      // No existe → insertamos una nueva línea
       await db.query(
         `INSERT INTO carrito_compras_producto_especifico
          (id_carrito, id_producto_especifico, cantidad)
