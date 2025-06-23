@@ -3,7 +3,7 @@ import ProductSection from "../components/products/ProductSection";
 import CarruselMarcas from "../components/ui/CarruselMarcas";
 export default function Home() {
   return (
-    <main>
+    <main className="bg-ebony-50">
       <CarruselPromociones />
       <ProductSection
         title="¡Conoce nuestros productos con promociones!"
