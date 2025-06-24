@@ -79,6 +79,8 @@ const ProductSection = ({
         }
         const data = await response.json();
         setProductos(data);
+        console.log("Productos obtenidos:", data);
+        console.log(params.toString());
       } catch (error) {
         console.error("Error al obtener productos:", error);
         setError("Error al cargar los productos");
@@ -87,6 +89,7 @@ const ProductSection = ({
     }
     fetchProducts();
   },[filterType, categoryId, categoryLevel, promotionId, limit, selectedVariations]); 
+  
 
   return (
     <section>
@@ -101,7 +104,7 @@ const ProductSection = ({
           {asCarousel ? (
             <ProductCarousel productos={productos} />
           ) : (
-            <ProductList productos={productos} horizontal={false} />
+            <ProductList productos={productos} horizontal={false} itemsPage={2} />
             
           )}
         </div>
