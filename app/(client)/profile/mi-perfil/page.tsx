@@ -11,6 +11,8 @@ export default function MiPerfilPage() {
     surname: session?.user?.surname || "",
     email: session?.user?.email || "",
     phone: session?.user?.phone || "",
+    typeDocument: session?.user?.typeDocument || "",
+    documentId: session?.user?.documentId || "",
   });
 
   // Actualizar formData cuando session cambie
@@ -21,6 +23,8 @@ export default function MiPerfilPage() {
         surname: session.user.surname || "",
         email: session.user.email || "",
         phone: session.user.phone || "",
+        typeDocument: session.user.typeDocument || "",
+        documentId: session.user.documentId || "",
       });
     }
   }, [session]);
@@ -42,6 +46,8 @@ export default function MiPerfilPage() {
         surname: session.user.surname || "",
         email: session.user.email || "",
         phone: session.user.phone || "",
+        typeDocument: session.user.typeDocument || "",
+        documentId: session.user.documentId || "",
       });
     }
     setToggleEdit(false);
@@ -69,6 +75,13 @@ export default function MiPerfilPage() {
       }
 
       const data = await response.json();
+      console.log({
+        id: session?.user?.id, // Asegúrate que exista
+        name: formData.name,
+        surname: formData.surname,
+        email: formData.email,
+        phone: formData.phone,
+      });
       console.log("Usuario actualizado:", data.message);
       setToggleEdit(false);
     } catch (error) {
@@ -149,14 +162,19 @@ export default function MiPerfilPage() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Documento de identidad
             </label>
-            <input
-              type="tel"
-              className="w-full px-3 bg-ebony-50 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ebony-500"
-              value={formData.phone}
-              onChange={(e) => handleInputChange("phone", e.target.value)}
-              placeholder="+1 234 567 8900"
-              disabled={true}
-            />
+            <div className="relative">
+              <input
+                type="text"
+                className="w-full pl-16 pr-3 py-2 bg-ebony-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ebony-500"
+                value={formData.documentId || ""}
+                onChange={(e) => handleInputChange("documentId", e.target.value)}
+                placeholder="12345678"
+                disabled={true}
+              />
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-ebony-800 text-white px-2 py-1 rounded text-xs font-medium">
+                {formData.typeDocument || "DNI"}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -178,7 +196,7 @@ export default function MiPerfilPage() {
               </button>
               <button
                 className="bg-ebony-900 text-white px-6 py-2 rounded-md hover:bg-ebony-800 cursor-pointer transition-colors"
-                onClick={() => setToggleEdit(!toggleEdit)}
+                onClick={handleSave}
               >
                 Guardar
               </button>
