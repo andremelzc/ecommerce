@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
       pe.SKU,
       pe.precio,
       pe.cantidad_stock AS stock,
-      pe.imagen_producto AS imagen
+      pe.imagen_producto AS imagen,
+      pe.fecha_registro
     FROM Ecommerce.producto_especifico pe
     INNER JOIN Ecommerce.producto p ON p.id = pe.id_producto
   `;
@@ -55,14 +56,14 @@ export async function GET(request: NextRequest) {
   }
 
   // 5️⃣ Filtros de fecha (entre comillas) — opcional, descomenta si los usas
-  /*
+  
   if (fechaDesde) {
-    wheres.push(`pe.fecha_llegada >= '${fechaDesde}'`);
+    wheres.push(`pe.fecha_registro >= '${fechaDesde}'`);
   }
   if (fechaHasta) {
-    wheres.push(`pe.fecha_llegada <= '${fechaHasta}'`);
+    wheres.push(`pe.fecha_registro <= '${fechaHasta}'`);
   }
-  */
+  
 
   // 6️⃣ Montar el WHERE si hay condiciones
   if (wheres.length) {
