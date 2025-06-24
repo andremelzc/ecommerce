@@ -5,7 +5,9 @@ import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
 import { useCart } from "@/app/context/CartContext";
 import type { CartItem } from "@/app/types/itemCarrito";
+import { useStock } from '@/app/hooks/useStock';
 import Link from "next/link";
+import { AddToCartButton } from '@/app/components/ui/AddToCartButton';
 
 const ProductCard = ({
   producto_id,
@@ -16,6 +18,10 @@ const ProductCard = ({
   porcentaje_desc,
 }: ProductCardProps) => {
   // Manejar los estados de la imagen (hover y errores)
+  const { stock, loading } = id_producto_especifico !== undefined
+  ? useStock(id_producto_especifico)
+  : { stock: null, loading: true };
+
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -25,33 +31,6 @@ const ProductCard = ({
   const porcentajeDescuento = porcentaje_desc
     ? Math.round(porcentaje_desc * 100)
     : null;
-
-  // Al darle click al carrito de la imagen
-  const { addItem } = useCart();
-
-  const handleAddToCart = async () => {
-    if (id_producto_especifico === undefined) {
-      console.error(
-        "producto_id es undefined, no se puede agregar al carrito."
-      );
-      return;
-    }
-
-    const item: CartItem = {
-      productId: id_producto_especifico,
-      nombre,
-      descripcion: "",
-      image_producto: imagen_producto || "",
-      cantidad: 1,
-      precio,
-    };
-
-    try {
-      await addItem(item);
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-    }
-  };
 
   // Manejar el error de carga de imagen
   const handleImageError = () => {
@@ -100,13 +79,15 @@ const ProductCard = ({
             isHovered ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >
-          <button
-            onClick={handleAddToCart}
-            title="Agregar al carrito"
-            className="p-1.5 sm:p-2 bg-slate-800 hover:bg-slate-700 rounded-full cursor-pointer transition-colors duration-300 shadow-lg"
-          >
-            <ShoppingCart size={24} color="white" />
-          </button>
+          
+
+          <AddToCartButton
+            productId={id_producto_especifico}
+            nombre={nombre}
+            precio={precio}
+            imagen={imagen_producto}
+            className="your-optional-custom-classes"
+          />
         </div>
       </div>
 

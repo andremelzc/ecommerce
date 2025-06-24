@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { formatPrice } from "@/app/utils/formatPrice";
-import { Plus, Minus, Trash2 } from "lucide-react";
+import { QuantityButton } from '@/app/components/ui/QuantityButton';
+import { Minus, Trash2 } from "lucide-react";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart();
@@ -101,15 +102,9 @@ export default function CartPage() {
                           <span className="px-3 sm:px-2 text-sm font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">
                             {item.cantidad}
                           </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.productId, item.cantidad + 1)
-                            }
-                            className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-gray-700" />
-                          </button>
+                          
+                          <QuantityButton  item={item} size="sm" className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"/>
+
                         </div>
 
                         {/* Precio en desktop */}

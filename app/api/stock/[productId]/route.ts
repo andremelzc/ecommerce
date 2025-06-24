@@ -1,17 +1,18 @@
-// app/api/product/stock/[productId]/route.ts
-
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import type { NextRequest } from 'next/server';
 
-interface Context {
-  params: { productId: string };
-}
-
-export async function GET(_req: Request, context: Context) {
+export async function GET(
+  _req: NextRequest,
+  // Indica que params es una promesa de un objeto con productId
+  { params }: { params: Promise<{ productId: string }> }
+) {
   try {
-    const productId = parseInt(context.params.productId, 10);
+    // Esperamos a que params se resuelva
+    const { productId } = await params;
 
-    if (isNaN(productId)) {
+    const parsedId = parseInt(productId, 10);
+    if (isNaN(parsedId)) {
       return NextResponse.json(
         { error: 'ID de producto inválido' },
         { status: 400 }
@@ -20,7 +21,7 @@ export async function GET(_req: Request, context: Context) {
 
     const [rows] = await db.query(
       `SELECT Cantidad_stock FROM producto_especifico WHERE id = ?`,
-      [productId]
+      [parsedId]
     );
 
     const result = rows as any[];

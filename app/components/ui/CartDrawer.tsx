@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { formatPrice } from "@/app/utils/formatPrice";
 import type { DrawerProps } from "@/app/types/props";
+import { QuantityButton } from '@/app/components/ui/QuantityButton';
 
 const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
   const [isVisible, setIsVisible] = useState(isOpen);
@@ -153,15 +154,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                           <span className="px-3 text-sm font-semibold min-w-[2rem] text-center">
                             {item.cantidad}
                           </span>
-                          <button
-                            onClick={() =>
-                              updateQuantity(item.productId, item.cantidad + 1)
-                            }
-                            className="p-1.5 rounded-md hover:bg-gray-100 hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
-                            aria-label="Aumentar cantidad"
-                          >
-                            <Plus className="w-3.5 h-3.5 text-gray-700" />
-                          </button>
+                          <QuantityButton  item={item} size="sm" className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"/>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-bold text-ebony-950">
