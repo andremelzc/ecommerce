@@ -47,9 +47,34 @@ export default function MiPerfilPage() {
     setToggleEdit(false);
   };
 
-  const handleSave = () => {
-    console.log("Datos guardados:", formData);
-    setToggleEdit(false);
+  const handleSave = async () => {
+    try {
+      const response = await fetch("/api/usuario", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: session?.user?.id, // Asegúrate que exista
+          name: formData.name,
+          surname: formData.surname,
+          email: formData.email,
+          phone: formData.phone,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Error al guardar");
+      }
+
+      const data = await response.json();
+      console.log("Usuario actualizado:", data.message);
+      setToggleEdit(false);
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      alert("Hubo un error al guardar los cambios");
+    }
   };
 
   return (
