@@ -106,6 +106,10 @@ async function fetchProductsWithoutVariations(categoryId: string,
   const catId = parseInt(categoryId);
   const catLevel = parseInt(categoryLevel);
 
+  // Join para validar si la promoción está vigente
+  const joinPromocion = "LEFT JOIN Ecommerce.promocion AS pr ON pr.id = ppe.id_promocion";
+
+  // Si se nos especifica el nivel de categoría y el id de la categoría
   const joinCategory =
     "INNER JOIN producto_categoria as pc ON p.id = pc.id_producto";
 
@@ -114,7 +118,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
     WITH max_precios AS (
       SELECT 
         id_producto, 
-        MAX(precio) AS precio_max
+        MIN(precio) AS precio_max
       FROM Ecommerce.producto_especifico
       GROUP BY id_producto
     )
@@ -136,6 +140,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
     AND pe.precio       = mp.precio_max
 
     ${joinPromo}
+    ${joinPromocion}
 
     ${!isNaN(catLevel) && !isNaN(catId) ? `\n${joinCategory}` : ""}
       
@@ -163,6 +168,9 @@ async function fetchProductsWithoutVariations(categoryId: string,
     conditions.push(
       `pc.id_cat_n${categoryLevel} = ${db.escape(parseInt(categoryId))}`
     );
+  }
+  if (onlyPromo === "true") {
+    conditions.push(`CURRENT_DATE() BETWEEN pr.fecha_inicio AND pr.fecha_final`);
   }
   if (conditions.length > 0) {
     sql += `\nAND ${conditions.join(" AND ")}`;

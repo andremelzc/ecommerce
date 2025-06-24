@@ -12,8 +12,11 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle,
+  Calendar,
+  Package2,
+  DollarSign,
 } from "lucide-react";
-import { usePromotion } from "@/app/context/PromotionContext"; // tu hook
+import { usePromotion } from "@/app/context/PromotionContext";
 
 interface Subcategoria {
   id: number;
@@ -31,10 +34,12 @@ interface Categoria {
 interface Producto {
   id: number;
   nombre: string;
+  SKU: string;
   precio: number;
   categoria: string;
-  sku?: string;
   imagen?: string;
+  fecha_llegada?: string; // Nueva propiedad
+  stock?: number; // Nueva propiedad
 }
 
 export default function PromocionProductSelector() {
@@ -66,17 +71,27 @@ export default function PromocionProductSelector() {
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
 
-  // 6️⃣ cargar categorías y productos desde la API
+  // 6️⃣ Nuevos estados para las opciones adicionales
+  const [filtrosFecha, setFiltrosFecha] = useState({
+    fechaDesde: "",
+    fechaHasta: "",
+  });
+  const [filtrosStock, setFiltrosStock] = useState({
+    stockMinimo: "",
+    stockMaximo: "",
+  });
+  const [filtrosPrecios, setFiltrosPrecios] = useState({
+    precioMinimo: "",
+    precioMaximo: "",
+  });
+
+  // Cargar categorías desde la API
   useEffect(() => {
     async function cargar() {
       setLoading(true);
       try {
-        const [r1, r2] = await Promise.all([
-          fetch("/api/categorias"),
-          fetch("/api/productos"),
-        ]);
+        const [r1] = await Promise.all([fetch("/api/categorias")]);
         setCategorias(await r1.json());
-        setProductos(await r2.json());
       } catch {
         alert("Error cargando datos.");
       } finally {
@@ -86,16 +101,125 @@ export default function PromocionProductSelector() {
     cargar();
   }, []);
 
-  // 7️⃣ Filtrar productos por texto
-  const productosFiltrados = productos.filter((p) =>
-    p.nombre.toLowerCase().includes(busquedaProducto.toLowerCase())
-  );
+  // Cargar productos desde la API
+  useEffect(() => {
+    async function fetchFiltrados() {
+      setLoading(true);
+      try {
+        const qs = new URLSearchParams();
 
-  // 8️⃣ Helpers de toggle
+        // subcategorías (cuando tipo === 'CATEGORIA')
+        if (subcategoriasSeleccionadas.size) {
+          qs.append(
+            "subcategoriaIds",
+            Array.from(subcategoriasSeleccionadas).join(",")
+          );
+        }
+
+        // stock
+
+        if (filtrosStock.stockMinimo)
+          qs.append("stockMinimo", filtrosStock.stockMinimo);
+        if (filtrosStock.stockMaximo)
+          qs.append("stockMaximo", filtrosStock.stockMaximo);
+
+        // precio
+
+        if (filtrosPrecios.precioMinimo)
+          qs.append("precioMinimo", filtrosPrecios.precioMinimo);
+        if (filtrosPrecios.precioMaximo)
+          qs.append("precioMaximo", filtrosPrecios.precioMaximo);
+
+        /*
+        // fecha
+        if (destino.tipo === "FECHA_LLEGADA") {
+          if (filtrosFecha.fechaDesde)
+            qs.append("fechaDesde", filtrosFecha.fechaDesde);
+          if (filtrosFecha.fechaHasta)
+            qs.append("fechaHasta", filtrosFecha.fechaHasta);
+        }*/
+
+        const url = `/api/productos/especificos?${qs.toString()}`;
+        console.log("Cargando productos filtrados desde:", url);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Fetch fail");
+        const data: Producto[] = await res.json();
+        setProductos(data);
+      } catch {
+        alert("Error cargando productos filtrados");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFiltrados();
+    // ⚠️ Pon aquí **todos** los estados de filtro de los que dependa la consulta:
+  }, [
+    destino.tipo,
+    filtrosStock.stockMinimo,
+    filtrosStock.stockMaximo,
+    filtrosPrecios.precioMinimo,
+    filtrosPrecios.precioMaximo,
+    filtrosFecha.fechaDesde,
+    filtrosFecha.fechaHasta,
+    Array.from(subcategoriasSeleccionadas).join(","), // para que detecte cambios
+  ]);
+
+  // 8️⃣ Filtrar productos por múltiples criterios
+  const productosFiltrados = productos.filter((p) => {
+    // Filtro por texto
+    const coincideTexto = p.nombre
+      .toLowerCase()
+      .includes(busquedaProducto.toLowerCase());
+
+    // Filtro por fecha de llegada (solo para tipos FECHA_LLEGADA)
+    let coincideFecha = true;
+    if (destino.tipo === "FECHA_LLEGADA") {
+      if (filtrosFecha.fechaDesde && p.fecha_llegada) {
+        coincideFecha =
+          coincideFecha &&
+          new Date(p.fecha_llegada) >= new Date(filtrosFecha.fechaDesde);
+      }
+      if (filtrosFecha.fechaHasta && p.fecha_llegada) {
+        coincideFecha =
+          coincideFecha &&
+          new Date(p.fecha_llegada) <= new Date(filtrosFecha.fechaHasta);
+      }
+    }
+
+    // Filtro por stock (solo para tipos STOCK)
+    let coincideStock = true;
+    if (destino.tipo === "STOCK") {
+      if (filtrosStock.stockMinimo && p.stock !== undefined) {
+        coincideStock =
+          coincideStock && p.stock >= parseInt(filtrosStock.stockMinimo);
+      }
+      if (filtrosStock.stockMaximo && p.stock !== undefined) {
+        coincideStock =
+          coincideStock && p.stock <= parseInt(filtrosStock.stockMaximo);
+      }
+    }
+
+    // Filtro por precios (solo para tipos PRECIO)
+    let coincidePrecio = true;
+    if (destino.tipo === "PRECIO") {
+      if (filtrosPrecios.precioMinimo) {
+        coincidePrecio =
+          coincidePrecio && p.precio >= parseFloat(filtrosPrecios.precioMinimo);
+      }
+      if (filtrosPrecios.precioMaximo) {
+        coincidePrecio =
+          coincidePrecio && p.precio <= parseFloat(filtrosPrecios.precioMaximo);
+      }
+    }
+
+    return coincideTexto && coincideFecha && coincideStock && coincidePrecio;
+  });
+
+  // 9️⃣ Helpers de toggle
   const toggleCategoria = (id: number) => {
     if (destino.tipo !== "CATEGORIA") return;
 
-    // Solo toggle expansión de la categoría, NO la selección
     const nuevasExpandidas = new Set(categoriasExpandidas);
     if (nuevasExpandidas.has(id)) {
       nuevasExpandidas.delete(id);
@@ -116,12 +240,14 @@ export default function PromocionProductSelector() {
   };
 
   const toggleProducto = (id: number) => {
-    if (destino.tipo === "PRODUCTO") {
-      // selección directa
+    if (
+      ["PRODUCTO", "FECHA_LLEGADA", "STOCK", "PRECIO"].includes(destino.tipo)
+    ) {
+      // selección directa para todos los tipos de producto
       const ids = destino.ids.includes(id)
         ? destino.ids.filter((x) => x !== id)
         : [...destino.ids, id];
-      setDestino({ tipo: "PRODUCTO", ids });
+      setDestino({ ...destino, ids });
     } else {
       // exclusiones cuando elegimos por categoría
       const ids = destino.ids.includes(id)
@@ -181,16 +307,16 @@ export default function PromocionProductSelector() {
   });
 
   const isValid = () =>
-    (destino.tipo === "PRODUCTO" && destino.ids.length > 0) ||
-    (destino.tipo === "CATEGORIA" && subcategoriasSeleccionadas.size > 0);
+    ["CATEGORIA", "PRODUCTO", "FECHA_LLEGADA", "STOCK", "PRECIO"].includes(
+      destino.tipo
+    ) && destino.ids.length > 0;
 
-  // 9️⃣ navegación de pasos (si tú manejas pasos fuera de aquí)
-  const [paso, setPaso] = useState(2); // este selector es el paso 2
+  // 🔟 navegación de pasos
+  const [paso, setPaso] = useState(2);
   const goBack = () => setPaso(1);
 
   // Función para preparar datos de confirmación
   const prepararDatosConfirmacion = () => {
-    // Obtener nombres de subcategorías seleccionadas
     const subcategoriasConNombres = Array.from(subcategoriasSeleccionadas)
       .map((subcategoriaId) => {
         const resultado = encontrarSubcategoria(subcategoriaId);
@@ -204,23 +330,27 @@ export default function PromocionProductSelector() {
       })
       .filter(Boolean);
 
-    // NOTA: destino.ids actualmente se usa para:
-    // - Si tipo === "PRODUCTO": IDs de productos seleccionados
-    // - Si tipo === "CATEGORIA": Parece que no se usa para categorías principales
-    //   porque la selección real está en subcategoriasSeleccionadas
-
-    // Obtener productos seleccionados (cuando tipo === "PRODUCTO")
-    const productosSeleccionados =
-      destino.tipo === "PRODUCTO"
-        ? destino.ids
-            .map((prodId) => {
-              const prod = productos.find((p) => p.id === prodId);
-              return prod
-                ? { id: prodId, nombre: prod.nombre, precio: prod.precio }
-                : null;
-            })
-            .filter(Boolean)
-        : [];
+    const productosSeleccionados = [
+      "PRODUCTO",
+      "FECHA_LLEGADA",
+      "STOCK",
+      "PRECIO",
+    ].includes(destino.tipo)
+      ? destino.ids
+          .map((prodId) => {
+            const prod = productos.find((p) => p.id === prodId);
+            return prod
+              ? {
+                  id: prodId,
+                  nombre: prod.nombre,
+                  precio: prod.precio,
+                  fecha_llegada: prod.fecha_llegada,
+                  stock: prod.stock,
+                }
+              : null;
+          })
+          .filter(Boolean)
+      : [];
 
     return {
       subcategoriasConNombres,
@@ -253,28 +383,13 @@ export default function PromocionProductSelector() {
     );
 
     console.log("\n🎯 Aplicación:");
-    console.log("  - Tipo:", destino.tipo);
-
-    if (destino.tipo === "CATEGORIA") {
-      if (subcategoriasConNombres.length > 0) {
-        console.log("  - Categorías seleccionadas:", subcategoriasConNombres);
-      }
-      if (subcategoriasConNombres.length > 0) {
-        console.log(
-          "  - Subcategorías seleccionadas:",
-          subcategoriasConNombres
-        );
-      }
-    } else {
-      console.log("  - Productos seleccionados:", productosSeleccionados);
-    }
-
-    console.log("\n📊 Resumen IDs:");
-    console.log("  - IDs destino:", destino.ids);
     console.log(
-      "  - IDs subcategorías:",
-      Array.from(subcategoriasSeleccionadas)
+      "\n Subcategorías seleccionadas: ",
+      subcategoriasConNombres.map((s) => s!.nombre).join(", ")
     );
+    console.log("Filtro por stock: ", filtrosStock);
+    console.log("Filtro por precios: ", filtrosPrecios);
+    console.log("  - IDs seleccionados:", destino.ids.join(", "));
 
     const body = {
       nombre: promotionDraft.nombre,
@@ -283,44 +398,39 @@ export default function PromocionProductSelector() {
       fecha_fin: promotionDraft.fecha_fin,
       img_promocional: promotionDraft.img_promocional,
       porcentaje_descuento: promotionDraft.porcentaje_descuento,
-      destino,
-      subcategorias: Array.from(subcategoriasSeleccionadas),
-    }
+      destino: {
+        tipo: destino.tipo, // 'CATEGORIA' | 'PRODUCTO'
+        ids: destino.ids, // [1,2,3…]
+      },
+      // solo si estás en categoría
+      subcategorias:
+        destino.tipo === "CATEGORIA"
+          ? Array.from(subcategoriasSeleccionadas)
+          : undefined,
+    };
 
-    console.log("📤 Enviando datos:", JSON.stringify(body, null, 2));
-
-    // Simular envío
     try {
       const response = await fetch("/api/promociones/guardar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: promotionDraft.nombre,
-          descripcion: promotionDraft.descripcion,
-          fecha_inicio: promotionDraft.fecha_inicio,
-          fecha_fin: promotionDraft.fecha_fin,
-          img_promocional: promotionDraft.img_promocional,
-          porcentaje_descuento: promotionDraft.porcentaje_descuento,
-          destino,
-          subcategorias: Array.from(subcategoriasSeleccionadas),
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
-        console.log("✅ Promoción creada exitosamente:", data);
-      } else {
-        console.error("❌ Error al crear la promoción:", data.error);
+      if (!response.ok) {
+        console.error("❌ Error al crear la promoción:", data);
         throw new Error(data.error || "Error desconocido");
       }
 
+      console.log("✅ Promoción creada exitosamente:", data);
       setEnviado(true);
       setTimeout(() => {
         setMostrarConfirmacion(false);
         setPaso(3);
       }, 1500);
     } catch (error) {
+      console.error(error);
       alert("Error al crear la promoción");
     } finally {
       setEnviando(false);
@@ -328,13 +438,23 @@ export default function PromocionProductSelector() {
   };
 
   // Función para limpiar selecciones al cambiar de tipo
-  const handleTipoChange = (nuevoTipo: "CATEGORIA" | "PRODUCTO") => {
+  const handleTipoChange = (
+    nuevoTipo: "CATEGORIA" | "PRODUCTO" | "FECHA_LLEGADA" | "STOCK" | "PRECIO"
+  ) => {
     setDestino({ tipo: nuevoTipo, ids: [] });
-    if (nuevoTipo === "PRODUCTO") {
-      // Limpiar subcategorías cuando cambiamos a productos específicos
+
+    {
+      /*  if (nuevoTipo !== "CATEGORIA") {
       setSubcategoriasSeleccionadas(new Set());
     }
     setCategoriasExpandidas(new Set());
+    
+    // Limpiar filtros cuando cambiamos de tipo
+    setFiltrosFecha({ fechaDesde: "", fechaHasta: "" });
+    setFiltrosStock({ stockMinimo: "", stockMaximo: "" });
+    setFiltrosPrecios({ precioMinimo: "", precioMaximo: "" });
+    setBusquedaProducto(""); */
+    }
   };
 
   if (loading)
@@ -356,26 +476,54 @@ export default function PromocionProductSelector() {
         </h2>
       </header>
 
-      {/* Tipo */}
-      <section className="flex mb-6 gap-4">
-        <label className="flex items-center mr-6 gap-2">
-          <input
-            type="radio"
-            checked={destino.tipo === "CATEGORIA"}
-            onChange={() => handleTipoChange("CATEGORIA")}
-            className="mr-2"
-          />
-          <Tag /> Por Categoría
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            checked={destino.tipo === "PRODUCTO"}
-            onChange={() => handleTipoChange("PRODUCTO")}
-            className="mr-2"
-          />
-          <Package /> Productos Específicos
-        </label>
+      {/* Opciones de Tipo */}
+      <section className="mb-6">
+        <h3 className="font-semibold mb-3">Método de Selección</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              checked={destino.tipo === "CATEGORIA"}
+              onChange={() => handleTipoChange("CATEGORIA")}
+              className="mr-3"
+            />
+            <Tag className="w-4 h-4 mr-2" />
+            <span className="text-sm">Por Categoría</span>
+          </label>
+
+          <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              checked={destino.tipo === "FECHA_LLEGADA"}
+              onChange={() => handleTipoChange("FECHA_LLEGADA")}
+              className="mr-3"
+            />
+            <Calendar className="w-4 h-4 mr-2" />
+            <span className="text-sm">Por Fecha de Llegada</span>
+          </label>
+
+          <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              checked={destino.tipo === "STOCK"}
+              onChange={() => handleTipoChange("STOCK")}
+              className="mr-3"
+            />
+            <Package2 className="w-4 h-4 mr-2" />
+            <span className="text-sm">Por Stock</span>
+          </label>
+
+          <label className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50">
+            <input
+              type="radio"
+              checked={destino.tipo === "PRECIO"}
+              onChange={() => handleTipoChange("PRECIO")}
+              className="mr-3"
+            />
+            <DollarSign className="w-4 h-4 mr-2" />
+            <span className="text-sm">Por Rango de Precios</span>
+          </label>
+        </div>
       </section>
 
       {/* Categorías */}
@@ -384,8 +532,7 @@ export default function PromocionProductSelector() {
           <h3 className="font-semibold mb-2">Selecciona Categorías</h3>
           <div className="space-y-0">
             {categorias.map((c) => (
-              <div key={c.id} className="rounded-lg p-4">
-                {/* Categoría principal */}
+              <div key={c.id} className="rounded-lg p-2">
                 <div
                   onClick={() => toggleCategoria(c.id)}
                   className={`p-4 border rounded cursor-pointer flex items-center justify-between ${
@@ -409,7 +556,6 @@ export default function PromocionProductSelector() {
                   </p>
                 </div>
 
-                {/* Subcategorías */}
                 {categoriasExpandidas.has(c.id) &&
                   c.subcategorias &&
                   c.subcategorias.length > 0 && (
@@ -424,7 +570,6 @@ export default function PromocionProductSelector() {
             ))}
           </div>
 
-          {/* Resumen de selecciones */}
           {subcategoriasSeleccionadas.size > 0 && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium mb-2">Subcategorías seleccionadas:</h4>
@@ -450,21 +595,205 @@ export default function PromocionProductSelector() {
         </section>
       )}
 
-      {/* Productos específicos */}
-      {destino.tipo === "PRODUCTO" && (
+      {/* Filtros por Fecha de Llegada */}
+      {destino.tipo === "FECHA_LLEGADA" && (
         <section className="mb-6">
-          <h3 className="font-semibold mb-2">Selecciona Productos</h3>
+          <h3 className="font-semibold mb-2">
+            Seleccione el intervalo de fecha de llegada
+          </h3>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Fecha Desde
+              </label>
+              <input
+                type="date"
+                value={filtrosFecha.fechaDesde}
+                onChange={(e) =>
+                  setFiltrosFecha({
+                    ...filtrosFecha,
+                    fechaDesde: e.target.value,
+                  })
+                }
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Fecha Hasta
+              </label>
+              <input
+                type="date"
+                value={filtrosFecha.fechaHasta}
+                onChange={(e) =>
+                  setFiltrosFecha({
+                    ...filtrosFecha,
+                    fechaHasta: e.target.value,
+                  })
+                }
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
+          {filtrosFecha.fechaDesde && filtrosFecha.fechaHasta && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              Mostrando productos con fecha de llegada entre{" "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                {" "}
+                {new Date(filtrosFecha.fechaDesde).toLocaleDateString()}
+              </span>
+              {" y "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                {new Date(filtrosFecha.fechaHasta).toLocaleDateString()}
+              </span>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Filtros por Stock */}
+      {destino.tipo === "STOCK" && (
+        <section className="mb-6">
+          <h3 className="font-semibold mb-2">Filtrar por Stock</h3>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Stock Mínimo
+              </label>
+              <input
+                type="number"
+                value={filtrosStock.stockMinimo}
+                onChange={(e) =>
+                  setFiltrosStock({
+                    ...filtrosStock,
+                    stockMinimo: e.target.value,
+                  })
+                }
+                placeholder="Ej: 10"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Stock Máximo
+              </label>
+              <input
+                type="number"
+                value={filtrosStock.stockMaximo}
+                onChange={(e) =>
+                  setFiltrosStock({
+                    ...filtrosStock,
+                    stockMaximo: e.target.value,
+                  })
+                }
+                placeholder="Ej: 100"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
+          {filtrosStock.stockMinimo && filtrosStock.stockMaximo && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              Mostrando productos con stock entre{" "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                {filtrosStock.stockMinimo} unidades
+              </span>
+              {" y "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                {filtrosStock.stockMaximo} unidades
+              </span>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Filtros por Precio */}
+      {destino.tipo === "PRECIO" && (
+        <section className="mb-6">
+          <h3 className="font-semibold mb-2">Filtrar por Rango de Precios</h3>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Precio Mínimo ($)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={filtrosPrecios.precioMinimo}
+                onChange={(e) =>
+                  setFiltrosPrecios({
+                    ...filtrosPrecios,
+                    precioMinimo: e.target.value,
+                  })
+                }
+                placeholder="Ej: 10.00"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Precio Máximo ($)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={filtrosPrecios.precioMaximo}
+                onChange={(e) =>
+                  setFiltrosPrecios({
+                    ...filtrosPrecios,
+                    precioMaximo: e.target.value,
+                  })
+                }
+                placeholder="Ej: 500.00"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
+          {filtrosPrecios.precioMinimo && filtrosPrecios.precioMaximo && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              Mostrando productos con precio entre{" "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                ${filtrosPrecios.precioMinimo}
+              </span>
+              {" y "}
+              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                ${filtrosPrecios.precioMaximo}
+              </span>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Lista de Productos para selección individual */}
+      {["CATEGORIA", "PRODUCTO", "FECHA_LLEGADA", "STOCK", "PRECIO"].includes(
+        destino.tipo
+      ) && (
+        <section className="mb-6">
+          <h3 className="font-semibold mb-2">
+            {destino.tipo === "PRODUCTO"
+              ? "Selecciona Productos"
+              : destino.tipo === "FECHA_LLEGADA"
+              ? "Productos por Fecha de Llegada"
+              : destino.tipo === "STOCK"
+              ? "Productos por Stock"
+              : "Productos por Precio"}
+          </h3>
+
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-3 text-gray-400" />
+            <Search className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
             <input
               type="text"
               value={busquedaProducto}
               onChange={(e) => setBusquedaProducto(e.target.value)}
-              placeholder="Buscar..."
+              placeholder="Buscar por nombre..."
               className="w-full pl-10 py-2 border rounded"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4 max-h-80 overflow-auto">
+
+          <div className="text-sm text-gray-600 mb-2">
+            Mostrando {productosFiltrados.length} producto(s)
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-80 overflow-auto">
             {productosFiltrados.map((p) => (
               <div
                 key={p.id}
@@ -475,16 +804,67 @@ export default function PromocionProductSelector() {
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
-                <span className="font-medium">{p.nombre}</span>
-                <p className="text-sm text-gray-500">${p.precio}</p>
-                {destino.ids.includes(p.id) && (
-                  <Check className="ml-1 inline" />
-                )}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <span className="font-medium">{p.nombre}</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                      <p className="text-sm text-gray-500">{p.SKU}</p>
+                      <p className="text-sm text-gray-500">
+                        Precio: ${p.precio}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Stock: {p.stock} unidades
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Fecha de llegada:{" "}
+                      </p>
+                    </div>
+                  </div>
+                  {destino.ids.includes(p.id) && (
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 ml-2" />
+                  )}
+                </div>
               </div>
             ))}
           </div>
+
+          {productosFiltrados.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              No se encontraron productos con los filtros aplicados
+            </div>
+          )}
         </section>
       )}
+
+      {/* Resumen de selección */}
+      {destino.ids.length > 0 &&
+        ["CATEGORIA", "PRODUCTO", "FECHA_LLEGADA", "STOCK", "PRECIO"].includes(
+          destino.tipo
+        ) && (
+          <section className="mb-6 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-medium mb-2">
+              Productos seleccionados: {destino.ids.length}
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {destino.ids.slice(0, 5).map((prodId) => {
+                const prod = productos.find((p) => p.id === prodId);
+                return prod ? (
+                  <span
+                    key={prodId}
+                    className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm"
+                  >
+                    {prod.nombre}
+                  </span>
+                ) : null;
+              })}
+              {destino.ids.length > 5 && (
+                <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm">
+                  +{destino.ids.length - 5} más
+                </span>
+              )}
+            </div>
+          </section>
+        )}
 
       {/* Footer */}
       <footer className="flex justify-end space-x-3">
@@ -498,7 +878,9 @@ export default function PromocionProductSelector() {
           onClick={goNext}
           disabled={!isValid()}
           className={`px-4 py-2 text-white rounded ${
-            isValid() ? "bg-blue-600" : "bg-gray-400 cursor-not-allowed"
+            isValid()
+              ? "bg-blue-600 hover:bg-blue-700"
+              : "bg-gray-400 cursor-not-allowed"
           }`}
         >
           Siguiente
@@ -560,70 +942,59 @@ export default function PromocionProductSelector() {
                     </h4>
                     <div className="text-sm">
                       <div className="mb-2">
-                        <strong>Tipo:</strong>{" "}
-                        {destino.tipo === "CATEGORIA"
-                          ? "Por Categoría"
-                          : "Productos Específicos"}
-                      </div>
-
-                      {destino.tipo === "CATEGORIA" && (
-                        <>
-                          {subcategoriasConNombres.length > 0 && (
-                            <div>
-                              <strong>Subcategorías seleccionadas:</strong>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {subcategoriasConNombres.map((sub) => (
-                                  <span
-                                    key={sub!.id}
-                                    className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                                  >
-                                    {sub!.nombre} ({sub!.categoria_padre})
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {destino.tipo === "PRODUCTO" &&
-                        productosSeleccionados.length > 0 && (
+                        {/* Subcategorías */}
+                        {subcategoriasConNombres.length > 0 && (
                           <div>
-                            <strong>Productos seleccionados:</strong>
-                            <div className="mt-1 space-y-1">
-                              {productosSeleccionados.map((prod) => (
-                                <div
-                                  key={prod!.id}
-                                  className="flex justify-between text-xs bg-gray-50 p-2 rounded"
-                                >
-                                  <span>{prod!.nombre}</span>
-                                  <span className="font-medium">
-                                    ${prod!.precio}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
+                            <strong>Subcategorías:</strong>{" "}
+                            {subcategoriasConNombres
+                              .map((s) => s!.nombre)
+                              .join(", ")}
                           </div>
                         )}
-                    </div>
-                  </div>
-
-                  {/* Resumen IDs */}
-                  <div className="border rounded p-4">
-                    <h4 className="font-semibold mb-2 text-purple-600">
-                      📊 Resumen Técnico
-                    </h4>
-                    <div className="text-sm">
-                      {destino.ids.length > 0 && (
-                        <div className="mb-2">
-                          <strong>IDs seleccionados:</strong>{" "}
-                          {destino.ids.join(", ")}
-                        </div>
-                      )}
-                      {subcategoriasSeleccionadas.size > 0 && (
-                        <div className="mb-2">
-                          <strong>Subcategorías seleccionadas:</strong>{" "}
-                          {Array.from(subcategoriasSeleccionadas).join(", ")}
+                        {/* Stock */}
+                        {(filtrosStock.stockMinimo ||
+                          filtrosStock.stockMaximo) && (
+                          <div>
+                            <strong>Stock:</strong>{" "}
+                            {filtrosStock.stockMinimo && (
+                              <>Mínimo {filtrosStock.stockMinimo}</>
+                            )}
+                            {filtrosStock.stockMaximo && (
+                              <>, Máximo {filtrosStock.stockMaximo}</>
+                            )}
+                          </div>
+                        )}
+                        {/* Precio */}
+                        {(filtrosPrecios.precioMinimo ||
+                          filtrosPrecios.precioMaximo) && (
+                          <div>
+                            <strong>Precio:</strong>{" "}
+                            {filtrosPrecios.precioMinimo && (
+                              <>Desde ${filtrosPrecios.precioMinimo}</>
+                            )}
+                            {filtrosPrecios.precioMaximo && (
+                              <>, Hasta ${filtrosPrecios.precioMaximo}</>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {productosSeleccionados.length > 0 && (
+                        <div>
+                          <strong>Productos seleccionados:</strong>
+                          <div className="mt-1 space-y-1 max-h-32 overflow-y-auto">
+                            {productosSeleccionados.map((prod) => (
+                              <div
+                                key={prod!.id}
+                                className="flex justify-between text-xs bg-gray-50 p-2 rounded"
+                              >
+                                <div className="flex-1">
+                                  <span>
+                                    {prod?.id} - {prod!.nombre}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
