@@ -37,7 +37,7 @@ export default function LoginForm() {
       onSubmit={onSubmit}
       className="space-y-4 bg-white p-8 rounded-xl shadow-md max-w-lg mx-auto w-full"
     >
-      <h2 className="text-xl font-semibold text-ebony-800 text-center">
+      <h2 className="text-xl font-semibold text-ebony-900 text-center">
         Iniciar Sesión
       </h2>
 
@@ -49,8 +49,8 @@ export default function LoginForm() {
             required: { value: true, message: "El correo es obligatorio" },
           })}
           className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 transition-colors duration-200 ${
-            errors.email 
-              ? "border-red-400 focus:ring-red-400 focus:border-red-400" 
+            errors.email
+              ? "border-red-400 focus:ring-red-400 focus:border-red-400"
               : "border-gray-200 focus:ring-gray-200"
           }`}
         />
@@ -71,8 +71,8 @@ export default function LoginForm() {
             required: { value: true, message: "La contraseña es obligatoria" },
           })}
           className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 transition-colors duration-200 ${
-            errors.password 
-              ? "border-red-400 focus:ring-red-400 focus:border-red-400" 
+            errors.password
+              ? "border-red-400 focus:ring-red-400 focus:border-red-400"
               : "border-gray-200 focus:ring-gray-200"
           }`}
         />
@@ -94,8 +94,8 @@ export default function LoginForm() {
         disabled={loading}
         className={`w-full py-2 rounded-md transition-colors duration-200 ${
           loading
-            ? "bg-ebony-400 cursor-not-allowed"
-            : "bg-ebony-800 hover:bg-ebony-700 cursor-pointer text-white"
+            ? "bg-ebony-800 cursor-not-allowed"
+            : "bg-ebony-900 hover:bg-ebony-700 cursor-pointer text-white"
         }`}
       >
         {loading ? "Ingresando..." : "Ingresar"}
@@ -107,7 +107,7 @@ export default function LoginForm() {
       <button
         type="button"
         onClick={() => router.push("/auth/register")}
-        className="w-full py-2 rounded-md font-semibold border border-ebony-800 text-ebony-800 bg-white hover:bg-ebony-800 cursor-pointer hover:text-white transition-colors duration-200"
+        className="w-full py-2 rounded-md font-semibold border border-ebony-900 text-ebony-900 bg-white hover:bg-ebony-800 cursor-pointer hover:text-white transition-colors duration-200"
       >
         Crear cuenta
       </button>

@@ -49,20 +49,28 @@ export async function removeItemById(productId: number) {
 /**
  * PATCH /api/cart/[productId]
  */
+// utils/cartActions.ts
+
 export async function updateItemQuantity(productId: number, quantity: number) {
-  const res = await fetch(`/api/cart/${productId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ quantity }),
-  });
+  try {
+    const res = await fetch(`/api/cart/${productId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quantity }),
+    });
 
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err?.error || 'Error al actualizar cantidad');
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { success: false, error: data?.error || 'Error al actualizar cantidad' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: 'Error de red o servidor' };
   }
-
-  return res.json();
 }
+
 
 /**
  * DELETE /api/cart/DeleteAll

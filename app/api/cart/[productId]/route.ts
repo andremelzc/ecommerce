@@ -58,22 +58,23 @@ export async function DELETE(
   }
 }
 
-/**
- * PATCH /api/cart/{productId}
- * Body esperado: { quantity: number }
- * Actualiza la cantidad de ese producto en el carrito.
- */
 export async function PATCH(
   request: Request,
   context: Context
 ) {
+  const session = await auth();
   try {
-    // Extraemos params haciendo await sobre context.params
     const paramsData = await context.params;
     const productId = parseInt(paramsData.productId, 10);
+    const { quantity } = await request.json();
 
-    // Leemos el body para extraer quantity
-    const { quantity } = await request.json(); // { quantity: número }
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: 'Usuario no autenticado' }, { status: 401 });
+    }
+
+    if (isNaN(productId)) {
+      return NextResponse.json({ error: 'ID de producto inválido' }, { status: 400 });
+    }
 
     if (typeof quantity !== 'number' || quantity < 1) {
       return NextResponse.json(
@@ -82,23 +83,60 @@ export async function PATCH(
       );
     }
 
-    // Simulamos usuario autenticado con id = 1
-    const userId = 1;
+    const userId = session.user.id;
 
-    // 1) Obtener id del carrito para userId = 1
+    // 1. Verificar existencia del producto y su stock
+    const [stockRows] = await db.query(
+      `SELECT Cantidad_stock FROM producto_especifico WHERE id = ?`,
+      [productId]
+    );
+
+    const stockRowArray = stockRows as any[];
+    if (stockRowArray.length === 0) {
+      return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 });
+    }
+
+    const stockDisponible = stockRowArray[0].Cantidad_stock as number;
+
+    if (stockDisponible === 0) {
+      return NextResponse.json({ error: 'NO HAY STOCK DISPONIBLE' }, { status: 400 });
+    }
+
+    if (quantity > stockDisponible) {
+      return NextResponse.json(
+        { error: `Solo hay ${stockDisponible} unidades disponibles` },
+        { status: 400 }
+      );
+    }
+
+    // 2. Obtener carrito del usuario
     const [carritoRows] = await db.query(
       `SELECT id FROM carrito_compras WHERE id_usuario = ?`,
       [userId]
     );
-    if ((carritoRows as any[]).length === 0) {
+
+    const carritoRowArray = carritoRows as any[];
+    if (carritoRowArray.length === 0) {
+      return NextResponse.json({ error: 'El usuario no tiene carrito' }, { status: 400 });
+    }
+
+    const carritoId = carritoRowArray[0].id as number;
+
+    // 3. Verificar que el producto esté en el carrito
+    const [productoRows] = await db.query(
+      `SELECT cantidad FROM carrito_compras_producto_especifico
+       WHERE id_carrito = ? AND id_producto_especifico = ?`,
+      [carritoId, productId]
+    );
+
+    if ((productoRows as any[]).length === 0) {
       return NextResponse.json(
-        { error: 'El usuario no tiene carrito' },
-        { status: 400 }
+        { error: 'El producto no está en el carrito' },
+        { status: 404 }
       );
     }
-    const carritoId = (carritoRows as any[])[0].id as number;
 
-    // 2) Actualizar la cantidad en carrito_compras_producto_especifico
+    // 4. Actualizar cantidad
     await db.query(
       `UPDATE carrito_compras_producto_especifico
        SET cantidad = ?

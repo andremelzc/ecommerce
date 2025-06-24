@@ -41,7 +41,9 @@ const authOptions : NextAuthConfig = {
                     return {
                         id: data.usuario.id,
                         name: data.usuario.nombre,
-                        email: data.usuario.email
+                        email: data.usuario.email,
+                        surname : data.usuario.apellido,
+                        phone: data.usuario.telefono,
                     };
                 } else {
                     return null; // no autorizado

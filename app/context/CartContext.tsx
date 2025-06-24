@@ -131,15 +131,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // 5) Función para actualizar cantidad
-  const updateQuantity = async (productId: number, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
+const updateQuantity = async (productId: number, quantity: number) => {
+  try {
+    const res = await updateItemQuantity(productId, quantity);
 
-    try {
-      await updateItemQuantity(productId, quantity);
-    } catch (err) {
-      console.error('Error actualizando cantidad en backend:', err);
+    if (res?.success) {
+      // Solo actualizamos estado si el backend lo acepta
+      dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
+    } else {
+      // El backend rechazó la cantidad (por falta de stock u otro error)
+      alert(res?.error || 'No se pudo actualizar la cantidad');
     }
-  };
+  } catch (err) {
+    console.error('Error actualizando cantidad en backend:', err);
+    alert('Error del servidor al actualizar el carrito');
+  }
+};
+
 
   // 6) Función para vaciar el carrito
   const clearCart = async () => {

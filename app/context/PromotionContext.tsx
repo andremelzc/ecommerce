@@ -18,10 +18,10 @@ interface PromotionContextType {
   promotionDraft: PromotionDraft;
   setPromotionDraft: React.Dispatch<React.SetStateAction<PromotionDraft>>;
   destino: {
-    tipo: 'CATEGORIA' | 'PRODUCTO';
+    tipo: 'CATEGORIA' | 'PRODUCTO' | 'FECHA_LLEGADA' | 'STOCK' | 'PRECIO';
     ids: number[];
   };
-  setDestino: React.Dispatch<React.SetStateAction<{ tipo: 'CATEGORIA' | 'PRODUCTO'; ids: number[] }>>;
+  setDestino: React.Dispatch<React.SetStateAction<{ tipo: 'CATEGORIA' | 'PRODUCTO' | 'FECHA_LLEGADA' | 'STOCK' | 'PRECIO'; ids: number[] }>>;
   subcategoriasSeleccionadas: Set<number>;
   setSubcategoriasSeleccionadas: React.Dispatch<React.SetStateAction<Set<number>>>;
 }
@@ -37,7 +37,7 @@ const defaultPromotionDraft: PromotionDraft = {
 };
 
 // Definimos explícitamente el tipo para evitar errores en setDestino
-const defaultDestino: { tipo: 'CATEGORIA' | 'PRODUCTO'; ids: number[] } = {
+const defaultDestino: { tipo: 'CATEGORIA' | 'PRODUCTO' | 'FECHA_LLEGADA' | 'STOCK' | 'PRECIO'; ids: number[] } = {
   tipo: 'CATEGORIA',
   ids: [],
 };
@@ -47,7 +47,7 @@ const PromotionContext = createContext<PromotionContextType | undefined>(undefin
 
 export function PromotionProvider({ children }: { children: ReactNode }) {
   const [promotionDraft, setPromotionDraft] = useState<PromotionDraft>(defaultPromotionDraft);
-  const [destino, setDestino] = useState<{ tipo: 'CATEGORIA' | 'PRODUCTO'; ids: number[] }>(
+  const [destino, setDestino] = useState<{ tipo: 'CATEGORIA' | 'PRODUCTO' | 'FECHA_LLEGADA' | 'STOCK' | 'PRECIO'; ids: number[] }>(
     defaultDestino
   );
   const [subcategoriasSeleccionadas, setSubcategoriasSeleccionadas] = useState<Set<number>>(new Set());

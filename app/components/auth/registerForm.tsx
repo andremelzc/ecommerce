@@ -42,7 +42,7 @@ export default function RegisterForm() {
       onSubmit={onSubmit}
       className="space-y-4 bg-white p-8 rounded-xl shadow-md max-w-lg mx-auto w-full"
     >
-      <h2 className="text-xl font-semibold text-ebony-800 text-center">Crear cuenta</h2>
+      <h2 className="text-xl font-semibold text-ebony-900 text-center">Crear cuenta</h2>
 
       <div className="space-y-1">
         <input
@@ -229,7 +229,7 @@ export default function RegisterForm() {
 
       <button
         type="submit"
-        className="w-full py-2 rounded-md transition-colors duration-200 bg-ebony-800 hover:bg-ebony-700 cursor-pointer text-white"
+        className="w-full py-2 rounded-md transition-colors duration-200 bg-ebony-900 hover:bg-ebony-800 cursor-pointer text-white"
       >
         Registrarse
       </button>
