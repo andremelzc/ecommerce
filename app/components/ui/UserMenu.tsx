@@ -71,10 +71,17 @@ const UserMenu = ({ isOpen, onClose, anchorRef }: DrawerProps) => {
             <Package size={18} />
             <span>Mis pedidos</span>
           </button>
+          <Link
+            href="/profile/metodo-pago" // Aquí defines la ruta para las direcciones
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+            onClick={onClose} // Cerrar al hacer click
+            >
           <button className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
             <CreditCard size={18} />
             <span>Mis métodos de pago</span>
           </button>
+          </Link>
+          
 
           <hr className="my-2 border-t border-gray-200" />
 

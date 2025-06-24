@@ -25,7 +25,7 @@ const ProfileSidebar = () => {
       icon: Package,
     },
     {
-      href: '/profile/tarjetas',
+      href: '/profile/metodo-pago',
       label: 'Mis métodos de pago',
       icon: CreditCard,
     },
