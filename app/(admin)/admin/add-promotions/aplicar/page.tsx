@@ -38,7 +38,7 @@ interface Producto {
   precio: number;
   categoria: string;
   imagen?: string;
-  fecha_llegada?: string; // Nueva propiedad
+  fecha_registro?: string; // Nueva propiedad
   stock?: number; // Nueva propiedad
 }
 
@@ -130,14 +130,14 @@ export default function PromocionProductSelector() {
         if (filtrosPrecios.precioMaximo)
           qs.append("precioMaximo", filtrosPrecios.precioMaximo);
 
-        /*
+        
         // fecha
         if (destino.tipo === "FECHA_LLEGADA") {
           if (filtrosFecha.fechaDesde)
             qs.append("fechaDesde", filtrosFecha.fechaDesde);
           if (filtrosFecha.fechaHasta)
             qs.append("fechaHasta", filtrosFecha.fechaHasta);
-        }*/
+        }
 
         const url = `/api/productos/especificos?${qs.toString()}`;
         console.log("Cargando productos filtrados desde:", url);
@@ -175,15 +175,15 @@ export default function PromocionProductSelector() {
     // Filtro por fecha de llegada (solo para tipos FECHA_LLEGADA)
     let coincideFecha = true;
     if (destino.tipo === "FECHA_LLEGADA") {
-      if (filtrosFecha.fechaDesde && p.fecha_llegada) {
+      if (filtrosFecha.fechaDesde && p.fecha_registro) {
         coincideFecha =
           coincideFecha &&
-          new Date(p.fecha_llegada) >= new Date(filtrosFecha.fechaDesde);
+          new Date(p.fecha_registro) >= new Date(filtrosFecha.fechaDesde);
       }
-      if (filtrosFecha.fechaHasta && p.fecha_llegada) {
+      if (filtrosFecha.fechaHasta && p.fecha_registro) {
         coincideFecha =
           coincideFecha &&
-          new Date(p.fecha_llegada) <= new Date(filtrosFecha.fechaHasta);
+          new Date(p.fecha_registro) <= new Date(filtrosFecha.fechaHasta);
       }
     }
 
@@ -344,7 +344,7 @@ export default function PromocionProductSelector() {
                   id: prodId,
                   nombre: prod.nombre,
                   precio: prod.precio,
-                  fecha_llegada: prod.fecha_llegada,
+                  fecha_llegada: prod.fecha_registro,
                   stock: prod.stock,
                 }
               : null;
@@ -816,7 +816,7 @@ export default function PromocionProductSelector() {
                         Stock: {p.stock} unidades
                       </p>
                       <p className="text-sm text-gray-500">
-                        Fecha de llegada:{" "}
+                        Fecha de llegada: {p.fecha_registro}  
                       </p>
                     </div>
                   </div>
