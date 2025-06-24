@@ -44,26 +44,25 @@ const ProductSection = ({
             break;
           case "byPromotion":
             if (promotionId) {
-              params.append("promotionId", promotionId.toString());
+              params.append("onlyPromo", "true");
+              params.append("promocionId", promotionId.toString());
             }
             break;
           case "onlyPromotions":
             params.append("onlyPromo", "true");
             break;
           case "byVariacion":
-            if (categoryId) 
-              {
-                params.append("categoryId", categoryId.toString());
-                if (categoryLevel) {
-                  params.append("categoryLevel", categoryLevel.toString());
-                }
-                // Añadir variaciones si existen
-                if (selectedVariations && selectedVariations.length > 0) {
-                  const variationIdsString = selectedVariations.join(",");
-                  params.append("variationIds",variationIdsString.toString())
-                  ;
-                }
+            if (categoryId) {
+              params.append("categoryId", categoryId.toString());
+              if (categoryLevel) {
+                params.append("categoryLevel", categoryLevel.toString());
               }
+              // Añadir variaciones si existen
+              if (selectedVariations && selectedVariations.length > 0) {
+                const variationIdsString = selectedVariations.join(",");
+                params.append("variationIds", variationIdsString.toString());
+              }
+            }
             break;
           case "all":
             // No se añaden parámetros específicos
@@ -73,14 +72,14 @@ const ProductSection = ({
         if (limit) {
           params.append("limit", limit.toString());
         }
-        const response = await fetch(`/api/productos?${params.toString()}`); 
+        const response = await fetch(`/api/productos?${params.toString()}`);
         if (!response.ok) {
           throw new Error("Error al cargar los productos");
         }
         const data = await response.json();
         setProductos(data);
         console.log("Productos obtenidos:", data);
-        console.log(params.toString());
+        console.log(`/api/productos?${params.toString()}`);
       } catch (error) {
         console.error("Error al obtener productos:", error);
         setError("Error al cargar los productos");
@@ -88,8 +87,14 @@ const ProductSection = ({
       }
     }
     fetchProducts();
-  },[filterType, categoryId, categoryLevel, promotionId, limit, selectedVariations]); 
-  
+  }, [
+    filterType,
+    categoryId,
+    categoryLevel,
+    promotionId,
+    limit,
+    selectedVariations,
+  ]);
 
   return (
     <section>
@@ -104,8 +109,11 @@ const ProductSection = ({
           {asCarousel ? (
             <ProductCarousel productos={productos} />
           ) : (
-            <ProductList productos={productos} horizontal={false} itemsPage={2} />
-            
+            <ProductList
+              productos={productos}
+              horizontal={false}
+              itemsPage={2}
+            />
           )}
         </div>
       </div>

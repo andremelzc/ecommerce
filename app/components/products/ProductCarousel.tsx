@@ -83,7 +83,6 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   // Solo mostrar navegación si hay más productos que los visibles
   const showNavigation = productos.length > visibleProducts;
   
-  console.log("Productos:", productos);
   
   return (
     <div className="relative w-full" ref={containerRef}>

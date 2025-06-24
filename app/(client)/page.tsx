@@ -6,7 +6,19 @@ export default function Home() {
     <main className="bg-ebony-50">
       <CarruselPromociones />
       <ProductSection
-        title="¡Conoce nuestros productos con promociones!"
+        title="¡Promoción por invierno!"
+        filterType="byPromotion"
+        promotionId={8}
+        asCarousel={true}
+      />
+      <ProductSection
+        title="¡Promocion por Julio!"
+        filterType="byPromotion"
+        promotionId={7}
+        asCarousel={true}
+      />
+      <ProductSection
+        title="¡Conoce algunos de nuestros productos!"
         filterType="all"
         limit={10}
         asCarousel={true}
