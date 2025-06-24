@@ -38,6 +38,15 @@ const ProductCard = ({
     setImageLoaded(true); // Importante: marcamos como "cargado" para ocultar el spinner
   };
 
+  console.log("Producto en ProductCard:", {
+    producto_id,
+    id_producto_especifico,
+    nombre,
+    imagen_producto,
+    precio,
+    porcentaje_desc,
+  });
+
   return (
     <div className="group flex flex-col bg-white shadow-md hover:shadow-xl w-full max-w-xs mx-auto relative gap-1 rounded-xl transition-all duration-300 overflow-hidden p-2 sm:p-3 lg:p-4">
       {/* Container de la imagen */}

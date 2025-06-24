@@ -11,6 +11,11 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   const [isClient, setIsClient] = useState(false); // Track client-side hydration
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Detectar hidratación del cliente
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // CONFIGURACIÓN RESPONSIVE: Productos visibles según tamaño de pantalla
   const getVisibleProductsCount = (width: number) => {
     if (width < 640) return 1; // móvil pequeño: 1 producto
@@ -23,8 +28,6 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
 
   // Calcular dimensiones y productos visibles
   useEffect(() => {
-    
-
     const updateDimensions = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
@@ -80,7 +83,6 @@ export default function ProductCarousel({ productos }: ProductCarouselProps) {
   // Solo mostrar navegación si hay más productos que los visibles
   const showNavigation = productos.length > visibleProducts;
   
-  console.log("Productos:", productos);
   
   return (
     <div className="relative w-full" ref={containerRef}>
