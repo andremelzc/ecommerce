@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db"; // Ajusta la ruta según tu proyecto
+import { db } from "@/lib/db"; 
 import { RowDataPacket } from "mysql2";
 
 interface VariacionRow extends RowDataPacket {
@@ -10,6 +10,8 @@ interface VariacionRow extends RowDataPacket {
   id_categoria_3: number | null;
 }
 
+// Para traer todas las variaciones UNICAMENTE de los niveles e id's especificados.
+// 19/06 - No se llega a utilizar esta API
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
