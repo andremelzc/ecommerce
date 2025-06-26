@@ -1,4 +1,4 @@
-// app/api/tipo-pago/route.ts
+
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { RowDataPacket } from "mysql2";

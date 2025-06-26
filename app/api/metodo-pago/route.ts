@@ -68,10 +68,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const [newRows] = await db.query<MetodoPagoRow[]>(
-      `SELECT * FROM Ecommerce.usuario_metodo_pago WHERE id = ?`,
-      [result.insertId]
-    );
+    const [newRows] = await db.query<MetodoPagoRow[]>(`
+      SELECT 
+        ump.id,
+        ump.id_usuario,
+        ump.id_tipo_pago,
+        tp.valor       AS tipo,
+        ump.proveedor,
+        ump.numero_cuenta,
+        DATE_FORMAT(ump.fecha_vencimiento,'%Y-%m-%d') AS fecha_vencimiento,
+        ump.es_predeterminado
+      FROM Ecommerce.usuario_metodo_pago AS ump
+      JOIN Ecommerce.tipo_pago AS tp
+        ON tp.id = ump.id_tipo_pago
+      WHERE ump.id = ?
+    `, [result.insertId]);
+
     return NextResponse.json(newRows[0], { status: 201 });
   } catch (error) {
     console.error("Error creating método de pago:", error);

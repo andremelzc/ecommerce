@@ -7,7 +7,10 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const id = Number(params.id);
+  
+  const { id: idStr } = await params;
+  const id = Number(idStr);
+
   const {
     tipoPagoId,
     proveedor,
@@ -48,7 +51,19 @@ export async function PUT(
     }
 
     const [updatedRows] = await db.query<MetodoPagoRow[]>(
-      `SELECT * FROM Ecommerce.usuario_metodo_pago WHERE id = ?`,
+      `SELECT 
+        ump.id,
+        ump.id_usuario,
+        ump.id_tipo_pago,
+        tp.valor       AS tipo,
+        ump.proveedor,
+        ump.numero_cuenta,
+        DATE_FORMAT(ump.fecha_vencimiento,'%Y-%m-%d') AS fecha_vencimiento,
+        ump.es_predeterminado
+      FROM Ecommerce.usuario_metodo_pago AS ump
+      JOIN Ecommerce.tipo_pago AS tp
+        ON tp.id = ump.id_tipo_pago
+      WHERE ump.id = ?`,
       [id]
     );
     return NextResponse.json(updatedRows[0]);
@@ -60,6 +75,7 @@ export async function PUT(
     );
   }
 }
+
 
 export async function DELETE(
   req: Request,
