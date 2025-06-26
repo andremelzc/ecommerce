@@ -79,13 +79,15 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }  
 ) {
-  const id = Number(params.id);
+  const { id } = await context.params;
+  const idNum = Number(id);
+
   try {
     await db.query<OkPacket>(
       `DELETE FROM Ecommerce.usuario_metodo_pago WHERE id = ?`,
-      [id]
+      [idNum]
     );
     return NextResponse.json({ success: true });
   } catch (error) {
