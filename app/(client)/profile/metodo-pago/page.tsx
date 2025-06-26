@@ -110,7 +110,11 @@ export default function MisMetodosPagoPage() {
           tarjetas.map((t) => (
             <div
               key={t.id}
-              className="flex items-center justify-between p-4 bg-white rounded-lg shadow border"
+              className="flex items-center justify-between p-4 
+            bg-ebony-50 border border-blue-200 
+            rounded-lg shadow 
+            hover:bg-ebony-100
+            transition-colors duration-200"
             >
               <div>
                 <p className="font-medium">{formatCard(t)}</p>
