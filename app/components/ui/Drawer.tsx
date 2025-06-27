@@ -10,7 +10,7 @@ import {
   ChevronUp,
   ArrowLeft,
 } from "lucide-react";
-import { Transition } from "@headlessui/react";
+import { Button, Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
 import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
@@ -230,7 +230,12 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                           <ul className="space-y-1">
                             {cat2.subcategorias.map((cat3) => (
                               <li key={cat3.id}>
-                                <button className="group flex items-center justify-between w-full text-left text-sm p-2 hover:bg-white hover:shadow-sm rounded-md cursor-pointer transition-all duration-150 border border-transparent hover:border-gray-200">
+                                <button className="group flex items-center justify-between w-full text-left text-sm p-2 hover:bg-white hover:shadow-sm rounded-md cursor-pointer transition-all duration-150 border border-transparent hover:border-gray-200"
+                                  onClick={() => {
+                                    router.push(`/categoria/3/${cat3.id}`);
+                                    onClose();
+                                  }}
+                                >
                                   <span className="text-black group-hover:text-black font-medium transition-colors">
                                     {cat3.nombre}
                                   </span>
@@ -239,12 +244,14 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
                               </li>
                             ))}
                           </ul>
-                          <a
+                          <button
                             className="inline-block mt-3 text-xs font-semibold text-black hover:text-black/70 hover:underline transition-colors px-2 py-1 rounded hover:bg-white/50"
-                            href=""
+                            onClick={() =>{
+                              router.push(`/categoria/2/${cat2.id}`);
+                            }}
                           >
                             Ver todo en {cat2.nombre}
-                          </a>
+                          </button>
                         </div>
                       )}
                     </li>
