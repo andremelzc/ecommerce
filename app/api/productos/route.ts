@@ -142,7 +142,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
     ${joinPromo}
     ${joinPromocion}
 
-    ${!isNaN(catLevel) && !isNaN(catId) ? `\n${joinCategory}` : ""}
+    ${!isNaN(catLevel) && !isNaN(catId) ? `\n${joinCategory}` : ""} 
       
     WHERE pe.id = (
       SELECT MIN(ID) 
