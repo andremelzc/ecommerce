@@ -2,6 +2,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { CreditCard } from "lucide-react";
 import {
   getTarjetas,
   saveTarjeta,
@@ -19,7 +20,9 @@ export default function MisMetodosPagoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editTarjeta, setEditTarjeta] = useState<SaveTarjetaParams | null>(null);
+  const [editTarjeta, setEditTarjeta] = useState<SaveTarjetaParams | null>(
+    null
+  );
 
   useEffect(() => {
     if (!userId) return;
@@ -34,9 +37,11 @@ export default function MisMetodosPagoPage() {
   if (error) return <div className="text-red-600">{error}</div>;
 
   const formatCard = (t: MetodoPagoRow) =>
-    `${t.tipo || "Tarjeta"} •••• ${t.numero_cuenta.slice(-4)} – ${t.fecha_vencimiento.slice(5, 7)}/${
-      t.fecha_vencimiento.slice(0, 4).slice(-2)
-    }`;
+    `${t.tipo || "Tarjeta"} •••• ${t.numero_cuenta.slice(
+      -4
+    )} – ${t.fecha_vencimiento.slice(5, 7)}/${t.fecha_vencimiento
+      .slice(0, 4)
+      .slice(-2)}`;
 
   const handleAdd = () => {
     if (!userId) return;
@@ -71,7 +76,9 @@ export default function MisMetodosPagoPage() {
         // Si este método se guarda como predeterminado, desmarcar todos los demás primero
         if (saved.es_predeterminado === 1) {
           // Asignar '0' al flag predeterminado y forzar tipo con assertion
-          const cleared: MetodoPagoRow[] = prev.map((t) => ({ ...t, es_predeterminado: 0 }) as MetodoPagoRow);
+          const cleared: MetodoPagoRow[] = prev.map(
+            (t) => ({ ...t, es_predeterminado: 0 } as MetodoPagoRow)
+          );
           const idx = cleared.findIndex((t) => t.id === saved.id);
           if (idx !== -1) {
             cleared[idx] = saved;
@@ -103,7 +110,10 @@ export default function MisMetodosPagoPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Mis Métodos de Pago</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <CreditCard className="text-black-600" size={20} />
+        Mis Métodos de Pago
+      </h1>
 
       <div className="space-y-4">
         {tarjetas.length > 0 ? (

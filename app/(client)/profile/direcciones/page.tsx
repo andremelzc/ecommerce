@@ -96,14 +96,9 @@ export default function MisDireccionesPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <MapPin className="text-red-600" size={28} />
+        <MapPin className="text-black-600" size={28} />
         Mis direcciones
       </h1>
-
-      <div className="text-center py-12">
-        <p className="text-lg text-gray-600 mb-4">¡Hola! Soy la página de direcciones 📍</p>
-        <p className="text-gray-500">Aquí podrás gestionar todas tus direcciones de entrega</p>
-      </div>
 
       <div className="space-y-6">
         {directions.length > 0 ? (

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { User } from "lucide-react";
 
 export default function MiPerfilPage() {
   const [toggleEdit, setToggleEdit] = useState(false);
@@ -92,7 +93,10 @@ export default function MiPerfilPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Mi perfil</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <User className="text-black-600" size={28} />
+        Mi perfil
+      </h1>
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -167,7 +171,9 @@ export default function MiPerfilPage() {
                 type="text"
                 className="w-full pl-16 pr-3 py-2 bg-ebony-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-ebony-500"
                 value={formData.documentId || ""}
-                onChange={(e) => handleInputChange("documentId", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("documentId", e.target.value)
+                }
                 placeholder="12345678"
                 disabled={true}
               />
