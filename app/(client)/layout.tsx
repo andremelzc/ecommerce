@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import { usePathname } from "next/navigation";
 import ClientLayout from "../components/shared/ClientLayout";
 import "@/app/globals.css";
 
@@ -8,13 +9,17 @@ export const metadata: Metadata = {
   description: "Descripción de mi aplicación",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+
+
   return (
     <html lang="en">
       <body>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

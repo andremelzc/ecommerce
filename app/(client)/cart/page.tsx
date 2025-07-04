@@ -17,7 +17,7 @@ export default function CartPage() {
           {/* Lista de productos */}
           <section className="flex-1 xl:max-w-4xl">
             <div className="mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+              <h2 className="text-xl sm:text-xl font-semibold text-gray-900">
                 Carrito de compras
               </h2>
               <p className="text-sm sm:text-base text-gray-600 mt-1">
@@ -139,7 +139,7 @@ export default function CartPage() {
           {cart.length > 0 && (
             <aside className="xl:w-80 xl:flex-shrink-0">
               <div className="sticky top-4">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl sm:text-xl font-semibold text-gray-900 mb-4">
                   Resumen
                 </h2>
 
