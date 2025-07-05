@@ -186,7 +186,7 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                   </span>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link href="/cart" onClick={handleCloseDrawer}>
+                  <Link href="/venta/carro-compras" onClick={handleCloseDrawer}>
                     <button className="w-full py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 font-semibold shadow-lg hover:scale-[1.02] cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-300">
                       Ir al carrito
                     </button>
