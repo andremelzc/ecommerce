@@ -147,7 +147,7 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
   const distritos = provincias.find(p => p.id === provinciaId)?.distritos || [];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
       <div className="bg-white p-6 rounded-lg w-full sm:w-96">
         <h1 className="text-2xl font-bold mb-4">{direccion ? "Editar Dirección" : "Añadir Dirección"}</h1>
         <form onSubmit={handleSubmit}>
