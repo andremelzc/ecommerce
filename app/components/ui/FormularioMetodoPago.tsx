@@ -15,7 +15,11 @@ interface FormularioProps {
   onClose: () => void;
 }
 
-export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: FormularioProps) {
+export default function FormularioMetodoPago({
+  tarjeta,
+  onSave,
+  onClose,
+}: FormularioProps) {
   const [form, setForm] = useState<SaveTarjetaParams>({ ...tarjeta });
   const [tipos, setTipos] = useState<TipoPagoRow[]>([]);
   const [loadingTipos, setLoadingTipos] = useState(true);
@@ -23,27 +27,29 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
 
   useEffect(() => {
     // Obtener lista de tipos de pago
-    fetch('/api/tipo-pago')
-      .then(res => {
-        if (!res.ok) throw new Error('Error cargando tipos');
+    fetch("/api/tipo-pago")
+      .then((res) => {
+        if (!res.ok) throw new Error("Error cargando tipos");
         return res.json();
       })
       .then((data: TipoPagoRow[]) => setTipos(data))
-      .catch(err => setError(err.message))
+      .catch((err) => setError(err.message))
       .finally(() => setLoadingTipos(false));
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
     let newValue: string | number | boolean;
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       newValue = (e.target as HTMLInputElement).checked;
-    } else if (name === 'tipoPagoId') {
+    } else if (name === "tipoPagoId") {
       newValue = Number(value);
     } else {
       newValue = value;
     }
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       [name]: newValue,
     }));
@@ -55,19 +61,22 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
       >
         <h2 className="text-xl font-semibold mb-4">
-          {form.id ? 'Editar Método' : 'Nuevo Método'}
+          {form.id ? "Editar Método" : "Nuevo Método"}
         </h2>
 
         {error && <p className="text-red-600 mb-2">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="tipoPagoId">
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="tipoPagoId"
+          >
             Tipo de Pago
           </label>
           {loadingTipos ? (
@@ -81,9 +90,13 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
               className="w-full border-gray-300 rounded p-2"
               required
             >
-              <option value={0} disabled>Seleccionar…</option>
-              {tipos.map(t => (
-                <option key={t.id} value={t.id}>{t.valor}</option>
+              <option value={0} disabled>
+                Seleccionar…
+              </option>
+              {tipos.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.valor}
+                </option>
               ))}
             </select>
           )}
@@ -105,7 +118,10 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1" htmlFor="numeroCuenta">
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="numeroCuenta"
+          >
             Número de Cuenta
           </label>
           <input
@@ -122,7 +138,10 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
 
         <div className="mb-4 grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="fechaVencimiento">
+            <label
+              className="block text-sm font-medium mb-1"
+              htmlFor="fechaVencimiento"
+            >
               Fecha de Vencimiento
             </label>
             <input
@@ -135,7 +154,7 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
               required
             />
           </div>
-          <div className="flex items-end">
+          {/* <div className="flex items-end">
             <label className="inline-flex items-center">
               <input
                 type="checkbox"
@@ -146,7 +165,7 @@ export default function FormularioMetodoPago({ tarjeta, onSave, onClose }: Formu
               />
               <span className="ml-2">Predeterminado</span>
             </label>
-          </div>
+          </div>*/}
         </div>
 
         <div className="flex justify-end gap-4">

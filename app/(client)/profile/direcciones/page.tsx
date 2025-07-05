@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { MapPin } from "lucide-react";
-import FormularioDireccion from "../../../components/ui/FormularioDireccion"; // Importa el componente del modal
+import FormularioDireccion from "../../../components/ui/FormularioDireccion";
 import { deleteDireccionHandler } from "../../../utils/deleteDireccionHandler";
 
 // Definimos la interfaz para la dirección
@@ -20,11 +20,11 @@ interface Direccion {
 
 export default function MisDireccionesPage() {
   const { data: session } = useSession();
-  const [directions, setDirections] = useState<Direccion[]>([]); // Estado para las direcciones
-  const [loading, setLoading] = useState(true); // Estado para la carga
-  const [error, setError] = useState<string | null>(null); // Para manejar errores
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
-  const [editDirection, setEditDirection] = useState<Direccion | null>(null); // Dirección a editar
+  const [directions, setDirections] = useState<Direccion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editDirection, setEditDirection] = useState<Direccion | null>(null);
 
   // Función para obtener las direcciones
   const fetchDirections = async () => {
@@ -56,7 +56,7 @@ export default function MisDireccionesPage() {
   }, [session]);
 
   if (loading) {
-    return <div>Cargando...</div>;
+    return <div>Cargando direcciones...</div>;
   }
 
   if (error) {
@@ -125,14 +125,14 @@ export default function MisDireccionesPage() {
       departamento: "",
       codigo_postal: "",
       isPrimary: false,
-    }); // Resetear la dirección para añadir una nueva
-    setIsModalOpen(true); // Abrir el modal
+    });
+    setIsModalOpen(true);
   };
 
   // Abrir el modal para editar una dirección
   const handleEditClick = (direction: Direccion) => {
-    setEditDirection(direction); // Establecer los datos de la dirección para editar
-    setIsModalOpen(true); // Abrir el modal
+    setEditDirection(direction);
+    setIsModalOpen(true);
   };
 
   // Función para cerrar el modal y refrescar las direcciones
@@ -147,10 +147,32 @@ export default function MisDireccionesPage() {
     }
   };
 
+  const handleDelete = async (direction: Direccion) => {
+    if (!session?.user?.id || !direction.id) return;
+
+    const confirmacion = confirm(
+      "¿Seguro que deseas eliminar esta dirección?"
+    );
+    if (!confirmacion) return;
+
+    const resultado = await deleteDireccionHandler(
+      direction.id,
+      Number(session.user.id)
+    );
+    if (resultado.ok) {
+      // Elimina visualmente la dirección de la lista sin recargar
+      setDirections((prev) =>
+        prev.filter((d) => d.id !== direction.id)
+      );
+    } else {
+      alert(resultado.mensaje);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-        <MapPin className="text-black-600" size={28} />
+        <MapPin className="text-ebony-800" size={28} />
         Mis direcciones
       </h1>
 
@@ -159,7 +181,12 @@ export default function MisDireccionesPage() {
           directions.map((direction) => (
             <div
               key={direction.id}
-              className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-200"
+              className={
+                `rounded-lg shadow-md border p-6 hover:shadow-lg transition-shadow duration-200 ` +
+                (direction.isPrimary
+                  ? 'bg-blue-50 border-blue-300 ring-1 ring-blue-200'
+                  : 'bg-white border-gray-200')
+              }
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -178,12 +205,12 @@ export default function MisDireccionesPage() {
                     </label>
                   </div>
 
-                  <p className="font-medium text-gray-800 mb-1">
+                  <p className={`font-medium mb-1 ${direction.isPrimary ? 'text-blue-800' : 'text-gray-800'}`}>
                     {formatAddress(direction)}
                   </p>
 
                   {direction.codigo_postal && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 mb-1">
                       Código postal: {direction.codigo_postal}
                     </p>
                   )}
@@ -198,27 +225,7 @@ export default function MisDireccionesPage() {
                   </button>
 
                   <button
-                    onClick={async () => {
-                      if (!session?.user?.id || !direction.id) return;
-
-                      const confirmacion = confirm(
-                        "¿Seguro que deseas eliminar esta dirección?"
-                      );
-                      if (!confirmacion) return;
-
-                      const resultado = await deleteDireccionHandler(
-                        direction.id,
-                        Number(session.user.id)
-                      );
-                      if (resultado.ok) {
-                        // Elimina visualmente la dirección de la lista sin recargar
-                        setDirections((prev) =>
-                          prev.filter((d) => d.id !== direction.id)
-                        );
-                      } else {
-                        alert(resultado.mensaje);
-                      }
-                    }}
+                    onClick={() => handleDelete(direction)}
                     className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
                   >
                     Eliminar
@@ -228,7 +235,7 @@ export default function MisDireccionesPage() {
             </div>
           ))
         ) : (
-          <p>No tienes direcciones disponibles.</p>
+          <p>No tienes direcciones registradas.</p>
         )}
       </div>
 
