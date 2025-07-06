@@ -10,6 +10,8 @@ interface PromocionRequest {
   fecha_fin: string;
   img_promocional?: string;
   porcentaje_descuento: number;
+  nivel: number; // prioridad
+  combinable: boolean;
   destino: {
     tipo: "CATEGORIA" | "PRODUCTO";
     ids: number[];
@@ -128,50 +130,6 @@ export async function GET() {
   }
 }
 
-async function aplicarPromocionPorCategorias(
-  connection: any,
-  body: PromocionRequest
-) {
-  const subcategoriasIds = body.subcategorias || [];
-  if (subcategoriasIds.length === 0) {
-    throw new Error("Debes seleccionar al menos una subcategoría");
-  }
-
-  // Verificar existencia de subcategorías
-  const placeholders = subcategoriasIds.map(() => "?").join(",");
-  const [found] = await connection.execute(
-    `SELECT id FROM categoria_nivel_2 WHERE id IN (${placeholders})`,
-    subcategoriasIds
-  );
-  if ((found as any[]).length !== subcategoriasIds.length) {
-    throw new Error("Algunas subcategorías especificadas no existen");
-  }
-
-  // Convertir a string CSV
-  const idsString = subcategoriasIds.join(",");
-
-  // Llamar al SP optimizado de categorías
-  const [[{ promocion_id, productos_afectados }]] = await connection.query(
-    `CALL AplicarPromocion_Categoria_Optimizada(
-       ?, ?, ?, ?, ?, ?, ?
-     )`,
-    [
-      body.nombre,
-      body.descripcion,
-      body.fecha_inicio,
-      body.fecha_fin,
-      body.img_promocional || null,
-      idsString,
-      body.porcentaje_descuento,
-    ]
-  );
-
-  console.log(
-    `✅ SP Categorías devolvió promocion_id=${promocion_id}, productos_afectados=${productos_afectados}`
-  );
-  return { promocion_id, productos_afectados };
-}
-
 async function aplicarPromocionPorProductos(
   connection: any,
   body: PromocionRequest
@@ -194,10 +152,12 @@ async function aplicarPromocionPorProductos(
   // Convertir a string CSV
   const idsString = productoIds.join(",");
 
-  // Llamar al Stored Procedure AplicarPromocion_Productos
+
+  // Llamar al Stored Procedure AplicarPromocion_Productos (ahora con nivel y combinable)
+  // IMPORTANTE: El SP debe aceptar los nuevos parámetros en el mismo orden
   const [[{ promocion_id, productos_afectados }]] = await connection.query(
     `CALL AplicarPromocion_Productos(
-       ?, ?, ?, ?, ?, ?, ?
+       ?, ?, ?, ?, ?, ?, ?, ?, ?
      )`,
     [
       body.nombre,
@@ -207,6 +167,8 @@ async function aplicarPromocionPorProductos(
       body.img_promocional || null,
       idsString,
       body.porcentaje_descuento,
+      body.nivel,
+      body.combinable ? 1 : 0,
     ]
   );
 
