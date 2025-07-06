@@ -45,46 +45,41 @@ const UserMenu = ({ isOpen, onClose, anchorRef }: DrawerProps) => {
         <div className="flex flex-col">
           <div className="text-gray-800 font-semibold">¡Bienvenido!</div>
           <hr className="my-2 border-t border-gray-200" />
+
           <Link
             href="/profile/mi-perfil"
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-            onClick={onClose} // Cerrar al hacer click
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer w-full"
+            onClick={onClose}
           >
-            <button className="flex items-center gap-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
-              <User size={18} />
-              <span>Mi perfil</span>
-            </button>
+            <User size={18} />
+            <span>Mi perfil</span>
           </Link>
 
           <Link
-            href="/profile/direcciones" // Aquí defines la ruta para las direcciones
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-            onClick={onClose} // Cerrar al hacer click
+            href="/profile/direcciones"
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer w-full"
+            onClick={onClose}
           >
-            <button className="flex items-center gap-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
-              <MapPin size={18} />
-              <span>Mis direcciones</span>
-            </button>
+            <MapPin size={18} />
+            <span>Mis direcciones</span>
           </Link>
 
-          <Link href="/profile/pedidos" // Aquí defines la ruta para las direcciones
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-            onClick={onClose}>
-          
-          <button className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+          <Link
+            href="/profile/pedidos"
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer w-full"
+            onClick={onClose}
+          >
             <Package size={18} />
             <span>Mis pedidos</span>
-          </button>
           </Link>
+
           <Link
-            href="/profile/metodo-pago" // Aquí defines la ruta para las direcciones
-            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-            onClick={onClose} // Cerrar al hacer click
-            >
-          <button className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+            href="/profile/metodo-pago"
+            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer w-full"
+            onClick={onClose}
+          >
             <CreditCard size={18} />
             <span>Mis métodos de pago</span>
-          </button>
           </Link>
           
 
