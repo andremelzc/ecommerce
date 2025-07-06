@@ -19,11 +19,19 @@ declare module "next-auth" {
   interface User {
     id: string;
     name?: string | null;
+    surname?: string | null;
+    phone?: string | null;
     email?: string | null;
     image?: string | null;
+    typeDocument?: string | null;
+    documentId?: string | null;
   }
 
   interface JWT {
     id?: string;
+    surname?: string | null;
+    phone?: string | null;
+    typeDocument?: string | null;
+    documentId?: string | null;
   }
 }

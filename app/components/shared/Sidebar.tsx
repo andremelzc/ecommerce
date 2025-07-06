@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, MapPin, Package, CreditCard, LogOut } from 'lucide-react';
+import { signOut } from "next-auth/react";
+
 
 const ProfileSidebar = () => {
   const pathname = usePathname();
@@ -32,7 +34,7 @@ const ProfileSidebar = () => {
   ];
 
   const handleLogout = () => {
-
+    signOut();
     console.log('Cerrar sesión');
   };
 
