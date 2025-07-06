@@ -7,6 +7,7 @@ import { Session, User } from "next-auth";
 import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcrypt";
 
+
 // Aqui se hacen las configuraciones necesarias
 // Aca se manejan proveedores, como github, google al momento de hacer login,
 // pero como veremos usuarios autenticados en nuestra BD, esto no sera necesario
@@ -26,25 +27,35 @@ const authOptions: NextAuthConfig = {
             },
             //credentials agarra el email y el password colocados
             async authorize(credentials, req) {
-                
+
                 console.log("Credenciales recibidas:");
                 console.log(credentials);
 
                 const [rows] = await db.query<resultadoRow[]>(
-                    "CALL authUser(?,?)",
-                    [credentials?.email, credentials?.password])
+                    "CALL authUser(?)",
+                    [credentials?.email])
                 const resultadoJSON = rows[0][0]?.resultado;
                 // Si ya es objeto, úsalo tal cual
                 const data = typeof resultadoJSON === "string"
                     ? JSON.parse(resultadoJSON)
                     : resultadoJSON ?? [];
-                const passwordBD = rows[0][0]?.resultado; // Asegúrate de que el campo password esté en el resultado
-                console.log("Datos obtenidos de la base de datos:");
-                console.log(data);
-                console.log("Contraseña obtenida de la base de datos:");
-                console.log(passwordBD)
-                //const isPasswordValid = await bcrypt.compare(credentials?.password, passwordBD);
-                if (data.ok ) {
+                /*  Ejemplo de data:
+                {
+                    ok: true,
+                    usuario: {
+                        id: 101,
+                        email: 'suycoriverap@gmail.com',
+                        nombre: 'Pedro jesus',
+                        apellido: 'Suyco rivera',
+                        password: '$2b$10$Y9eF5HphZmZtMP9FCZMQWeqo93lRbZ6trfzQAmZ6zwZ.0.8JQFoli',
+                        telefono: '957199045',
+                        identificacion: '72647844',
+                        tipo_identificacion: 'DNI'
+                    }
+                
+                */
+                const isPasswordValid = await bcrypt.compare(credentials?.password as string, data.usuario.password);
+                if (data.ok && isPasswordValid) {
                     return {
                         id: data.usuario.id,
                         name: data.usuario.nombre,
@@ -56,6 +67,7 @@ const authOptions: NextAuthConfig = {
                     };
                 } else {
                     return null; // no autorizado
+
                 }
 
             }
