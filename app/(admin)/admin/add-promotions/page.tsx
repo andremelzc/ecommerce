@@ -163,22 +163,19 @@ export default function PromotionForm() {
           <select
             id="nivel"
             name="nivel"
-            value={form.nivel.toString()}
-            onChange={e => handleChange({
-              ...e,
-              target: {
-                ...e.target,
-                value: e.target.value
-              }
-            })}
+            value={form.nivel}
+            onChange={e => {
+              const value = Number(e.target.value);
+              setForm(prev => ({ ...prev, nivel: value }));
+            }}
             required
             className="w-full rounded-md border px-4 py-2"
           >
-            <option value={1}>1 (Alta prioridad)</option>
+            <option value={3}>3 (Alta prioridad)</option>
             <option value={2}>2 (Media prioridad)</option>
-            <option value={3}>3 (Baja prioridad)</option>
+            <option value={1}>1 (Baja prioridad)</option>
           </select>
-          <p className="text-xs text-gray-500 mt-1">1 es la prioridad más alta, 3 la más baja.</p>
+          <p className="text-xs text-gray-500 mt-1">3 es la prioridad más alta, 1 la más baja.</p>
         </div>
         {/* Combinable */}
         <div className="flex items-center">

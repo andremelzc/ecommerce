@@ -398,6 +398,8 @@ export default function PromocionProductSelector() {
       fecha_fin: promotionDraft.fecha_fin,
       img_promocional: promotionDraft.img_promocional,
       porcentaje_descuento: promotionDraft.porcentaje_descuento,
+      nivel: promotionDraft.nivel,
+      combinable: promotionDraft.combinable,
       destino: {
         tipo: destino.tipo, // 'CATEGORIA' | 'PRODUCTO'
         ids: destino.ids, // [1,2,3…]
