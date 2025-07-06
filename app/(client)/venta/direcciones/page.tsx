@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { MapPin, Truck, Store, Plus, Edit2, Trash2, Check } from 'lucide-react';
+import { MapPin, Truck, Store, Plus, Edit2, Trash2, Check, Router } from 'lucide-react';
 import clsx from 'clsx';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { deleteDireccionHandler } from '@/app/utils/deleteDireccionHandler';
 import FormularioDireccion from '@/app/components/ui/FormularioDireccion';
 import { useCheckout } from '@/app/context/CheckoutContext';
@@ -36,6 +37,7 @@ const STORES = [
 ];
 
 export default function DireccionesPage() {
+  const router = useRouter();
   /** SESSION & STATE */
   const { data: session } = useSession();
   const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
@@ -158,6 +160,7 @@ export default function DireccionesPage() {
       costoEnvio: shippingCost ?? 0,
     });
     // TODO: navegar a /venta/metodo
+    router.push('/venta/metodo-pago');
   };
 
   /** LOADING / ERROR STATES */
