@@ -12,38 +12,37 @@ export async function GET(request: NextRequest) {
   const categoryLevel = params.get("categoryLevel") ?? "";
   const variationParam = params.get("variationIds") ?? ""; // 
   const selectedVariations = variationParam
-  .split(",")
-  .map((v) => v.trim())
-  .filter((v) => v !== "");
-  
-// Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
+    .split(",")
+    .map((v) => v.trim())
+    .filter((v) => v !== "");
+
+  // Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
   if (selectedVariations.length > 0) {
     console.log("usando API con variaciones")
-    return await fetchProductsWithVariations(selectedVariations, 
-                                              categoryId, 
-                                              categoryLevel, 
-                                              limit);
+    return await fetchProductsWithVariations(selectedVariations,
+      categoryId,
+      categoryLevel,
+      limit);
   }
   else {
     // Si no se seleccionaron variaciones, se realizan las otras opciones
-    console.log("usando API sin variaciones") 
-    return await fetchProductsWithoutVariations(categoryId, 
-                                              categoryLevel, 
-                                              limit, 
-                                              onlyPromo, 
-                                              promocionId, 
-                                              minPrecio, 
-                                              maxPrecio);
-     
+    console.log("usando API sin variaciones")
+    return await fetchProductsWithoutVariations(categoryId,
+      categoryLevel,
+      limit,
+      onlyPromo,
+      promocionId,
+      minPrecio,
+      maxPrecio);
+
   }
 
-  
+
 }
 async function fetchProductsWithVariations(selectedVariations: string[],
-                                          categoryId: string, 
-                                          categoryLevel: string, 
-                                          limit: string) 
-{
+  categoryId: string,
+  categoryLevel: string,
+  limit: string) {
   try {
     const sql = `
       SELECT 
@@ -54,16 +53,25 @@ async function fetchProductsWithVariations(selectedVariations: string[],
         p.descripcion,
         p.id,
         p.nombre,
+        MAX(ppe.porcentaje_desc) as porcentaje_desc,
         COUNT(DISTINCT vo.id) as matched_variations
       FROM variacion v
       JOIN categoria_nivel_${categoryLevel} cn ON cn.id = v.id_categoria_${categoryLevel}
       JOIN variacion_opcion vo ON v.id = vo.id_variacion
       JOIN combinaciones_producto cp ON cp.id_variacion_opcion = vo.id
       JOIN producto_especifico pe ON pe.id = cp.id_producto_especifico
+      LEFT JOIN promocion_producto_especifico ppe ON ppe.id_producto_especifico = pe.id 
       JOIN producto p ON pe.id_producto = p.id
       WHERE v.id_categoria_${categoryLevel} = ?
       AND vo.id IN (${selectedVariations.map(() => '?').join(',')})
-      GROUP BY pe.id
+      GROUP BY 
+        pe.id, 
+        pe.SKU, 
+        pe.precio, 
+        pe.imagen_producto, 
+       p.descripcion, 
+       p.id, 
+       p.nombre
       HAVING COUNT(DISTINCT vo.id) = ?
       LIMIT ?;
     `;
@@ -74,9 +82,10 @@ async function fetchProductsWithVariations(selectedVariations: string[],
       selectedVariations.length,
       parseInt(limit, 10) || 20,
     ];
-
+    console.log("SQL Query:", categoryId, selectedVariations, params);
     //Se ejecuta la consulta
     const [rows] = await db.query(sql, params);
+    console.log("Rows fetched:", rows);
     return NextResponse.json(rows);
 
   } catch (error) {
@@ -84,14 +93,13 @@ async function fetchProductsWithVariations(selectedVariations: string[],
     return NextResponse.json({ error: "Error al obtener productos con variaciones" }, { status: 500 });
   }
 }
-async function fetchProductsWithoutVariations(categoryId: string, 
-                                              categoryLevel: string, 
-                                              limit: string, 
-                                              onlyPromo: string, 
-                                              promocionId: string, 
-                                              minPrecio: string, 
-                                              maxPrecio: string) 
-{
+async function fetchProductsWithoutVariations(categoryId: string,
+  categoryLevel: string,
+  limit: string,
+  onlyPromo: string,
+  promocionId: string,
+  minPrecio: string,
+  maxPrecio: string) {
   // Si queremos productos que tengan alguna promoción o no
   const joinPromo =
     onlyPromo === "true"
@@ -190,5 +198,5 @@ async function fetchProductsWithoutVariations(categoryId: string,
   }
 
 }
-  
+
 
