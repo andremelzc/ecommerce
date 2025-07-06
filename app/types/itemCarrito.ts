@@ -5,4 +5,6 @@ export interface CartItem {
   image_producto: string;
   cantidad: number;
   precio: number;
+  precioOriginal?: number;
+  descuento?: number;
 }

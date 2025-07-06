@@ -18,17 +18,21 @@ export default function LoginForm() {
   const [loginError, setLoginError] = useState("");
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false,
     });
-    if (res?.ok) {
-      console.log("redirigiendo aaaa");
+    //console.log("res_error", res.error);
+    //const isError = res?.error;
+    //console.log("variable",isError)
+    if (res.error === undefined) {
+      console.log("redirigiendo");
       router.push("/");
     } else {
-      alert(res?.error);
+      //alert(res?.error);
+      setLoginError("Correo o contraseña incorrectos");
     }
   });
 
@@ -86,7 +90,7 @@ export default function LoginForm() {
       </div>
 
       {loginError && (
-        <p className="text-ebony-200 text-sm text-center">{loginError}</p>
+        <p className="text-red-500 text-sm  text-center">{loginError}</p>
       )}
 
       <button

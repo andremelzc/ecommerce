@@ -5,6 +5,8 @@ import { RowDataPacket } from "mysql2";
 import { JWT } from "next-auth/jwt";
 import { Session, User } from "next-auth";
 import type { NextAuthConfig } from "next-auth";
+import bcrypt from "bcrypt";
+
 
 // Aqui se hacen las configuraciones necesarias
 // Aca se manejan proveedores, como github, google al momento de hacer login,
@@ -15,7 +17,7 @@ interface resultadoRow extends RowDataPacket {
     resultado: string // Para que lo arrojado por mi stored tenga un tipo de dato
 }
 
-const authOptions : NextAuthConfig = {
+const authOptions: NextAuthConfig = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -25,28 +27,47 @@ const authOptions : NextAuthConfig = {
             },
             //credentials agarra el email y el password colocados
             async authorize(credentials, req) {
+
+                console.log("Credenciales recibidas:");
                 console.log(credentials);
+
                 const [rows] = await db.query<resultadoRow[]>(
-                    "CALL authUser(?,?)",
-                    [credentials?.email, credentials?.password])
+                    "CALL authUser(?)",
+                    [credentials?.email])
                 const resultadoJSON = rows[0][0]?.resultado;
                 // Si ya es objeto, úsalo tal cual
                 const data = typeof resultadoJSON === "string"
                     ? JSON.parse(resultadoJSON)
                     : resultadoJSON ?? [];
-
-                console.log(data);
-                console.log(data.ok);
-                if (data.ok) {
+                /*  Ejemplo de data:
+                {
+                    ok: true,
+                    usuario: {
+                        id: 101,
+                        email: 'suycoriverap@gmail.com',
+                        nombre: 'Pedro jesus',
+                        apellido: 'Suyco rivera',
+                        password: '$2b$10$Y9eF5HphZmZtMP9FCZMQWeqo93lRbZ6trfzQAmZ6zwZ.0.8JQFoli',
+                        telefono: '957199045',
+                        identificacion: '72647844',
+                        tipo_identificacion: 'DNI'
+                    }
+                
+                */
+                const isPasswordValid = await bcrypt.compare(credentials?.password as string, data.usuario.password);
+                if (data.ok && isPasswordValid) {
                     return {
                         id: data.usuario.id,
                         name: data.usuario.nombre,
                         email: data.usuario.email,
-                        surname : data.usuario.apellido,
+                        surname: data.usuario.apellido,
                         phone: data.usuario.telefono,
+                        typeDocument: data.usuario.tipo_identificacion,
+                        documentId: data.usuario.identificacion
                     };
                 } else {
                     return null; // no autorizado
+
                 }
 
             }
@@ -56,15 +77,25 @@ const authOptions : NextAuthConfig = {
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user }: { token: JWT; user?: User }) {
+        async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+
+                // ⚠️ Aquí usamos "as any" para acceder a campos extra
+                token.surname = (user as any).surname;
+                token.phone = (user as any).phone;
+                token.typeDocument = (user as any).typeDocument;
+                token.documentId = (user as any).documentId;
             }
             return token;
         },
         async session({ session, token }: { session: Session; token: JWT }) {
-            if (token.id && session.user) {
+            if (session.user) {
                 session.user.id = token.id as string;
+                session.user.surname = token.surname as string;
+                session.user.phone = token.phone as string;
+                session.user.typeDocument = token.typeDocument as string;
+                session.user.documentId = token.documentId as string;
             }
             return session;
         }
@@ -73,6 +104,6 @@ const authOptions : NextAuthConfig = {
 
 
 //esto nos arroja una funcion, geneerlmente un handler
-const {handlers:{GET,POST},auth} = NextAuth(authOptions);
+const { handlers: { GET, POST }, auth } = NextAuth(authOptions);
 //depende de que necesitamos se llamaria a la funcion
 export { GET, POST, auth };
