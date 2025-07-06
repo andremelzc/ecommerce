@@ -15,7 +15,7 @@ interface resultadoRow extends RowDataPacket {
     resultado: string // Para que lo arrojado por mi stored tenga un tipo de dato
 }
 
-const authOptions : NextAuthConfig = {
+const authOptions: NextAuthConfig = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -35,15 +35,15 @@ const authOptions : NextAuthConfig = {
                     ? JSON.parse(resultadoJSON)
                     : resultadoJSON ?? [];
 
-                console.log(data);
-                console.log(data.ok);
                 if (data.ok) {
                     return {
                         id: data.usuario.id,
                         name: data.usuario.nombre,
                         email: data.usuario.email,
-                        surname : data.usuario.apellido,
+                        surname: data.usuario.apellido,
                         phone: data.usuario.telefono,
+                        typeDocument: data.usuario.tipo_identificacion,
+                        documentId: data.usuario.identificacion
                     };
                 } else {
                     return null; // no autorizado
@@ -56,15 +56,25 @@ const authOptions : NextAuthConfig = {
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user }: { token: JWT; user?: User }) {
+        async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+
+                // ⚠️ Aquí usamos "as any" para acceder a campos extra
+                token.surname = (user as any).surname;
+                token.phone = (user as any).phone;
+                token.typeDocument = (user as any).typeDocument;
+                token.documentId = (user as any).documentId;
             }
             return token;
         },
         async session({ session, token }: { session: Session; token: JWT }) {
-            if (token.id && session.user) {
+            if (session.user) {
                 session.user.id = token.id as string;
+                session.user.surname = token.surname as string;
+                session.user.phone = token.phone as string;
+                session.user.typeDocument = token.typeDocument as string;
+                session.user.documentId = token.documentId as string;
             }
             return session;
         }
@@ -73,6 +83,6 @@ const authOptions : NextAuthConfig = {
 
 
 //esto nos arroja una funcion, geneerlmente un handler
-const {handlers:{GET,POST},auth} = NextAuth(authOptions);
+const { handlers: { GET, POST }, auth } = NextAuth(authOptions);
 //depende de que necesitamos se llamaria a la funcion
 export { GET, POST, auth };
