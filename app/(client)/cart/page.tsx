@@ -3,12 +3,24 @@
 import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { formatPrice } from "@/app/utils/formatPrice";
-import { QuantityButton } from '@/app/components/ui/QuantityButton';
+import { QuantityButton } from "@/app/components/ui/QuantityButton";
 import { Minus, Trash2 } from "lucide-react";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart();
-  const subtotal = cart.reduce((sum, i) => sum + i.precio * i.cantidad, 0);
+
+  // Calcular subtotales
+  const subtotalSinDescuento = cart.reduce(
+    (sum, i) => sum + (i.precioOriginal ?? i.precio) * i.cantidad,
+    0
+  );
+
+  const subtotalConDescuento = cart.reduce(
+    (sum, i) => sum + i.precio * i.cantidad,
+    0
+  );
+
+  const ahorro = subtotalSinDescuento - subtotalConDescuento;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-ebony-50">
@@ -21,7 +33,7 @@ export default function CartPage() {
                 Carrito de compras
               </h2>
               <p className="text-sm sm:text-base text-gray-600 mt-1">
-                {cart.length} {cart.length === 1 ? 'producto' : 'productos'}
+                {cart.length} {cart.length === 1 ? "producto" : "productos"}
               </p>
             </div>
 
@@ -30,8 +42,8 @@ export default function CartPage() {
                 <p className="text-gray-600 mb-4 text-base sm:text-lg">
                   Tu carrito está vacío
                 </p>
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className="inline-block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
                 >
                   Volver al catálogo
@@ -44,12 +56,14 @@ export default function CartPage() {
                     key={item.productId}
                     className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow"
                   >
-                    {/* Layout móvil y tablet */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                      {/* Imagen y detalles del producto */}
+                      {/* Imagen y detalles */}
                       <div className="flex gap-4 flex-1 min-w-0">
                         <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0">
-                          <Link href={`/productos/${item.productId}`} prefetch={true}>
+                          <Link
+                            href={`/productos/${item.productId}`}
+                            prefetch={true}
+                          >
                             <img
                               src={item.image_producto}
                               alt={item.nombre}
@@ -57,9 +71,9 @@ export default function CartPage() {
                             />
                           </Link>
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
-                          <Link 
+                          <Link
                             href={`/productos/${item.productId}`}
                             className="block hover:text-red-600 transition-colors"
                           >
@@ -70,22 +84,22 @@ export default function CartPage() {
                           <p className="text-sm text-gray-600 mt-1 line-clamp-2 sm:line-clamp-1">
                             {item.descripcion}
                           </p>
-                          
+
                           {/* Precio en móvil */}
                           <div className="mt-2 sm:hidden">
-                            <span className="font-bold text-lg text-gray-900">
-                              {formatPrice(item.precio * item.cantidad)}
-                            </span>
-                            {item.cantidad > 1 && (
-                              <span className="text-sm text-gray-500 ml-2">
-                                ({item.cantidad} × {formatPrice(item.precio)})
+                            {item.precioOriginal && item.precioOriginal !== item.precio && (
+                              <span className="text-sm text-gray-500 line-through mr-2">
+                                {formatPrice(item.precioOriginal * item.cantidad)}
                               </span>
                             )}
+                            <span className="font-bold text-lg text-red-600">
+                              {formatPrice(item.precio * item.cantidad)}
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Controles - Layout diferente en móvil vs desktop */}
+                      {/* Controles */}
                       <div className="flex items-center justify-between sm:justify-end sm:items-center gap-4 sm:gap-6">
                         {/* Controles de cantidad */}
                         <div className="flex items-center bg-gray-50 rounded-lg p-1 shadow-sm">
@@ -102,21 +116,23 @@ export default function CartPage() {
                           <span className="px-3 sm:px-2 text-sm font-semibold min-w-[2.5rem] sm:min-w-[2rem] text-center">
                             {item.cantidad}
                           </span>
-                          
-                          <QuantityButton  item={item} size="sm" className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"/>
-
+                          <QuantityButton
+                            item={item}
+                            size="sm"
+                            className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                          />
                         </div>
 
                         {/* Precio en desktop */}
                         <div className="hidden sm:block text-right min-w-[6rem]">
-                          <div className="font-bold text-lg text-gray-900">
-                            {formatPrice(item.precio * item.cantidad)}
-                          </div>
-                          {item.cantidad > 1 && (
-                            <div className="text-xs text-gray-500">
-                              {item.cantidad} × {formatPrice(item.precio)}
+                          {item.precioOriginal && item.precioOriginal !== item.precio && (
+                            <div className="text-sm text-gray-500 line-through">
+                              {formatPrice(item.precioOriginal * item.cantidad)}
                             </div>
                           )}
+                          <div className="font-bold text-lg text-red-600">
+                            {formatPrice(item.precio * item.cantidad)}
+                          </div>
                         </div>
 
                         {/* Botón eliminar */}
@@ -135,7 +151,7 @@ export default function CartPage() {
             )}
           </section>
 
-          {/* Resumen de la compra */}
+          {/* Resumen */}
           {cart.length > 0 && (
             <aside className="xl:w-80 xl:flex-shrink-0">
               <div className="sticky top-4">
@@ -144,14 +160,27 @@ export default function CartPage() {
                 </h2>
 
                 <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm">
-                  {/* Desglose */}
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between text-gray-600">
                       <span className="text-sm sm:text-base">
-                        Subtotal ({cart.reduce((sum, item) => sum + item.cantidad, 0)} productos)
+                        Subtotal antes de descuento
                       </span>
-                      <span className="font-medium text-sm sm:text-base">
-                        {formatPrice(subtotal)}
+                      <span className="text-sm sm:text-base line-through text-gray-400">
+                        {formatPrice(subtotalSinDescuento)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span className="text-sm sm:text-base">
+                        Subtotal con descuento
+                      </span>
+                      <span className="font-medium text-red-600 text-sm sm:text-base">
+                        {formatPrice(subtotalConDescuento)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-green-700 font-medium">
+                      <span className="text-sm sm:text-base">Ahorro</span>
+                      <span className="text-sm sm:text-base">
+                        -{formatPrice(ahorro)}
                       </span>
                     </div>
                     <div className="flex justify-between text-gray-600">
@@ -164,17 +193,15 @@ export default function CartPage() {
 
                   <hr className="border-gray-200 my-4" />
 
-                  {/* Total */}
                   <div className="flex justify-between items-center mb-6">
                     <span className="font-bold text-lg sm:text-xl text-gray-900">
-                      Total
+                      Total a pagar
                     </span>
                     <span className="font-bold text-xl sm:text-2xl text-black-600">
-                      {formatPrice(subtotal)}
+                      {formatPrice(subtotalConDescuento)}
                     </span>
                   </div>
 
-                  {/* Botones de acción */}
                   <div className="space-y-3">
                     <button
                       onClick={() => {
@@ -184,7 +211,7 @@ export default function CartPage() {
                     >
                       Proceder al pago
                     </button>
-                    
+
                     <button
                       onClick={clearCart}
                       className="w-full py-2 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer transition-colors font-medium text-sm sm:text-base"
@@ -193,7 +220,6 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  {/* Info adicional */}
                   <div className="mt-4 pt-4 border-t border-gray-100">
                     <p className="text-xs sm:text-sm text-gray-500 text-center">
                       Pago seguro y protegido

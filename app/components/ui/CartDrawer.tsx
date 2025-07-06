@@ -156,10 +156,23 @@ const CartDrawer = ({ isOpen, onClose }: DrawerProps) => {
                           </span>
                           <QuantityButton  item={item} size="sm" className="p-2 sm:p-1.5 rounded-md hover:bg-white hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"/>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-bold text-ebony-950">
-                            {formatPrice(item.precio * item.cantidad)}
-                          </span>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-right">
+                          {item.descuento && item.descuento > 0 ? (
+                            <>
+                              <div className="flex flex-col sm:items-end">
+                                <span className="text-xs text-gray-500 line-through">
+                                  {formatPrice((item.precioOriginal ?? item.precio) * item.cantidad)}
+                                </span>
+                                <span className="text-sm font-bold text-red-600">
+                                  {formatPrice(item.precio * item.cantidad)}
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <span className="text-sm font-bold text-ebony-950">
+                              {formatPrice(item.precio * item.cantidad)}
+                            </span>
+                          )}
                           <button
                             onClick={() => removeItem(item.productId)}
                             className="p-2 hover:bg-red-50 rounded-lg hover:scale-110 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-300 group"
