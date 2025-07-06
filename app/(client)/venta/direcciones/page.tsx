@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { deleteDireccionHandler } from '@/app/utils/deleteDireccionHandler';
 import FormularioDireccion from '@/app/components/ui/FormularioDireccion';
+import { useCheckout } from '@/app/context/CheckoutContext';
 
 /**
  * Paso 2 de 4 — Dirección / Método de entrega ✦ Diseño «Ebony»
@@ -46,6 +47,65 @@ export default function DireccionesPage() {
   const [directions, setDirections] = useState<Direccion[]>([]);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState<string | null>(null);
+
+
+  const { orden, setOrden } = useCheckout();
+
+  // Estado local para el costo de envío y loading
+  const [shippingCost, setShippingCost] = useState<number | null>(null);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+
+  // Actualizar el context según el método de entrega
+  useEffect(() => {
+    if (deliveryMethod === 'delivery' && selectedAddress) {
+      setOrden({
+        ...orden,
+        direccionEnvioId: selectedAddress,
+        metodoEnvioId: 1, // Envío a domicilio
+      });
+    } else if (deliveryMethod === 'pickup' && selectedStore) {
+      setOrden({
+        ...orden,
+        direccionEnvioId: null,
+        metodoEnvioId: 2, // Recojo en tienda (ajusta el id según tu modelo)
+      });
+    }
+  }, [deliveryMethod, selectedAddress, selectedStore]);
+
+  // Consultar costo de envío dinámicamente
+  useEffect(() => {
+    if (deliveryMethod !== 'delivery' || !selectedAddress) {
+      setShippingCost(0);
+      setShippingError(null);
+      setShippingLoading(false);
+      return;
+    }
+    setShippingLoading(true);
+    setShippingError(null);
+    fetch(`/api/envio?direccionId=${selectedAddress}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error('No se pudo calcular el costo de envío');
+        const data = await res.json();
+        // Debug: mostrar la respuesta de la API en consola
+        console.log('API /api/envio response:', data);
+        let costo = data.costoEnvio;
+        if (typeof costo === 'string') {
+          const parsed = parseFloat(costo);
+          costo = isNaN(parsed) ? null : parsed;
+        }
+        if (typeof costo !== 'number' || isNaN(costo)) {
+          setShippingCost(null);
+        } else {
+          setShippingCost(costo);
+        }
+      })
+      .catch((err) => {
+        setShippingError('Error al calcular el costo de envío');
+        setShippingCost(null);
+      })
+      .finally(() => setShippingLoading(false));
+  }, [deliveryMethod, selectedAddress]);
 
   /** FETCH direcciones del usuario */
   useEffect(() => {
@@ -92,7 +152,12 @@ export default function DireccionesPage() {
   };
 
   const handleContinue = () => {
-    // TODO: persistir en contexto y navegar a /venta/metodo
+    // Al continuar, guardar el costo de envío en el context
+    setOrden({
+      ...orden,
+      costoEnvio: shippingCost ?? 0,
+    });
+    // TODO: navegar a /venta/metodo
   };
 
   /** LOADING / ERROR STATES */
@@ -113,6 +178,11 @@ export default function DireccionesPage() {
   /* -------------------------------------------------------------------- */
   return (
     <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-4">
+      {/* Debug: mostrar datos del context de checkout */}
+      <pre className="bg-yellow-50 text-xs text-yellow-900 border border-yellow-200 rounded p-2 mb-4 overflow-x-auto">
+        <strong>orden (CheckoutContext):</strong>\n{JSON.stringify(orden, null, 2)}
+      </pre>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
         <header className="mb-6">
@@ -261,9 +331,33 @@ export default function DireccionesPage() {
               {/* TODO: conectar con carrito real */}
               <div className="space-y-3 mb-6 text-sm">
                 <div className="flex justify-between text-ebony-600"><span>Subtotal</span><span>S/ 349.99</span></div>
-                <div className="flex justify-between text-ebony-600"><span>Envío</span><span>{deliveryMethod === 'pickup' ? 'Gratis' : 'S/ 15.00'}</span></div>
+                <div className="flex justify-between text-ebony-600">
+                  <span>Envío</span>
+                  <span>
+                    {deliveryMethod === 'pickup' ? (
+                      'Gratis'
+                    ) : shippingLoading ? (
+                      <span className="text-ebony-400">Calculando…</span>
+                    ) : shippingError ? (
+                      <span className="text-red-600">Error</span>
+                    ) : shippingCost !== null ? (
+                      `S/ ${shippingCost.toFixed(2)}`
+                    ) : (
+                      '--'
+                    )}
+                  </span>
+                </div>
                 <hr className="border-ebony-200" />
-                <div className="flex justify-between font-semibold text-ebony-900"><span>Total</span><span>S/ {deliveryMethod === 'pickup' ? '349.99' : '364.99'}</span></div>
+                <div className="flex justify-between font-semibold text-ebony-900">
+                  <span>Total</span>
+                  <span>
+                    {deliveryMethod === 'pickup'
+                      ? '349.99'
+                      : shippingCost !== null
+                        ? (349.99 + shippingCost).toFixed(2)
+                        : '--'}
+                  </span>
+                </div>
               </div>
               <button
                 onClick={handleContinue}

@@ -13,16 +13,50 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { Minus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/app/context/CartContext';
+import {useSession} from 'next-auth/react';
+import { useCheckout } from '@/app/context/CheckoutContext';
 import { formatPrice } from '@/app/utils/formatPrice';
 import { QuantityButton } from '@/app/components/ui/QuantityButton';
+import { useEffect } from 'react';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart();
+  const { orden, setOrden } = useCheckout();
+  const { data: session } = useSession();
   const subtotal = cart.reduce((s, i) => s + i.precio * i.cantidad, 0);
   const itemsQty = cart.reduce((s, i) => s + i.cantidad, 0);
 
+  // Setear el id de usuario en el context de checkout
+  useEffect(()=> {
+    if(session?.user?.id && orden.usuarioId !== session.user.id) {
+      setOrden({
+        ...orden,
+        usuarioId: session.user.id,
+        // puedes agregar más datos aquí si lo necesitas
+      });
+    }
+  });
+
+  // Cuando el usuario hace click en "Realizar pedido", guarda el subtotal en el context
+  const handleRealizarPedido = () => {
+    setOrden({
+      ...orden,
+      subtotal,
+      // puedes guardar más datos aquí si lo necesitas
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-6">
+      {/* Debug: mostrar datos del context de checkout y del cart */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-4">
+        <pre className="bg-yellow-50 text-xs text-yellow-900 border border-yellow-200 rounded p-2 overflow-x-auto w-full sm:w-1/2">
+          <strong>orden (CheckoutContext):</strong>\n{JSON.stringify(orden, null, 2)}
+        </pre>
+        <pre className="bg-blue-50 text-xs text-blue-900 border border-blue-200 rounded p-2 overflow-x-auto w-full sm:w-1/2">
+          <strong>cart (CartContext):</strong>\n{JSON.stringify(cart, null, 2)}
+        </pre>
+      </div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ─── Header ─────────────────────────────────────────────── */}
         <header className="mb-6">
@@ -136,7 +170,11 @@ export default function CartPage() {
                   <hr className="border-ebony-200" />
                   <div className="flex justify-between font-semibold text-ebony-900"><span>Total</span><span>{formatPrice(subtotal)}</span></div>
                 </div>
-                <Link href="/venta/direcciones" className="block w-full py-3 text-center rounded-lg font-bold shadow-lg transition-all bg-ebony-700 text-white hover:bg-ebony-800 transform hover:-translate-y-0.5">
+                <Link
+                  href="/venta/direcciones"
+                  className="block w-full py-3 text-center rounded-lg font-bold shadow-lg transition-all bg-ebony-700 text-white hover:bg-ebony-800 transform hover:-translate-y-0.5"
+                  onClick={handleRealizarPedido}
+                >
                   Realizar pedido
                 </Link>
                 <div className="flex items-center justify-center gap-2 mt-4 text-sm text-ebony-500"><div className="w-2 h-2 bg-ebony-700 rounded-full" /> Pago seguro y protegido</div>

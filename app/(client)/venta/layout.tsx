@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import CheckoutHeader from "../../components/shared/CheckoutHeader";
 import React from "react";
+import { CheckoutProvider } from "@/app/context/CheckoutContext";
 
 /**
  * CheckoutLayout
@@ -37,16 +38,18 @@ export default function CheckoutLayout({
   );
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header con logo y stepper */}
-      <CheckoutHeader />
+    <CheckoutProvider>
+      <main className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Header con logo y stepper */}
+        <CheckoutHeader />
 
-      {/* Contenido del paso */}
-      <section className="min-h-screen bg-ebony-50">
-        <div className="container-padding">
-          <div className="w-full mx-auto py-8">{children}</div>
-        </div>
-      </section>
-    </main>
+        {/* Contenido del paso */}
+        <section className="min-h-screen bg-ebony-50">
+          <div className="container-padding">
+            <div className="w-full mx-auto py-8">{children}</div>
+          </div>
+        </section>
+      </main>
+    </CheckoutProvider>
   );
 }
