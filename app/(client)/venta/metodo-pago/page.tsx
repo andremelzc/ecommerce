@@ -13,6 +13,8 @@ import { CreditCard, Wallet, Banknote, Check } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useCheckout } from '@/app/context/CheckoutContext';
+
 
 // 👉 Sustituye con tu propio subtotal / summary hook si lo tienes
 const fakeCartSubtotal = 349.99;
@@ -20,6 +22,7 @@ const fakeCartSubtotal = 349.99;
 export default function PagoPage() {
   const router = useRouter();
   const [method, setMethod] = useState<string | null>(null);
+  const { orden, setOrden } = useCheckout();
 
   const paymentOptions = [
     { id: 'card',    label: 'Tarjeta de crédito', icon: CreditCard },
@@ -30,11 +33,21 @@ export default function PagoPage() {
   const handlePay = () => {
     if (!method) return;
     // Aquí iría tu lógica de tokenización / redirección a gateway
+    setOrden({
+      ...orden,
+      metodoPagoId: method === 'card' ? 1 :
+                    method === 'bizum' ? 2 :
+                    method === 'bank' ? 3 : null,
+    });
     router.push('/venta/resumen');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-6">
+      {/* Debug: mostrar datos del context de checkout */}
+      <pre className="bg-yellow-50 text-xs text-yellow-900 border border-yellow-200 rounded p-2 mb-4 overflow-x-auto">
+        <strong>orden (CheckoutContext):</strong>\n{JSON.stringify(orden, null, 2)}
+      </pre>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <header className="mb-6 sm:mb-8">
