@@ -10,7 +10,7 @@ const UserMenu = ({ isOpen, onClose, anchorRef }: DrawerProps) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const handleSignOut = async () => {
-    signOut({ callbackUrl: "/" });
+    signOut();
   };
 
   useEffect(() => {
