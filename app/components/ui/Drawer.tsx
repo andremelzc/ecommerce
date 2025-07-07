@@ -20,7 +20,7 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   const router = useRouter();
   // LLamada al api
   const [categoriasData, setCategoriasData] = useState<CategoriaNivel1[]>([]);
-
+  
   useEffect(() => {
     if (isOpen) {
       setLoading(true);

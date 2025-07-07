@@ -16,16 +16,12 @@ export async function GET(request: Request) {
       "CALL sp_listar_direcciones_usuario(?)",
       [parseInt(usuario_id, 10)]
     );
-
+    //console.log("Llamada al stored procedure sp_listar_direcciones_usuario con usuario_id:", usuario_id);
+    //console.log("Resultados de la llamada al stored procedure:", rows);
     // MySQL devuelve los resultados en rows[0]
     const results = rows[0];
+    //console.log("Resultados de direcciones:", results);
 
-    if (!results || results.length === 0) {
-      return NextResponse.json(
-        { error: "No se encontraron direcciones para este usuario." },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(results);
   } catch (error) {
