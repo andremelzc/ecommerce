@@ -7,7 +7,7 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-    console.log("TOKEN MIDDLEWARE", token);
+    //console.log("TOKEN MIDDLEWARE", token);
 
   if (!token) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
