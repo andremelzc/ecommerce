@@ -22,6 +22,15 @@ export async function GET(request: Request) {
     const results = rows[0];
     //console.log("Resultados de direcciones:", results);
 
+    // cuenca
+
+    if (!results || results.length === 0) {
+      return NextResponse.json(
+        { error: "No se encontraron direcciones para este usuario." },
+        { status: 404 }
+      );
+    }
+
 
     return NextResponse.json(results);
   } catch (error) {

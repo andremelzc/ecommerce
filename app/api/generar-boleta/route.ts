@@ -57,10 +57,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
+    console.log(typeof(subtotal), subtotal, typeof(costoEnvio), costoEnvio, typeof(total), total);
     // 3) Generar PDF
     const pdfBuffer = await generarBoletaPDF(
-      info, items, subtotal, costoEnvio, total
+      info, items, subtotal, costoEnvio, subtotal + costoEnvio
     );
     if (!Buffer.isBuffer(pdfBuffer)) {
       throw new Error("El PDF generado no es un Buffer.");

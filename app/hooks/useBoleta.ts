@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useCart } from '@/app/context/CartContext';
-import { useCheckout } from '@/app/context/CheckoutContext';
-import { enviarDatosBoletaApi } from '@/lib/boleta';
-import { ItemPayload, GenerarBoletaPayload } from "@/app/types/GenerarBoletaPayload";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useCart } from "@/app/context/CartContext";
+import { useCheckout } from "@/app/context/CheckoutContext";
+import { enviarDatosBoletaApi } from "@/lib/boleta";
+import {
+  ItemPayload,
+  GenerarBoletaPayload,
+} from "@/app/types/GenerarBoletaPayload";
+import { getUltimoPagoMercadoPago } from "@/app/utils/getUltimoPagoMercadoPago";
 
 export function useBoleta() {
   const { data: session } = useSession();
@@ -13,7 +17,7 @@ export function useBoleta() {
   const { orden } = useCheckout();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   async function generar() {
@@ -21,56 +25,59 @@ export function useBoleta() {
     setError(null);
     setSuccess(false);
 
-    if (!session?.user?.id) {
-      setError('Debes iniciar sesión para continuar.');
+    // Obtener los datos del último pago desde la API
+    const pago = await getUltimoPagoMercadoPago();
+    if (!pago) {
+      setError("No hay datos de pago disponibles");
       setLoading(false);
       return;
     }
+    console.log("[useBoleta] Datos de pago recibidos:", pago);
+    
+    if(pago.tipo_pago === "credit_card"){
+      pago.tipo_pago = 1;
+    } else if(pago.tipo_pago === "bank_transfer"){
+      pago.tipo_pago = 3;
+    } else if(pago.tipo_pago === "debit_card"){
+      pago.tipo_pago = 2;   }
+    // Mapear los datos del pago a los campos requeridos
+    const usuarioId = pago.usuario_id;
+    const metodoPagoId = pago.tipo_pago;
+    const direccionEnvioId = pago.direccion_envio_id;
+    const metodoEnvioId = pago.metodo_envio_id;
+    const subtotal = pago.subtotal_orden ?? 0;
+    const costoEnvio = pago.costo_envio ?? 0;
+    const total = pago.total ?? subtotal + costoEnvio;
+    const items: ItemPayload[] = Array.isArray(pago.cart_resumen)
+      ? pago.cart_resumen.map((item: any) => ({
+          nombre: item.nombre,
+          cantidad: item.cantidad,
+          precioUnitario: item.precioOriginal ?? item.precio_original ?? 0,
+        }))
+      : [];
 
-    // Prueba manual: asigna aquí tus valores
-    const usuarioId        = 3;
-    const metodoPagoId     = 1;
-    const direccionEnvioId = 2;
-    const metodoEnvioId    = 1;
-    const estadoOrdenId    = 1;
-
-    // Descomenta para volver al valor real
-    // const usuarioId        = session?.user.id!;
-    // const {
-    //   metodoPagoId     = null,
-    //   direccionEnvioId = null,
-    //   metodoEnvioId    = null,
-    //   estadoOrdenId    = null,
-    //   subtotal         = 0,
-    //   costoEnvio       = 0,
-    //   total            = 0
-    // } = orden;
-
-    // Para el subtotal, costoEnvio y total, puedes seguir usando orden o hardcodearlos igual:
-    const subtotal   = orden.subtotal   ?? 0;
-    const costoEnvio = orden.costoEnvio ?? 0;
-    const total      = orden.total      ?? 0;
-
-    // Prepara los items
-    const items: ItemPayload[] = cart.map(i => ({
-      nombre:         i.nombre,
-      cantidad:       i.cantidad,
-      precioUnitario: typeof i.precio === 'string'
-        ? parseFloat(i.precio)
-        : i.precio,
-    }));
-
-    // Construye el payload con valores de prueba
-    const payload: GenerarBoletaPayload = {
-      usuarioId:        session.user.id!,
+    // LOG: Datos que se enviarán en el payload
+    console.log("[useBoleta] Payload generado:", {
+      usuarioId,
       metodoPagoId,
       direccionEnvioId,
       metodoEnvioId,
-      estadoOrdenId:1,
       items,
       subtotal,
       costoEnvio,
-      total: subtotal + costoEnvio,
+      total,
+    });
+
+    const payload: GenerarBoletaPayload = {
+      usuarioId,
+      metodoPagoId,
+      direccionEnvioId,
+      metodoEnvioId:1,
+      estadoOrdenId: 1,
+      items,
+      subtotal,
+      costoEnvio,
+      total,
     };
 
     try {
@@ -78,7 +85,7 @@ export function useBoleta() {
       setSuccess(true);
       //clearCart();
     } catch (err: any) {
-      setError(err.message || 'Error generando boleta');
+      setError(err.message || "Error generando boleta");
     } finally {
       setLoading(false);
     }
