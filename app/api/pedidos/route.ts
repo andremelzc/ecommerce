@@ -11,11 +11,11 @@ export async function GET(req: NextRequest) {
 
   try {
     const [rows]: any = await db.query(`
-      SELECT o.id, o.orden_total, eo.estado, d.calle, d.lote, d.piso, di.nombre AS distrito
+      SELECT o.id, o.total_orden, eo.estado, d.calle, d.lote, d.piso, di.nombre AS distrito
       FROM orden_producto_especifico AS ope
       JOIN orden AS o ON o.id = ope.id_orden
       JOIN estado_orden AS eo ON eo.id = o.id_estado_orden 
-      JOIN direccion AS d ON d.id = o.direccion_envio
+      JOIN direccion AS d ON d.id = o.id_direccion_envio
       JOIN distrito AS di ON di.id = d.id_distrito
       WHERE o.id_usuario = ? 
       LIMIT 10

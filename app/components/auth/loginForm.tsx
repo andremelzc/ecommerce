@@ -11,6 +11,7 @@ export default function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const router = useRouter();
@@ -29,10 +30,12 @@ export default function LoginForm() {
     //console.log("variable",isError)
     if (res.error === undefined) {
       console.log("redirigiendo");
-      router.push("/");
+      router.push("/profile/mi-perfil");
     } else {
       //alert(res?.error);
       setLoginError("Correo o contraseña incorrectos");
+      reset();
+
     }
   });
 
