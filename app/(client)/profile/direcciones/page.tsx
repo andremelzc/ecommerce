@@ -33,7 +33,7 @@ export default function MisDireccionesPage() {
     try {
       const usuario_id = session.user.id;
       const res = await fetch(`/api/direccion?usuario_id=${usuario_id}`);
-
+      console.log("res",res)
       if (res.ok) {
         const data = await res.json();
         setDirections(data);

@@ -138,7 +138,7 @@ async function fetchProductsWithoutVariations(categoryId: string,
       p.descripcion,
       pe.imagen_producto,
       pe.precio,               -- aquí es el precio máximo
-      ppe.porcentaje_desc
+      traer_descuento(pe.id) AS porcentaje_desc
 
     FROM Ecommerce.producto AS p
     INNER JOIN Ecommerce.producto_especifico AS pe 

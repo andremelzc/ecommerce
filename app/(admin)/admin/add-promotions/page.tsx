@@ -18,10 +18,15 @@ export default function PromotionForm() {
   }, [promotionDraft]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setForm(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
 
     if (name === 'fecha_inicio' || name === 'fecha_fin') {
       const updated = { ...form, [name]: value };
@@ -150,6 +155,43 @@ export default function PromotionForm() {
           />
           </div>
 
+        {/* Prioridad de la Promoción */}
+        <div>
+          <label htmlFor="nivel" className="block mb-2 font-semibold">
+            Prioridad de la Promoción
+          </label>
+          <select
+            id="nivel"
+            name="nivel"
+            value={form.nivel}
+            onChange={e => {
+              const value = Number(e.target.value);
+              setForm(prev => ({ ...prev, nivel: value }));
+            }}
+            required
+            className="w-full rounded-md border px-4 py-2"
+          >
+            <option value={3}>3 (Alta prioridad)</option>
+            <option value={2}>2 (Media prioridad)</option>
+            <option value={1}>1 (Baja prioridad)</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">3 es la prioridad más alta, 1 la más baja.</p>
+        </div>
+        {/* Combinable */}
+        <div className="flex items-center">
+          <input
+            id="combinable"
+            name="combinable"
+            type="checkbox"
+            checked={form.combinable}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          <label htmlFor="combinable" className="font-semibold">
+            ¿Es combinable con otras promociones?
+          </label>
+        </div>
+
         <button
           type="submit"
           disabled={
@@ -159,7 +201,8 @@ export default function PromotionForm() {
             !form.img_promocional ||
             !form.fecha_inicio ||
             !form.fecha_fin ||
-            form.porcentaje_descuento < 0
+            form.porcentaje_descuento < 0 ||
+            !form.nivel
           }
           className="w-full mt-8 py-3 rounded-md font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
         >
