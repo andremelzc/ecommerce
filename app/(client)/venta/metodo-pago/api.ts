@@ -46,27 +46,23 @@ const api = {
         quantity: Number(item.cantidad),
         unit_price: Number(item.precio),
       }));
-
-      // Construir el cart_resumen desde metadata o fallback al cart original
-      const cart_resumen = Array.isArray(metadata.cartResumen)
+      
+      const cart_resumen_base = Array.isArray(metadata.cartResumen)
         ? metadata.cartResumen
         : Array.isArray(metadata.cart_resumen)
         ? metadata.cart_resumen
-        : cart.map((item) => {
-            let precioOriginal = Number(item.precioOriginal);
-            if (isNaN(precioOriginal)) {
-              precioOriginal = Number(item.precio);
-            }
-            if (isNaN(precioOriginal)) {
-              precioOriginal = 0;
-            }
-            return {
-              id_producto_especifico: item.productId,
-              precioOriginal,
-              descuento: Number(item.descuento ?? 0),
-              cantidad: Number(item.cantidad),
-            };
-          });
+        : cart;
+
+      const cart_resumen = cart_resumen_base.map((item, idx) => ({
+        
+        id_producto_especifico: item.id_producto_especifico ?? item.productId,
+        nombre: item.nombre ?? cart[idx]?.nombre, // Siempre intenta incluir el nombre
+        precioOriginal: item.precioOriginal ?? item.precio_original ?? Number(item.precio) ?? 0,
+        descuento: Number(item.descuento ?? 0),
+        cantidad: Number(item.cantidad),
+      }));
+
+
 
       // Crear la preferencia con solo los métodos de pago permitidos
       const preference = await new Preference(mercadopago).create({
