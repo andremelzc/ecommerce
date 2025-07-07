@@ -110,9 +110,8 @@ export default function DireccionesPage() {
   }, [deliveryMethod, selectedAddress]);
 
   /** FETCH direcciones del usuario */
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    const fetchDirections = async () => {
+  const fetchDirections = async () => {
+      if (!session?.user?.id) return;
       try {
         const res = await fetch(`/api/direccion?usuario_id=${session.user.id}`);
         if (!res.ok) throw new Error('Error al obtener las direcciones');
@@ -126,6 +125,10 @@ export default function DireccionesPage() {
         setLoading(false);
       }
     };
+
+  useEffect(() => {
+    
+    
     fetchDirections();
   }, [session]);
 
@@ -379,7 +382,7 @@ export default function DireccionesPage() {
       </div>
 
       {/* Modal */}
-      {isModalOpen && <FormularioDireccion direccion={editDirection} onClose={() => setIsModalOpen(false)} />}      
+      {isModalOpen && <FormularioDireccion direccion={editDirection} onClose={(shouldRefresh) => { setIsModalOpen(false); if (shouldRefresh) fetchDirections();}} />}      
     </div>
   );
 }

@@ -7,7 +7,6 @@ export const updateDireccionHandler = async (data: {
   calle: string;
   distrito: string;
   codigo_postal: string;
-  isPrimary: boolean;
 }) => {
   try {
     const response = await fetch("/api/direccion/editar", {

@@ -5,7 +5,6 @@ interface FormDataDireccion {
   calle: string | null;
   distrito: string | null;
   codigo_postal: string | null;
-  isPrimary: boolean;
 }
 
 export async function crearDireccion(
@@ -19,7 +18,6 @@ export async function crearDireccion(
     calle: formData.calle,
     distrito: formData.distrito,
     codigo_postal: formData.codigo_postal,
-    isPrimary: formData.isPrimary,
   };
 
   try {

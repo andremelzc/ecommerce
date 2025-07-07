@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest) {
       calle,
       distrito,
       codigo_postal,
-      isPrimary
+      //isPrimary
     } = await req.json();
 
     if (!direccion_id || !usuario_id) {
@@ -20,7 +20,7 @@ export async function PUT(req: NextRequest) {
     }
 
     await db.query(
-      `CALL ActualizarDireccionUsuario(?, ?, ?, ?, ?, ?, ?, ?, @resultado);`,
+      `CALL ActualizarDireccionUsuario(?, ?, ?, ?, ?, ?, ?,  @resultado);`,
       [
         direccion_id,
         usuario_id,
@@ -29,7 +29,7 @@ export async function PUT(req: NextRequest) {
         calle,
         distrito,
         codigo_postal,
-        isPrimary ? 1 : 0
+        //isPrimary ? 1 : 0
       ]
     );
 
