@@ -77,30 +77,7 @@ export default function DireccionesPage() {
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
-  // Estado para debug visual
-  const [debugCart, setDebugCart] = useState<{
-    cart: any[];
-    cartResumen: any[];
-  } | null>(null);
-
-  // DEBUG: Calcular cartResumen en tiempo real
-  const cartResumenDebug = cart.map(
-    ({ productId, precio, precioOriginal, descuento, cantidad }) => {
-      let precioFinal = Number(precioOriginal);
-      if (isNaN(precioFinal)) {
-        precioFinal = Number(precio);
-      }
-      if (isNaN(precioFinal)) {
-        precioFinal = 0;
-      }
-      return {
-        id_producto_especifico: productId,
-        precioOriginal: precioFinal,
-        descuento: Number(descuento ?? 0),
-        cantidad: Number(cantidad),
-      };
-    }
-  );
+  // ...existing code...
 
   // Actualizar el context según el método de entrega
   useEffect(() => {
@@ -133,8 +110,7 @@ export default function DireccionesPage() {
       .then(async (res) => {
         if (!res.ok) throw new Error("No se pudo calcular el costo de envío");
         const data = await res.json();
-        // Debug: mostrar la respuesta de la API en consola
-        console.log("API /api/envio response:", data);
+        // ...existing code...
         let costo = data.costoEnvio;
         if (typeof costo === "string") {
           const parsed = parseFloat(costo);
@@ -226,7 +202,7 @@ export default function DireccionesPage() {
     // Redirigir a MercadoPago directamente
     // DEBUG: Mostrar cart y cartResumen en el frontend antes de enviar
     // Mostrar en pantalla para debug visual
-    setDebugCart({ cart: [...cart], cartResumen: cartResumenDebug });
+    // ...existing code...
     await crearPreferenciaMP({
       cart: cart.map(
         ({
@@ -253,7 +229,7 @@ export default function DireccionesPage() {
         subtotal: orden.subtotal,
         costoEnvio: shippingCost ?? 0,
         total: orden.total ?? 0,
-        cartResumen: cartResumenDebug, // Usar el debug que ya es correcto
+        // ...existing code...
       },
     });
   };
@@ -283,11 +259,7 @@ export default function DireccionesPage() {
   /* -------------------------------------------------------------------- */
   return (
     <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-4">
-      {/* Debug: mostrar datos del context de checkout */}
-      <pre className="bg-yellow-50 text-xs text-yellow-900 border border-yellow-200 rounded p-2 mb-4 overflow-x-auto">
-        <strong>orden (CheckoutContext):</strong>\n
-        {JSON.stringify(orden, null, 2)}
-      </pre>
+      {/* ...existing code... */}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Encabezado */}
@@ -587,17 +559,7 @@ export default function DireccionesPage() {
         </div>
       </div>
 
-      {/* DEBUG: Mostrar cart y cartResumen en el frontend en tiempo real */}
-      <div className="bg-gray-100 p-4 rounded mb-4">
-        <h3 className="font-bold mb-2">DEBUG: CartContext</h3>
-        <pre className="text-xs overflow-x-auto bg-white p-2 rounded border border-gray-200 mb-2">
-          {JSON.stringify(cart, null, 2)}
-        </pre>
-        <h3 className="font-bold mb-2">DEBUG: cartResumen a enviar</h3>
-        <pre className="text-xs overflow-x-auto bg-white p-2 rounded border border-gray-200">
-          {JSON.stringify(cartResumenDebug, null, 2)}
-        </pre>
-      </div>
+      {/* ...existing code... */}
 
       {/* Modal */}
       {isModalOpen && (
