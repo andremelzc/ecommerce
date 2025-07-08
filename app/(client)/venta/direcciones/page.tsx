@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import {
   MapPin,
@@ -10,10 +10,8 @@ import {
   Edit2,
   Trash2,
   Check,
-  Router,
 } from "lucide-react";
 import clsx from "clsx";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteDireccionHandler } from "@/app/utils/deleteDireccionHandler";
 import FormularioDireccion from "@/app/components/ui/FormularioDireccion";
@@ -21,16 +19,6 @@ import { useCheckout } from "@/app/context/CheckoutContext";
 import { useCart } from "@/app/context/CartContext";
 import { crearPreferenciaMP } from "../metodo-pago/mercado-pago/actions";
 
-/**
- * Paso 2 de 4 — Dirección / Método de entrega ✦ Diseño «Ebony»
- * ─────────────────────────────────────────────────────────────
- * • Paleta coherente con CartPage (bg‑gradient, ebony‑700, etc.)
- * • Dos modos   » Envío a domicilio   » Recojo en tienda
- * • Tarjetas seleccionables con ring‑ebony‑700, sombra suave al hover
- * • Modal de alta/edición de direcciones (usa tu componente existente)
- */
-
-// ▼ Tipos auxiliares ---------------------------------------------------------
 interface Direccion {
   id?: number;
   piso: string | null;
@@ -55,43 +43,58 @@ const STORES = [
 
 export default function DireccionesPage() {
   const router = useRouter();
-  /** SESSION & STATE */
   const { data: session } = useSession();
+  const { cart } = useCart();
+  const { orden, setOrden } = useCheckout();
+
+  // MÉTODOS DE ENTREGA
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">(
     "delivery"
   );
   const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
   const [selectedStore, setSelectedStore] = useState<number>(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editDirection, setEditDirection] = useState<Direccion | null>(null);
 
+  // DIRECCIONES
   const [directions, setDirections] = useState<Direccion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { orden, setOrden } = useCheckout();
-  const { cart } = useCart();
-
-  // Estado local para el costo de envío y loading
+  // COSTO DE ENVÍO
   const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
 
-  // ...existing code...
+  // MODAL DE DIRECCIÓN
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editDirection, setEditDirection] = useState<Direccion | null>(null);
 
-  // Actualizar el context según el método de entrega
+  // CALCULAR SUBTOTAL Y TOTAL
+  const subtotal = useMemo(
+    () =>
+      cart.reduce((acc, item) => acc + item.precio * item.cantidad, 0),
+    [cart]
+  );
+
+  const total =
+    deliveryMethod === "pickup"
+      ? subtotal
+      : shippingCost !== null
+      ? subtotal + shippingCost
+      : null;
+
+  // Actualizar orden en el contexto cuando cambian método o selección
   useEffect(() => {
     if (deliveryMethod === "delivery" && selectedAddress) {
       setOrden({
         ...orden,
         direccionEnvioId: selectedAddress,
-        metodoEnvioId: 1, // Envío a domicilio
+        metodoEnvioId: 1,
       });
-    } else if (deliveryMethod === "pickup" && selectedStore) {
+    } else if (deliveryMethod === "pickup") {
       setOrden({
         ...orden,
         direccionEnvioId: null,
-        metodoEnvioId: 2, // Recojo en tienda (ajusta el id según tu modelo)
+        metodoEnvioId: 2,
       });
     }
   }, [deliveryMethod, selectedAddress, selectedStore]);
@@ -106,39 +109,35 @@ export default function DireccionesPage() {
     }
     setShippingLoading(true);
     setShippingError(null);
+
     fetch(`/api/envio?direccionId=${selectedAddress}`)
       .then(async (res) => {
         if (!res.ok) throw new Error("No se pudo calcular el costo de envío");
         const data = await res.json();
-        // ...existing code...
         let costo = data.costoEnvio;
         if (typeof costo === "string") {
           const parsed = parseFloat(costo);
           costo = isNaN(parsed) ? null : parsed;
         }
-        if (typeof costo !== "number" || isNaN(costo)) {
-          setShippingCost(null);
-        } else {
-          setShippingCost(costo);
-        }
+        setShippingCost(typeof costo === "number" && !isNaN(costo) ? costo : null);
       })
-      .catch((err) => {
+      .catch(() => {
         setShippingError("Error al calcular el costo de envío");
         setShippingCost(null);
       })
       .finally(() => setShippingLoading(false));
   }, [deliveryMethod, selectedAddress]);
 
-  /** FETCH direcciones del usuario */
+  // Obtener direcciones del usuario
   useEffect(() => {
     if (!session?.user?.id) return;
     const fetchDirections = async () => {
       try {
         const res = await fetch(`/api/direccion?usuario_id=${session.user.id}`);
         if (!res.ok) throw new Error("Error al obtener las direcciones");
-        const data = await res.json();
+        const data: Direccion[] = await res.json();
         setDirections(data);
-        const primary = data.find((d: Direccion) => d.isPrimary) ?? data[0];
+        const primary = data.find((d) => d.isPrimary) ?? data[0];
         setSelectedAddress(primary?.id ?? null);
       } catch (err: any) {
         setError(err.message);
@@ -149,22 +148,14 @@ export default function DireccionesPage() {
     fetchDirections();
   }, [session]);
 
-  /** HELPERS */
   const formatAddress = (d: Direccion) => {
-    const line1 = [
-      d.piso && `Piso ${d.piso}`,
-      d.lote && `Lote ${d.lote}`,
-      d.calle,
-    ]
+    const line1 = [d.piso && `Piso ${d.piso}`, d.lote && `Lote ${d.lote}`, d.calle]
       .filter(Boolean)
       .join(" ");
-    const line2 = [d.distrito, d.provincia, d.departamento]
-      .filter(Boolean)
-      .join(", ");
+    const line2 = [d.distrito, d.provincia, d.departamento].filter(Boolean).join(", ");
     return `${line1}${line1 && line2 ? ", " : ""}${line2}`;
   };
 
-  /** UI CALLBACKS */
   const openNewAddress = () => {
     setEditDirection({
       piso: "",
@@ -178,6 +169,7 @@ export default function DireccionesPage() {
     });
     setIsModalOpen(true);
   };
+
   const openEditAddress = (d: Direccion) => {
     setEditDirection(d);
     setIsModalOpen(true);
@@ -189,20 +181,22 @@ export default function DireccionesPage() {
     const res = await deleteDireccionHandler(d.id, Number(session.user.id));
     if (res.ok) {
       setDirections((prev) => prev.filter((x) => x.id !== d.id));
-      if (selectedAddress === d.id)
-        setSelectedAddress((prev) => (prev === d.id ? null : prev));
-    } else alert(res.mensaje);
+      if (selectedAddress === d.id) setSelectedAddress(null);
+    } else {
+      alert(res.mensaje);
+    }
   };
 
   const handleContinue = async () => {
+    // Actualizar contexto con subtotal y total reales
     setOrden({
       ...orden,
+      subtotal,
       costoEnvio: shippingCost ?? 0,
+      total: total ?? subtotal,
     });
-    // Redirigir a MercadoPago directamente
-    // DEBUG: Mostrar cart y cartResumen en el frontend antes de enviar
-    // Mostrar en pantalla para debug visual
-    // ...existing code...
+
+    // Crear preferencia en MercadoPago
     await crearPreferenciaMP({
       cart: cart.map(
         ({
@@ -226,21 +220,20 @@ export default function DireccionesPage() {
         usuarioId: orden.usuarioId,
         direccionEnvioId: orden.direccionEnvioId,
         metodoEnvioId: orden.metodoEnvioId,
-        subtotal: orden.subtotal,
+        subtotal,
         costoEnvio: shippingCost ?? 0,
-        total: orden.total ?? 0,
-        // ...existing code...
+        total: total ?? subtotal,
       },
     });
   };
 
-  /** LOADING / ERROR STATES */
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ebony-50 to-ebony-100/30">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-ebony-700" />
       </div>
     );
+
   if (error)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-ebony-50 to-ebony-100/30">
@@ -256,13 +249,9 @@ export default function DireccionesPage() {
       </div>
     );
 
-  /* -------------------------------------------------------------------- */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-4">
-      {/* ...existing code... */}
-
+    <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Encabezado */}
         <header className="mb-6">
           <div className="flex items-center gap-4 mb-2">
             <div className="p-1.5 bg-gradient-to-r from-ebony-900 to-ebony-900 rounded-lg">
@@ -273,12 +262,11 @@ export default function DireccionesPage() {
             </h1>
           </div>
           <p className="text-sm sm:text-base text-ebony-600 font-medium">
-            Paso 2 de 4 — Selecciona dónde recibirás tu pedido
+            Paso 2 de 4 — Selecciona dónde recibirás tu pedido
           </p>
         </header>
 
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Columna principal */}
           <section className="flex-1 lg:max-w-3xl space-y-6">
             {/* Método de entrega */}
             <div className="bg-white rounded-xl p-6 shadow-md border border-ebony-200/50">
@@ -359,7 +347,6 @@ export default function DireccionesPage() {
                         )}
                       >
                         <div className="flex items-start gap-3">
-                          {/* radio */}
                           <span
                             className={clsx(
                               "w-5 h-5 rounded-full ring-2 flex items-center justify-center mt-0.5",
@@ -380,7 +367,7 @@ export default function DireccionesPage() {
                             </p>
                             {d.codigo_postal && (
                               <p className="text-xs text-ebony-600">
-                                CP {d.codigo_postal}
+                                CP {d.codigo_postal}
                               </p>
                             )}
                           </div>
@@ -447,7 +434,6 @@ export default function DireccionesPage() {
                       )}
                     >
                       <div className="flex items-start gap-3">
-                        {/* radio */}
                         <span
                           className={clsx(
                             "w-5 h-5 rounded-full ring-2 flex items-center justify-center mt-0.5",
@@ -498,43 +484,36 @@ export default function DireccionesPage() {
             )}
           </section>
 
-          {/* Summary */}
+          {/* Resumen */}
           <aside className="lg:w-80 lg:flex-shrink-0">
             <div className="sticky top-6 bg-white rounded-xl p-6 shadow-lg border border-ebony-200/50">
               <h3 className="text-lg font-semibold text-ebony-900 mb-4">
                 Resumen
               </h3>
-              {/* TODO: conectar con carrito real */}
               <div className="space-y-3 mb-6 text-sm">
                 <div className="flex justify-between text-ebony-600">
                   <span>Subtotal</span>
-                  <span>S/ 349.99</span>
+                  <span>S/ {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-ebony-600">
                   <span>Envío</span>
                   <span>
-                    {deliveryMethod === "pickup" ? (
-                      "Gratis"
-                    ) : shippingLoading ? (
-                      <span className="text-ebony-400">Calculando…</span>
-                    ) : shippingError ? (
-                      <span className="text-red-600">Error</span>
-                    ) : shippingCost !== null ? (
-                      `S/ ${shippingCost.toFixed(2)}`
-                    ) : (
-                      "--"
-                    )}
+                    {deliveryMethod === "pickup"
+                      ? "Gratis"
+                      : shippingLoading
+                      ? <span className="text-ebony-400">Calculando…</span>
+                      : shippingError
+                      ? <span className="text-red-600">Error</span>
+                      : shippingCost !== null
+                      ? `S/ ${shippingCost.toFixed(2)}`
+                      : "--"}
                   </span>
                 </div>
                 <hr className="border-ebony-200" />
                 <div className="flex justify-between font-semibold text-ebony-900">
                   <span>Total</span>
                   <span>
-                    {deliveryMethod === "pickup"
-                      ? "349.99"
-                      : shippingCost !== null
-                      ? (349.99 + shippingCost).toFixed(2)
-                      : "--"}
+                    {total !== null ? `S/ ${total.toFixed(2)}` : "--"}
                   </span>
                 </div>
               </div>
@@ -559,9 +538,6 @@ export default function DireccionesPage() {
         </div>
       </div>
 
-      {/* ...existing code... */}
-
-      {/* Modal */}
       {isModalOpen && (
         <FormularioDireccion
           direccion={editDirection}
