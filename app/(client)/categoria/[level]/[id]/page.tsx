@@ -53,6 +53,8 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
   const [hasInitializedRange, setHasInitializedRange] = useState(false);
   const [initialMin, setInitialMin] = useState<number | null>(null);
   const [initialMax, setInitialMax] = useState<number | null>(null);
+  const [hasUserSetPrice, setHasUserSetPrice] = useState(false);
+
 
   // Para cambiar dinámicamente el filtro de ProductSection
   const filterType = selectedVariations.length > 0 ? "byVariacion" : "byCategory";
@@ -221,6 +223,34 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
             </div>
           </div>
         </div>
+
+        {/* Categorías hijas */}
+        <CategoryGrid level={categoryLevel} id={categoryId} />
+        {/* Productos */}
+        <ProductSection
+          title="Productos en esta categoría"
+          key={productSectionKey}
+          MinPrecioEnvia={minPrecio}
+          MaxPrecioEnvia={maxPrecio}
+          filterType={filterType}
+          categoryLevel={categoryLevel}
+          categoryId={categoryId}
+          limit={20}
+          asCarousel={false}
+          selectedVariations={selectedVariations} // Pasamos las variaciones seleccionadas
+          onPrecioChange={(minPrecio, maxPrecio) => {
+            if (!hasInitializedRange && selectedVariations.length === 0) {
+              console.log("Callback en page:", minPrecio, maxPrecio);
+              setMinPrecio(minPrecio);
+              setMaxPrecio(maxPrecio);
+              setInitialMin(Number(minPrecio));
+              setInitialMax(Number(maxPrecio));
+              // Marca que ya se inicializó el rango y no se volvera a inicializar por cada llamada
+              setHasInitializedRange(true);
+            }
+          }}
+        />
+
       </div>
     </div>
   );

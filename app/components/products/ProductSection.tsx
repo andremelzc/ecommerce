@@ -76,60 +76,68 @@ const ProductSection = ({
             // No se añaden parámetros específicos
             break;
         }
-
+        console.log(filterType)
         if (limit) {
           params.append("limit", limit.toString());
         }
-        if (MinPrecioEnvia) {
-          params.append("minPrecio", MinPrecioEnvia.toString());
+        if (filterType !== "byVariacion") {
+          if (MinPrecioEnvia) {
+            params.append("minPrecio", MinPrecioEnvia.toString());
+          }
+          if (MaxPrecioEnvia) {
+            params.append("maxPrecio", MaxPrecioEnvia.toString());
+          }
         }
-        if (MaxPrecioEnvia) {
-          params.append("maxPrecio", MaxPrecioEnvia.toString());
-        }
+          const response = await fetch(`/api/productos?${params.toString()}`);
+          if (!response.ok) {
+            throw new Error("Error al cargar los productos");
+          }
+          const data = await response.json();
+          /*console.log("Datos obtenidos:", data);
+          {
+           products: Array(6),
+           minPrecio: '180.00', 
+           maxPrecio: '670.00'
+         }
+         */
 
-        const response = await fetch(`/api/productos?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error("Error al cargar los productos");
+
+          if (data.products.length > 0) {
+            setProductos(data.products);
+            setMinPrecio(data.minPrecio);     // Nuevo
+            setMaxPrecio(data.maxPrecio);     // Nuevo
+            console.log(onPrecioChange);
+            //Si recibe valores de minPrecio y maxPrecio, los actualiza
+            if (onPrecioChange) {
+              console.log("onPrecioChange:", data.minPrecio, data.maxPrecio);
+              onPrecioChange(data.minPrecio, data.maxPrecio);
+            }
+            console.log("Productos obtenidos:", data);
+            console.log(`/api/productos?${params.toString()}`);
+          } else {
+            // Opción 1: NO haces nada y mantienes productos actuales
+            // Opción 2: Podrías mostrar un mensaje "Sin resultados", depende de UX
+          }
+
+
+        } catch (error) {
+          console.error("Error al obtener productos:", error);
+          setError("Error al cargar los productos");
+          setProductos([]);
+
         }
-        const data = await response.json();
-        /*console.log("Datos obtenidos:", data);
-        {
-         products: Array(6),
-         minPrecio: '180.00', 
-         maxPrecio: '670.00'
-       }
-       */
-        setProductos(data.products);
-        setMinPrecio(data.minPrecio);     // Nuevo
-        setMaxPrecio(data.maxPrecio);     // Nuevo
-        console.log(onPrecioChange);
-        //Si recibe valores de minPrecio y maxPrecio, los actualiza
-        // Llamar a onPrecioChange solo si los valores realmente cambiaron
-        if (onPrecioChange && (data.minPrecio !== minPrecioState || data.maxPrecio !== maxPrecioState)) {
-          // Usar setTimeout para evitar el warning de React
-          setTimeout(() => {
-            onPrecioChange(data.minPrecio, data.maxPrecio);
-          }, 0);
-        }
-        console.log("Productos obtenidos:", data);
-        console.log(`/api/productos?${params.toString()}`);
-      } catch (error) {
-        console.error("Error al obtener productos:", error);
-        setError("Error al cargar los productos");
-        setProductos([]);
       }
-    }
     fetchProducts();
-  }, [
-    filterType,
-    categoryId,
-    categoryLevel,
-    promotionId,
-    limit,
-    selectedVariations,
-    MinPrecioEnvia,
-    MaxPrecioEnvia,
-  ]);
+    }, [
+      filterType,
+      categoryId,
+      categoryLevel,
+      promotionId,
+      limit,
+      selectedVariations,
+      MinPrecioEnvia,
+      MaxPrecioEnvia,
+    ]);
 
   return (
     <section>

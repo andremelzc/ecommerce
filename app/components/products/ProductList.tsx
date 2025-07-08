@@ -7,7 +7,7 @@ import { usePagination } from "@/app/hooks/usePagination";
 
 const ProductList = ({ productos, horizontal, itemsPage }: ProductListProps) => {
   const pagination = usePagination({
-    data: productos,
+    data: productos ?? [],
     itemsPerPage: itemsPage ?? 20
   });
 
@@ -29,7 +29,7 @@ const ProductList = ({ productos, horizontal, itemsPage }: ProductListProps) => 
             nombre={producto.nombre}
             descripcion={producto.descripcion}
             imagen_producto={producto.imagen_producto}
-            precio={producto.precio}
+            precio={Number(producto.precio)}
             porcentaje_desc={producto.porcentaje_desc}
           />
         ))}
