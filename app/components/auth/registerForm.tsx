@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-
+import { sendGAEvent } from "@next/third-parties/google";
 export default function RegisterForm() {
   const {
     register,
@@ -27,6 +27,10 @@ export default function RegisterForm() {
       //console.log("debugging");
       //console.log(response);
       if (response.ok) {
+        sendGAEvent("event", "sign_up", 
+          {
+            method: "email",
+          });
         Router.push('/auth/login');
       }
     }
