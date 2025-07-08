@@ -46,6 +46,8 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
   const [hasInitializedRange, setHasInitializedRange] = useState(false);
   const [initialMin, setInitialMin] = useState<number | null>(null);
   const [initialMax, setInitialMax] = useState<number | null>(null);
+  const [hasUserSetPrice, setHasUserSetPrice] = useState(false);
+
 
 
   //Para cambiar dinamicamente el filtro de ProductSection

@@ -90,7 +90,7 @@ async function fetchProductsWithVariations(selectedVariations: string[],
     //Se ejecuta la consulta
     const [rows] = await db.query(sql, params);
     console.log("Rows fetched:", rows);
-    return NextResponse.json(rows);
+    return NextResponse.json({ products: rows });
 
   } catch (error) {
     console.error("Error al obtener productos con variaciones:", error);
