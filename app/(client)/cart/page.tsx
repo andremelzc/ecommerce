@@ -5,6 +5,7 @@ import { useCart } from "@/app/context/CartContext";
 import { formatPrice } from "@/app/utils/formatPrice";
 import { QuantityButton } from "@/app/components/ui/QuantityButton";
 import { Minus, Trash2 } from "lucide-react";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeItem, clearCart } = useCart();
@@ -205,7 +206,10 @@ export default function CartPage() {
                   <div className="space-y-3">
                     <button
                       onClick={() => {
-                        /* TODO: invocar tu API de checkout aquí */
+                        sendGAEvent("event", "begin_checkout", {
+                          currency: "PEN",
+                          value: subtotalConDescuento
+                        });
                       }}
                       className="w-full py-2 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer transition-colors font-semibold text-sm sm:text-base shadow-sm hover:shadow-md"
                     >
