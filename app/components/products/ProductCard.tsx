@@ -101,7 +101,7 @@ const ProductCard = ({
       </div>
 
       {/* Etiqueta de descuento*/}
-      {porcentaje_desc && (
+      {porcentaje_desc != 0 && (
         <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-red-600 text-white text-xs sm:text-sm p-1.5 sm:p-2 rounded-md sm:rounded-lg shadow-md">
           <span className="font-semibold">{porcentajeDescuento}% OFF</span>
         </div>
@@ -115,7 +115,7 @@ const ProductCard = ({
           </h3>
         </div>
         <div className="flex items-center gap-2 mt-auto">
-          {porcentaje_desc != null ? (
+          {porcentaje_desc != 0 ? (
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
               <span className="text-lg sm:text-xl lg:text-2xl text-red-600 font-bold">
                 S/ {precioFinal.toFixed(2)}

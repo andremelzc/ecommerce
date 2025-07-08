@@ -46,7 +46,9 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
   const [departamentoId, setDepartamentoId] = useState<number | null>(null);
   const [provinciaId, setProvinciaId] = useState<number | null>(null);
 
-  const [formData, setFormData] = useState<Direccion>({
+  type DireccionFormFields = Omit<Direccion, 'id' | 'isPrimary'>;
+
+  const [formData, setFormData] = useState<DireccionFormFields>({
     piso: direccion?.piso || "",
     lote: direccion?.lote || "",
     calle: direccion?.calle || "",
@@ -54,7 +56,6 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
     provincia: direccion?.provincia || "",
     departamento: direccion?.departamento || "",
     codigo_postal: direccion?.codigo_postal || "",
-    isPrimary: direccion?.isPrimary || false,
   });
 
   useEffect(() => {
@@ -130,7 +131,6 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
         calle: formData.calle || "",
         distrito: formData.distrito || "",
         codigo_postal: formData.codigo_postal || "",
-        isPrimary: formData.isPrimary,
       });
     } else {
       resultado = await crearDireccion(formData, usuarioId);
@@ -157,12 +157,12 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
       <div className="bg-white p-6 rounded-lg w-full sm:w-96">
         <h1 className="text-2xl font-bold mb-4">{direccion ? "Editar Dirección" : "Añadir Dirección"}</h1>
         <form onSubmit={handleSubmit}>
-          {(["piso", "lote", "calle", "codigo_postal"] as (keyof Direccion)[]).map((campo) => (
+          {(["piso", "lote", "calle", "codigo_postal"] as (keyof DireccionFormFields)[]).map((campo) => (
             <input
               key={campo}
               type="text"
               name={campo}
-              value={typeof formData[campo] === "boolean" ? formData[campo] ? "true" : "" : formData[campo] || ""}
+              value={formData[campo] || ""}
               onChange={handleChange}
               placeholder={campo.replace("_", " ").toUpperCase()}
               className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4"
@@ -200,10 +200,10 @@ const FormularioDireccion = ({ direccion, onClose }: FormularioDireccionProps) =
             />
             <label htmlFor="isPrimary" className="text-sm">Establecer como dirección principal</label>
           </div>
-          
+          */}
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-500">
             {direccion ? "Guardar Cambios" : "Añadir Dirección"}
-          </button>  */}
+          </button>  
           
         </form>
         

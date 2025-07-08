@@ -10,14 +10,14 @@ export async function POST(req: NextRequest) {
       calle,
       distrito, // <- nombre del distrito, no ID
       codigo_postal,
-      isPrimary, // booleano
+      //isPrimary, // booleano
     } = await req.json();
 
-    const es_predeterminado = isPrimary ? 1 : 0;
+    //const es_predeterminado = isPrimary ? 1 : 0;
 
     // Ejecutamos el procedimiento almacenado
     const [rows]: any = await db.query(
-      `CALL CrearDireccionConUsuario(?, ?, ?, ?, ?, ?, ?, @direccion_id, @resultado)`,
+      `CALL CrearDireccionConUsuario(?, ?, ?, ?, ?, ?, @direccion_id, @resultado)`,
       [
         usuario_id,
         piso,
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
         calle,
         distrito,
         codigo_postal,
-        es_predeterminado
+        //es_predeterminado
       ]
     );
 
