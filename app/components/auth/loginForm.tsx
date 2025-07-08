@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import AppRouteRouteModule from "next/dist/server/route-modules/app-route/module";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export default function LoginForm() {
   const {
@@ -29,8 +30,13 @@ export default function LoginForm() {
     //const isError = res?.error;
     //console.log("variable",isError)
     if (res.error === undefined) {
+      sendGAEvent('event','login',{
+        action: "login",
+        category: "auth",
+        label: "Iniciar sesión",
+      });
       console.log("redirigiendo");
-      router.push("/profile/mi-perfil");
+      router.push("/");
     } else {
       //alert(res?.error);
       setLoginError("Correo o contraseña incorrectos");

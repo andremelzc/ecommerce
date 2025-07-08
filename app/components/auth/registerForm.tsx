@@ -24,8 +24,8 @@ export default function RegisterForm() {
       )
 
       const resJSON = await response.json();
-      console.log("debugging");
-      console.log(response);
+      //console.log("debugging");
+      //console.log(response);
       if (response.ok) {
         Router.push('/auth/login');
       }

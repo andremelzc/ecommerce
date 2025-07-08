@@ -22,6 +22,8 @@ export async function GET(request: NextRequest) {
     return await fetchProductsWithVariations(selectedVariations,
       categoryId,
       categoryLevel,
+      minPrecio,
+      maxPrecio,
       limit);
   }
   else {
@@ -42,6 +44,8 @@ export async function GET(request: NextRequest) {
 async function fetchProductsWithVariations(selectedVariations: string[],
   categoryId: string,
   categoryLevel: string,
+  minPrecio: string,
+  maxPrecio: string,
   limit: string) {
   try {
     const sql = `
@@ -188,7 +192,25 @@ async function fetchProductsWithoutVariations(categoryId: string,
 
   try {
     const [rows] = await db.query(sql);
-    return NextResponse.json(rows);
+    // Query para min y max
+    const sqlMinMax = `
+  SELECT 
+    MIN(pe.precio) AS minPrecio,
+    MAX(pe.precio) AS maxPrecio
+  FROM Ecommerce.producto AS p
+  INNER JOIN Ecommerce.producto_especifico AS pe 
+    ON p.id = pe.id_producto
+  ${joinPromo}
+  ${joinPromocion}
+  ${!isNaN(catLevel) && !isNaN(catId) ? `\n${joinCategory}` : ""} 
+  WHERE 1 = 1
+  ${conditions.length > 0 ? `\nAND ${conditions.join(" AND ")}` : ""}
+`;
+    const result = await db.query(sqlMinMax);
+    const priceRows = result[0] as any[];
+    const { minPrecio, maxPrecio } = priceRows[0];
+
+    return NextResponse.json({ products:rows, minPrecio, maxPrecio });
   } catch (error) {
     console.error("Error al obtener productos sin variacion:", error);
     return NextResponse.json(

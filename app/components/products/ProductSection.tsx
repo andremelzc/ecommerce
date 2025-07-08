@@ -14,10 +14,17 @@ const ProductSection = ({
   asCarousel,
   limit,
   selectedVariations,
+  MinPrecioEnvia,
+  MaxPrecioEnvia,
+  minPrecio,
+  maxPrecio,
+  onPrecioChange, // Callback para manejar cambios de precio
 }: ProductSectionProps) => {
   const [productos, setProductos] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [minPrecioState, setMinPrecio] = useState<string | null>(minPrecio || null);
+  const [maxPrecioState, setMaxPrecio] = useState<string | null>(maxPrecio || null);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -72,12 +79,34 @@ const ProductSection = ({
         if (limit) {
           params.append("limit", limit.toString());
         }
+        if (MinPrecioEnvia) {
+          params.append("minPrecio", MinPrecioEnvia.toString());
+        }
+        if (MaxPrecioEnvia) {
+          params.append("maxPrecio", MaxPrecioEnvia.toString());
+        }
+
         const response = await fetch(`/api/productos?${params.toString()}`);
         if (!response.ok) {
           throw new Error("Error al cargar los productos");
         }
         const data = await response.json();
-        setProductos(data);
+        /*console.log("Datos obtenidos:", data);
+        {
+         products: Array(6),
+         minPrecio: '180.00', 
+         maxPrecio: '670.00'
+       }
+       */
+        setProductos(data.products);
+        setMinPrecio(data.minPrecio);     // Nuevo
+        setMaxPrecio(data.maxPrecio);     // Nuevo
+        console.log(onPrecioChange);
+        //Si recibe valores de minPrecio y maxPrecio, los actualiza
+        if (onPrecioChange) {
+          console.log("onPrecioChange:", data.minPrecio, data.maxPrecio);
+          onPrecioChange(data.minPrecio, data.maxPrecio);
+        }
         console.log("Productos obtenidos:", data);
         console.log(`/api/productos?${params.toString()}`);
       } catch (error) {
@@ -94,6 +123,8 @@ const ProductSection = ({
     promotionId,
     limit,
     selectedVariations,
+    MinPrecioEnvia,
+    MaxPrecioEnvia,
   ]);
 
   return (
