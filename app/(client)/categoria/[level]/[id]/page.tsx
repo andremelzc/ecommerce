@@ -110,12 +110,13 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
           asCarousel={false}
           selectedVariations={selectedVariations} // Pasamos las variaciones seleccionadas
           onPrecioChange={(minPrecio, maxPrecio) => {
-            if (!hasInitializedRange) {
+            if (!hasInitializedRange && selectedVariations.length === 0) {
               console.log("Callback en page:", minPrecio, maxPrecio);
               setMinPrecio(minPrecio);
               setMaxPrecio(maxPrecio);
               setInitialMin(Number(minPrecio));
               setInitialMax(Number(maxPrecio));
+              // Marca que ya se inicializó el rango y no se volvera a inicializar por cada llamada
               setHasInitializedRange(true);
             }
           }}

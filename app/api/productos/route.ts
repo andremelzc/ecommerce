@@ -16,14 +16,17 @@ export async function GET(request: NextRequest) {
     .map((v) => v.trim())
     .filter((v) => v !== "");
 
-  // Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
-  if (selectedVariations.length > 0) {
+  if (selectedVariations.length > 0 && (minPrecio || maxPrecio)) {
+    console.log("⚡ Ignorando consulta: variaciones y precios no se pueden combinar.");
+    return NextResponse.json({ products: [] });
+  }
+    // Si hay variaciones seleccionadas, se realiza la consulta para esas variaciones.
+  if (selectedVariations.length > 0 ) {
     console.log("usando API con variaciones")
     return await fetchProductsWithVariations(selectedVariations,
       categoryId,
       categoryLevel,
-      minPrecio,
-      maxPrecio,
+
       limit);
   }
   else {
@@ -44,18 +47,17 @@ export async function GET(request: NextRequest) {
 async function fetchProductsWithVariations(selectedVariations: string[],
   categoryId: string,
   categoryLevel: string,
-  minPrecio: string,
-  maxPrecio: string,
+
   limit: string) {
   try {
     const sql = `
-      SELECT 
-        pe.id,
+      SELECT DISTINCT
+        pe.id as id_producto_especifico,
         pe.SKU,
         pe.precio,
         pe.imagen_producto,
         p.descripcion,
-        p.id,
+        p.id as producto_id,
         p.nombre,
         MAX(ppe.porcentaje_desc) as porcentaje_desc,
         COUNT(DISTINCT vo.id) as matched_variations

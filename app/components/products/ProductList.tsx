@@ -29,7 +29,7 @@ const ProductList = ({ productos, horizontal, itemsPage }: ProductListProps) => 
             nombre={producto.nombre}
             descripcion={producto.descripcion}
             imagen_producto={producto.imagen_producto}
-            precio={producto.precio}
+            precio={Number(producto.precio)}
             porcentaje_desc={producto.porcentaje_desc}
           />
         ))}
