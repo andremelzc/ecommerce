@@ -3,6 +3,9 @@
 import React from 'react';
 import { useCheckout } from '@/app/context/CheckoutContext';
 import { useBoleta } from '@/app/hooks/useBoleta';
+import { sendGAEvent } from '@next/third-parties/google';
+import { useEffect } from 'react';
+
 
 export default function ResumenPage() {
   const { orden } = useCheckout();
@@ -12,6 +15,17 @@ export default function ResumenPage() {
   const subtotal   = orden.subtotal   ?? 0;
   const costoEnvio = orden.costoEnvio ?? 0;
   const total      = orden.total      ?? 0;
+
+  useEffect(() => {
+  if (success) {
+    
+    sendGAEvent("event", "purchase", {
+      transaction_id: orden.usuarioId ?? "sin_id", // Si tienes un ID real de orden mejor
+      value: orden.total,
+      currency: "PEN",
+    });
+  }
+}, [success, orden]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-ebony-50 to-ebony-100/30 py-4 sm:py-6">
@@ -41,6 +55,7 @@ export default function ResumenPage() {
 
         <button
           onClick={generar}
+          
           disabled={loading}
           className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
         >

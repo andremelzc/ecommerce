@@ -31,9 +31,7 @@ export default function LoginForm() {
     //console.log("variable",isError)
     if (res.error === undefined) {
       sendGAEvent('event','login',{
-        action: "login",
-        category: "auth",
-        label: "Iniciar sesión",
+        method: "email",
       });
       console.log("redirigiendo");
       router.push("/");
