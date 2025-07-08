@@ -36,10 +36,16 @@ export default function MisDireccionesPage() {
       console.log("res",res)
       if (res.ok) {
         const data = await res.json();
-        setDirections(data);
+        if (Array.isArray(data)) {
+          setDirections(data);
+        } else {
+          setDirections([]);
+          setError(data.error || "No se encontraron direcciones.");
+        }
       } else {
-        console.error("Error al obtener las direcciones");
-        setError("Error al obtener las direcciones.");
+        const data = await res.json();
+        setDirections([]);
+        setError(data.error || "Error al obtener las direcciones.");
       }
     } catch (error) {
       console.error("Hubo un problema con la solicitud:", error);
@@ -59,7 +65,10 @@ export default function MisDireccionesPage() {
     return <div>Cargando direcciones...</div>;
   }
 
-  if (error) {
+  // Si el error es porque no hay direcciones, no bloquees el flujo, solo muestra el mensaje y el botón para crear
+  const noDirections = error && error.toLowerCase().includes("no se encontraron direcciones");
+
+  if (error && !noDirections) {
     return <div className="text-red-600">{error}</div>;
   }
 
@@ -235,18 +244,21 @@ export default function MisDireccionesPage() {
             </div>
           ))
         ) : (
-          <p>No tienes direcciones registradas.</p>
+          <>
+            <p>No tienes direcciones registradas.</p>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleAddClick}
+                className="bg-ebony-900 text-white px-6 py-2 rounded-md hover:bg-ebony-800 cursor-pointer transition-colors"
+              >
+                Añadir nueva dirección
+              </button>
+            </div>
+          </>
         )}
       </div>
 
-      <div className="flex justify-end mt-6">
-        <button
-          onClick={handleAddClick}
-          className="bg-ebony-900 text-white px-6 py-2 rounded-md hover:bg-ebony-800 cursor-pointer transition-colors"
-        >
-          Añadir nueva dirección
-        </button>
-      </div>
+      {/* El botón para añadir dirección solo se muestra en el bloque condicional, no aquí para evitar duplicados */}
 
       {/* Modal de añadir/editar dirección */}
       {isModalOpen && (

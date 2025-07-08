@@ -8,7 +8,7 @@ export default function Home() {
       <ProductSection
         title="¡Promoción por invierno!"
         filterType="byPromotion"
-        promotionId={8}
+        promotionId={21}
         asCarousel={true}
       />
       <ProductSection

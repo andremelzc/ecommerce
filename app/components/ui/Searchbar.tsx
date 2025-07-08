@@ -24,9 +24,17 @@ const Searchbar = () => {
         setIsLoading(true);
         const res = await fetch("/api/productos");
         const data = await res.json();
-        setProductos(data);
+        // Asegura que productos siempre sea un array
+        if (Array.isArray(data)) {
+          setProductos(data);
+        } else if (Array.isArray(data.products)) {
+          setProductos(data.products);
+        } else {
+          setProductos([]);
+        }
       } catch (error) {
         console.error("Error al obtener productos:", error);
+        setProductos([]);
       } finally {
         setIsLoading(false);
       }
@@ -43,7 +51,8 @@ const Searchbar = () => {
       setSelectedProduct(producto);
       setBusqueda("");
       sendGAEvent("event", "search", { search_term: busqueda });
-      // La navegación ahora se hará con <Link> en el render, no aquí
+      // Redirigir al producto seleccionado
+      window.location.href = `/productos/${producto.id_producto_especifico}`;
     }
   };
 
@@ -112,21 +121,12 @@ const Searchbar = () => {
                 </p>
                 <div>
                   {filteredProductos.slice(0, 3).map((producto) => (
-                    <Link
+                    <ComboboxOption
                       key={producto.producto_id}
-                      href={`/productos/${producto.id_producto_especifico}`}
-                      prefetch={true}
-                      className="flex rounded-lg cursor-pointer items-center gap-4 px-3 py-3 hover:bg-ebony-100 transition-colors duration-200"
-                      onClick={() => {
-                        setSelectedProduct(producto);
-                        setBusqueda("");
-                        // Evento GA
-                        sendGAEvent("event", "select_item", {
-                          item_id: producto.producto_id,
-                          item_name: producto.nombre,
-                          category: "search",
-                        })
-                      }}
+                      value={producto}
+                      className={({ active }) =>
+                        `flex rounded-lg cursor-pointer items-center gap-4 px-3 py-3 transition-colors duration-200 ${active ? "bg-ebony-100" : ""}`
+                      }
                     >
                       <div className="flex-shrink-0">
                         <img
@@ -138,7 +138,7 @@ const Searchbar = () => {
                       <div className="flex-1 min-w-0">
                         <span>{producto.nombre}</span>
                       </div>
-                    </Link>
+                    </ComboboxOption>
                   ))}
                 </div>
                 <div className="pt-4 mt-4 border-t border-gray-200">

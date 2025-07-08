@@ -93,30 +93,24 @@ const ProductSection = ({
             throw new Error("Error al cargar los productos");
           }
           const data = await response.json();
-          /*console.log("Datos obtenidos:", data);
+          /*
+          console.log("Datos obtenidos:", data);
           {
-           products: Array(6),
-           minPrecio: '180.00', 
-           maxPrecio: '670.00'
-         }
-         */
+            products: Array(6),
+            minPrecio: '180.00',
+            maxPrecio: '670.00'
+          }
+          */
 
-
-          if (data.products.length > 0) {
+          if (Array.isArray(data.products)) {
             setProductos(data.products);
-            setMinPrecio(data.minPrecio);     // Nuevo
-            setMaxPrecio(data.maxPrecio);     // Nuevo
-            console.log(onPrecioChange);
-            //Si recibe valores de minPrecio y maxPrecio, los actualiza
+            setMinPrecio(data.minPrecio);
+            setMaxPrecio(data.maxPrecio);
             if (onPrecioChange) {
-              console.log("onPrecioChange:", data.minPrecio, data.maxPrecio);
               onPrecioChange(data.minPrecio, data.maxPrecio);
             }
-            console.log("Productos obtenidos:", data);
-            console.log(`/api/productos?${params.toString()}`);
           } else {
-            // Opción 1: NO haces nada y mantienes productos actuales
-            // Opción 2: Podrías mostrar un mensaje "Sin resultados", depende de UX
+            setProductos([]);
           }
 
 

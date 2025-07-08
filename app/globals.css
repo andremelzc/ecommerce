@@ -158,3 +158,8 @@ body {
   }
 }
 
+/* Oculta el overlay/flotante de Next.js dev */
+.nextjs-portal, [data-nextjs-toast] {
+  display: none !important;
+}
+

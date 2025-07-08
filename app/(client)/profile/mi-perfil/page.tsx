@@ -9,10 +9,6 @@ export default function MiPerfilPage() {
   const [toggleEdit, setToggleEdit] = useState(false);
   // ...existing code...
 
-  // Debug: mostrar datos de session en consola y en UI
-  useEffect(() => {
-    console.log('Datos de useSession:', session);
-  }, [session]);
 
   const [formData, setFormData] = useState({
     name: session?.user?.name || "",
@@ -100,10 +96,7 @@ export default function MiPerfilPage() {
 
   return (
     <div>
-      {/* Debug visual de session */}
-      <pre className="bg-yellow-50 text-xs text-yellow-900 border border-yellow-200 rounded p-2 mb-4 overflow-x-auto">
-        <strong>session (useSession):</strong>\n{JSON.stringify(session, null, 2)}
-      </pre>
+      {/* ...existing code... */}
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
         <User className="text-black-600" size={28} />
         Mi perfil
