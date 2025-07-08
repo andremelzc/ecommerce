@@ -40,6 +40,12 @@ export default function AdminLayout({
               >
                 ➕ Agregar producto
               </Link>
+              <Link
+                href="/admin/add-promotions"
+                className="text-green-700 hover:underline"
+              >
+                🎉 Crear promoción
+              </Link>
             </nav>
           </header>
 

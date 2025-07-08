@@ -14,13 +14,13 @@ export default function Home() {
       <ProductSection
         title="¡Promocion por Julio!"
         filterType="byPromotion"
-        promotionId={7}
+        promotionId={20}
         asCarousel={true}
       />
       <ProductSection
         title="¡Conoce algunos de nuestros productos!"
         filterType="all"
-        limit={10}
+        limit={21}
         asCarousel={true}
       />
       <CarruselMarcas />

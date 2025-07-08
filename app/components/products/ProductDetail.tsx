@@ -33,20 +33,20 @@ function Breadcrumb({
           itemScope
           itemType="https://schema.org/ListItem"
         >
-          <Link href="/" itemProp="item">
+          <Link href="/" itemProp="item" className="hover:text-gray-800 transition-colors">
             <span itemProp="name">Inicio</span>
           </Link>
           <meta itemProp="position" content="1" />
         </li>
         {nivel_1 && (
           <>
-            <li className="mx-2">{">"}</li>
+            <li className="mx-2 text-gray-400">{">"}</li>
             <li
               itemProp="itemListElement"
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <Link href={`/categoria/${1}/${id_cat_n1}`} itemProp="item">
+              <Link href={`/categoria/${1}/${id_cat_n1}`} itemProp="item" className="hover:text-gray-800 transition-colors">
                 <span itemProp="name">{nivel_1}</span>
               </Link>
               <meta itemProp="position" content="2" />
@@ -55,13 +55,13 @@ function Breadcrumb({
         )}
         {nivel_2 && (
           <>
-            <li className="mx-2">{">"}</li>
+            <li className="mx-2 text-gray-400">{">"}</li>
             <li
               itemProp="itemListElement"
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <Link href={`/categoria/${2}/${id_cat_n2}`} itemProp="item">
+              <Link href={`/categoria/${2}/${id_cat_n2}`} itemProp="item" className="hover:text-gray-800 transition-colors">
                 <span itemProp="name">
                   {nivel_2.length > 12 ? nivel_2.slice(0, 7) + "..." : nivel_2}
                 </span>
@@ -72,13 +72,13 @@ function Breadcrumb({
         )}
         {nivel_3 && (
           <>
-            <li className="mx-2">{">"}</li>
+            <li className="mx-2 text-gray-400">{">"}</li>
             <li
               itemProp="itemListElement"
               itemScope
               itemType="https://schema.org/ListItem"
             >
-              <Link href={`/categoria/${3}/${id_cat_n3}`} itemProp="item">
+              <Link href={`/categoria/${3}/${id_cat_n3}`} itemProp="item" className="hover:text-gray-800 transition-colors">
                 <span itemProp="name">
                   {nivel_3.length > 12 ? nivel_3.slice(0, 7) + "..." : nivel_3}{" "}
                 </span>
@@ -87,9 +87,9 @@ function Breadcrumb({
             </li>
           </>
         )}
-        <li className="mx-2">{">"}</li>
+        <li className="mx-2 text-gray-400">{">"}</li>
         <li
-          className="font-bold"
+          className="font-semibold text-gray-800"
           itemProp="itemListElement"
           itemScope
           itemType="https://schema.org/ListItem"
@@ -113,11 +113,16 @@ function ProductImage({
 }: any) {
   return (
     <section
-      className="flex-1/2 items-center justify-center flex-col relative m-auto max-w-full xl:max-w-2/5"
+      className="flex-1/2 flex flex-col items-center justify-center relative m-auto max-w-full xl:max-w-2/5"
       aria-label="Imagen del producto"
     >
       <div className="relative flex w-full m-auto">
-        <div className="aspect-square w-full max-w-[400px] m-auto bg-white flex items-center justify-center">
+        <div className="aspect-square w-full max-w-[320px] sm:max-w-[340px] md:max-w-[360px] lg:max-w-[380px] xl:max-w-[400px] m-auto bg-gradient-to-br from-gray-50 to-white flex items-center justify-center rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative group">
+          {!isFullScreen && descuento && (
+            <div className="absolute top-3 right-3 z-10 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg tracking-wide animate-pulse pointer-events-none select-none">
+              {Math.round(descuento * 100)}% OFF
+            </div>
+          )}
           <img
             src={
               !imagen_producto || imagen_producto === "null"
@@ -125,23 +130,18 @@ function ProductImage({
                 : imagen_producto
             }
             alt={`Imagen de ${nombre}`}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-2xl max-h-[340px] sm:max-h-[360px] md:max-h-[380px] lg:max-h-[400px] xl:max-h-[420px] transition-transform duration-300 ease-in-out group-hover:scale-105"
             itemProp="image"
           />
         </div>
-        {!isFullScreen && descuento && (
-          <div className="absolute top-0 right-0 bg-red-900 text-white text-xs p-2 border-2 rounded-lg">
-            {Math.round(descuento * 100)}% OFF
-          </div>
-        )}
         {!isFullScreen && (
           <button
-            className="absolute bottom-0 left-0 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition-colors z-20"
+            className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 z-20 border border-gray-200 group"
             title="Ver en pantalla completa"
             onClick={openFullScreen}
             type="button"
           >
-            <Expand className="w-6 h-6 text-gray-700" />
+            <Expand className="w-5 h-5 text-gray-700 group-hover:text-gray-900 transition-colors" />
           </button>
         )}
       </div>
@@ -168,27 +168,27 @@ function ProductInfo({
 }: any) {
   return (
     <section
-      className="w-full 2xl:lg:w-3/5 lg:w-2/5 px-2 sm:px-8 md:px-12 lg:px-16 xl:px-20 flex-col border border-gray-200 shadow-xl rounded-2xl pt-4 sm:pt-5"
+      className="w-full max-w-xl px-4 sm:px-6 md:px-8 xl:px-10 flex flex-col border border-gray-200 shadow-xl rounded-2xl pt-6 sm:pt-8 pb-6 bg-white"
       itemScope
       itemType="https://schema.org/Product"
     >
       {nombre_promocion && (
-        <div className="w-full bg-red-900 text-white font-bold p-1 text-center border-b-2 rounded-lg text-xs sm:text-sm mb-3">
+        <div className="w-full bg-gradient-to-r from-ebony-700 to-ebony-800 text-white font-semibold py-2 px-4 text-center rounded-lg text-sm mb-4 tracking-wide shadow-md">
           {nombre_promocion}
         </div>
       )}
       <h1
-        className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl text-balance "
+        className="text-xl sm:text-2xl md:text-2xl lg:text-2xl xl:text-3xl font-bold text-gray-900 leading-tight mb-3"
         itemProp="name"
       >
         {nombre}
       </h1>
-      <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5" />
-      <div className="flex w-full justify-center items-center gap-2 my-3 sm:my-5">
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4" />
+      <div className="flex w-full justify-center items-center gap-4 my-4">
         {descuento != null ? (
           <>
             <span
-              className="text-xl sm:text-2xl text-button font-bold"
+              className="text-2xl sm:text-3xl text-green-600 font-bold"
               itemProp="offers"
               itemScope
               itemType="https://schema.org/Offer"
@@ -199,11 +199,11 @@ function ProductInfo({
               </span>
               <meta itemProp="priceCurrency" content="PEN" />
             </span>
-            <span className="text-xs sm:text-sm line-through">S/ {precio}</span>
+            <span className="text-sm line-through text-gray-500 bg-gray-100 px-2 py-1 rounded">S/ {precio}</span>
           </>
         ) : (
           <span
-            className="text-xl sm:text-2xl text-ebony-950 font-bold"
+            className="text-2xl sm:text-3xl text-ebony-950 font-bold"
             itemProp="offers"
             itemScope
             itemType="https://schema.org/Offer"
@@ -213,9 +213,9 @@ function ProductInfo({
           </span>
         )}
       </div>
-      <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5" />
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4" />
       <p
-        className="text-justify my-3 sm:my-5 text-base sm:text-lg lg:text-[1rem] "
+        className="text-justify my-4 text-base sm:text-lg text-gray-700 leading-relaxed"
         itemProp="description"
       >
         {descripcion}
@@ -228,7 +228,7 @@ function ProductInfo({
         variations={variations}
         id_producto_especifico={id_producto_especifico}
       />
-      <div className="w-full bg-ebony-950 border-b-2 rounded-lg my-3 sm:my-5 " />
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4" />
       <div className="w-full">
         <Contador
           cantidad_stock={stockDisponible}
@@ -236,10 +236,10 @@ function ProductInfo({
           setCantidad={setCantidad}
         />
       </div>
-      <div className="flex w-full my-3 sm:my-5">
+      <div className="flex w-full my-6">
         <button
           onClick={handleAddToCart}
-          className="w-full bg-button text-white font-bold mt-3 p-3 sm:p-4 text-lg sm:text-2xl lg:text-xl xl:text-1.5xl rounded-lg hover:bg-ebony-700 transition-colors cursor-pointer"
+          className="w-full bg-ebony-800 text-white font-semibold py-3 px-6 text-base sm:text-lg rounded-xl hover:bg-white hover:text-ebony-800 hover:border-ebony-800 border-2 border-transparent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-ebony-300 focus:ring-offset-2"
         >
           Añadir al carrito
         </button>
@@ -258,26 +258,26 @@ function ProductSpecs({
 }: any) {
   return (
     <ul
-      className="text-2xl flex flex-col gap-4 lg: text-[1.2rem]"
+      className="text-base sm:text-lg flex flex-col gap-3 mt-3"
       itemProp="additionalProperty"
       itemScope
       itemType="https://schema.org/PropertyValue"
     >
-      <li>
-        <strong>Marca</strong>: <span itemProp="value">{marca}</span>
+      <li className="text-gray-700 flex items-center gap-2">
+        <strong className="text-gray-900">Marca:</strong> <span itemProp="value" className="bg-gray-100 px-2 py-1 rounded text-sm">{marca}</span>
       </li>
-      <li>
-        <strong>SKU</strong>: <span itemProp="value">{SKU}</span>
+      <li className="text-gray-700 flex items-center gap-2">
+        <strong className="text-gray-900">SKU:</strong> <span itemProp="value" className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">{SKU}</span>
       </li>
       {especificaciones &&
         Object.entries(especificaciones).map(([key, value]) => (
-          <li key={key}>
-            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{" "}
-            {String(value)}
+          <li key={key} className="text-gray-700 flex items-center gap-2">
+            <strong className="text-gray-900">{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{" "}
+            <span className="bg-gray-100 px-2 py-1 rounded text-sm">{String(value)}</span>
           </li>
         ))}
-      <li>
-        <strong>En stock: </strong> {cantidad_stock}
+      <li className="text-gray-700 flex items-center gap-2">
+        <strong className="text-gray-900">En stock:</strong> <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-semibold text-sm">{cantidad_stock}</span>
       </li>
       {variations && variations.length > 0 && (
         <li>
@@ -309,23 +309,25 @@ function Contador({
   };
 
   return (
-    <div className="flex items-center gap-8">
-      <strong className="lg:text-[1.2rem] xl:text-2xl">Cantidad: </strong>
-      <button
-        onClick={decrementar}
-        className="bg-contador p-2 rounded-full hover:bg-gray-300 transition-colors w-8 h-8 flex items-center justify-center"
-        aria-label="Disminuir cantidad"
-      >
-        -
-      </button>
-      <span className="text-xl">{cantidad}</span>
-      <button
-        onClick={incrementar}
-        className="bg-contador p-2 rounded-full hover:bg-gray-300 transition-colors w-8 h-8 flex items-center justify-center"
-        aria-label="Aumentar cantidad"
-      >
-        +
-      </button>
+    <div className="flex items-center gap-6">
+      <strong className="text-base sm:text-lg text-gray-900">Cantidad:</strong>
+      <div className="flex items-center gap-4">
+        <button
+          onClick={decrementar}
+          className="bg-gray-200 hover:bg-white hover:border-gray-400 border-2 border-transparent text-gray-700 hover:text-gray-900 font-semibold w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg"
+          aria-label="Disminuir cantidad"
+        >
+          -
+        </button>
+        <span className="text-xl font-bold min-w-[3rem] text-center bg-gray-100 px-3 py-2 rounded-lg">{cantidad}</span>
+        <button
+          onClick={incrementar}
+          className="bg-gray-200 hover:bg-white hover:border-gray-400 border-2 border-transparent text-gray-700 hover:text-gray-900 font-semibold w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg"
+          aria-label="Aumentar cantidad"
+        >
+          +
+        </button>
+      </div>
     </div>
   );
 }
@@ -339,7 +341,7 @@ function FullScreenModal({
   if (!isFullScreen) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={closeFullScreen}
       aria-modal="true"
       role="dialog"
@@ -351,16 +353,16 @@ function FullScreenModal({
             : imagen_producto
         }
         alt={`Imagen de ${nombre}`}
-        className="max-h-[70vh] max-w-[70vw] object-contain rounded-lg shadow-lg"
+        className="max-h-[80vh] max-w-[80vw] object-contain rounded-lg shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       />
       <button
-        className="absolute top-6 right-6 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition-colors"
+        className="absolute top-6 right-6 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200"
         onClick={closeFullScreen}
         title="Cerrar"
         aria-label="Cerrar imagen"
       >
-        <X className="w-6 h-6 text-gray-700" />
+        <X className="w-6 h-6 text-gray-700 hover:text-gray-900 transition-colors" />
       </button>
     </div>
   );
@@ -413,7 +415,7 @@ const ProductDetail = (props: ProductDetailProps & { variations?: any[] }) => {
       itemType="https://schema.org/Product"
     >
       <Breadcrumb {...props} isFullScreen={isFullScreen} />
-      <div className="flex flex-col lg:flex-row bg-white py-6 sm:py-10 lg:py-15 relative align-middle justify-center font-sans md:gap-10 lg:gap-40">
+      <div className="flex flex-col lg:flex-row bg-white py-8 sm:py-12 lg:py-16 relative align-middle justify-center font-sans md:gap-10 lg:gap-20 xl:gap-32">
         <ProductImage
           imagen_producto={props.imagen_producto}
           nombre={props.nombre}
