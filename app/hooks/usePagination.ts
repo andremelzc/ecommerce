@@ -8,16 +8,17 @@ export function usePagination<T>({
 }: UsePaginationProps<T>): UsePaginationReturn<T> {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const safeData = data ?? [];
+  const totalPages = Math.ceil(safeData.length / itemsPerPage);
   
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return data.slice(startIndex, endIndex);
-  }, [data, currentPage, itemsPerPage]);
+    return safeData.slice(startIndex, endIndex);
+  }, [safeData, currentPage, itemsPerPage]);
 
   const startIndex = (currentPage - 1) * itemsPerPage + 1;
-  const endIndex = Math.min(currentPage * itemsPerPage, data.length);
+  const endIndex = Math.min(currentPage * itemsPerPage, safeData.length);
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -48,7 +49,7 @@ export function usePagination<T>({
     prevPage,
     startIndex,
     endIndex,
-    totalItems: data.length
+    totalItems: safeData.length
   };
 }
 

@@ -32,7 +32,7 @@ const PriceRange = ({ min, max, onChange }: PriceRangeProps) => {
 
   return (
     <div className="flex flex-col w-full">
-      <label className="font-semibold mb-2">Precio</label>
+      <label className="font-semibold mb-2 text-ebony-800">Precio</label>
       <div className="flex items-center space-x-2">
         <input
           type="number"
@@ -40,16 +40,16 @@ const PriceRange = ({ min, max, onChange }: PriceRangeProps) => {
           min={min}
           max={maxValue}
           onChange={handleMinChange}
-          className="w-20 border px-2 py-1 rounded"
+          className="w-20 border border-ebony-200 bg-ebony-50 text-ebony-800 px-2 py-1 rounded focus:ring-2 focus:ring-ebony-400 focus:border-ebony-400"
         />
-        <span> - </span>
+        <span className="text-ebony-400"> - </span>
         <input
           type="number"
           value={maxValue}
           min={minValue}
           max={max}
           onChange={handleMaxChange}
-          className="w-20 border px-2 py-1 rounded"
+          className="w-20 border border-ebony-200 bg-ebony-50 text-ebony-800 px-2 py-1 rounded focus:ring-2 focus:ring-ebony-400 focus:border-ebony-400"
         />
       </div>
       <input
@@ -58,7 +58,7 @@ const PriceRange = ({ min, max, onChange }: PriceRangeProps) => {
         max={max}
         value={minValue}
         onChange={handleMinChange}
-        className="mt-4 accent-orange-500"
+        className="mt-4 accent-ebony-700"
       />
       <input
         type="range"
@@ -66,7 +66,7 @@ const PriceRange = ({ min, max, onChange }: PriceRangeProps) => {
         max={max}
         value={maxValue}
         onChange={handleMaxChange}
-        className="accent-orange-500"
+        className="accent-ebony-700"
       />
     </div>
   );

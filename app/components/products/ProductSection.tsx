@@ -19,6 +19,7 @@ const ProductSection = ({
   minPrecio,
   maxPrecio,
   onPrecioChange, // Callback para manejar cambios de precio
+  itemsPage
 }: ProductSectionProps) => {
   const [productos, setProductos] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -103,9 +104,12 @@ const ProductSection = ({
         setMaxPrecio(data.maxPrecio);     // Nuevo
         console.log(onPrecioChange);
         //Si recibe valores de minPrecio y maxPrecio, los actualiza
-        if (onPrecioChange) {
-          console.log("onPrecioChange:", data.minPrecio, data.maxPrecio);
-          onPrecioChange(data.minPrecio, data.maxPrecio);
+        // Llamar a onPrecioChange solo si los valores realmente cambiaron
+        if (onPrecioChange && (data.minPrecio !== minPrecioState || data.maxPrecio !== maxPrecioState)) {
+          // Usar setTimeout para evitar el warning de React
+          setTimeout(() => {
+            onPrecioChange(data.minPrecio, data.maxPrecio);
+          }, 0);
         }
         console.log("Productos obtenidos:", data);
         console.log(`/api/productos?${params.toString()}`);
@@ -143,7 +147,7 @@ const ProductSection = ({
             <ProductList
               productos={productos}
               horizontal={false}
-              itemsPage={2}
+              itemsPage={itemsPage}
             />
           )}
         </div>

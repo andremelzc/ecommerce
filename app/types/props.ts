@@ -22,6 +22,7 @@ export interface ProductSectionProps {
   minPrecio?: string | null; // Opcional, si se usa filtro de precio
   maxPrecio?: string | null; // Opcional, si se usa filtro de precio
   onPrecioChange?: (min: string | null, max: string | null) => void;
+  itemsPage?: number; // Opcional, si se usa paginación
 }
 
 export interface ProductCardProps {
