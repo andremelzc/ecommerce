@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useRef } from "react";
 import { ShoppingBag, Menu, User, ShoppingCart, Search } from "lucide-react";
 import Drawer from "../ui/Drawer";
@@ -7,6 +8,8 @@ import Searchbar from "@/app/components/ui/Searchbar";
 import { useCart } from "@/app/context/CartContext";
 import { useSession, signOut } from "next-auth/react";
 import UserMenu from "../ui/UserMenu";
+import { useEffect } from "react";
+
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -16,6 +19,20 @@ const Navbar = () => {
   const buttonRef = useRef<HTMLButtonElement>(null!);
   const { cart } = useCart();
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      console.log("Enviando user_id a Google Analytics:", session?.user?.id);
+      // Enviar el user_id a Google Analytics
+      if (session?.user?.id) {
+        console.log("User ID encontrado:", session.user.id);
+        // Asegúrate de que gtag esté definido antes de usarlo
+        window.gtag('set', { user_id: session.user.id });
+      } else {
+        window.gtag('set', { user_id: null });
+      }
+    }
+  }, [session]);
 
   return (
     <>

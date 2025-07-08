@@ -4,6 +4,9 @@ import { useCart } from '@/app/context/CartContext';
 import { useStock } from '@/app/hooks/useStock';
 import { ShoppingCart } from 'lucide-react';
 import type { CartItem } from '@/app/types/itemCarrito';
+// Para enviar a google analytics
+import { sendGAEvent } from "@next/third-parties/google";
+
 
 interface AddToCartButtonProps {
   productId: number | undefined;
@@ -63,6 +66,13 @@ export const AddToCartButton = ({
 
     try {
       await addItem(item);
+      sendGAEvent("event", "add_to_cart", {
+      item_id: productId,
+      item_name: nombre,
+      category: "Productos", 
+      price: precio,
+      quantity: 1,
+    });
     } catch (error) {
       console.error('Error al agregar al carrito:', error);
     }

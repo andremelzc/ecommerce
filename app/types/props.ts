@@ -17,6 +17,11 @@ export interface ProductSectionProps {
   gridColumns?: number;
   limit?: number;
   selectedVariations?: number[]; // <-- Aquí agregamos selectedVariations
+  MinPrecioEnvia?: string | null;  // Opcional, si se usa filtro de precio
+  MaxPrecioEnvia?: string | null; // Opcional, si se usa filtro de precio
+  minPrecio?: string | null; // Opcional, si se usa filtro de precio
+  maxPrecio?: string | null; // Opcional, si se usa filtro de precio
+  onPrecioChange?: (min: string | null, max: string | null) => void;
 }
 
 export interface ProductCardProps {
