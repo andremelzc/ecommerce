@@ -11,6 +11,7 @@ import {
 import { Search } from "lucide-react";
 import type { Producto } from "@/app/types/producto";
 import Link from "next/link";
+import { sendGAEvent } from "@next/third-parties/google";
 
 const Searchbar = () => {
   const [productos, setProductos] = useState<Producto[]>([]); // Para almacenar los productos obtenidos de la API
@@ -41,6 +42,7 @@ const Searchbar = () => {
     if (producto) {
       setSelectedProduct(producto);
       setBusqueda("");
+      sendGAEvent("event", "search", { search_term: busqueda });
       // La navegación ahora se hará con <Link> en el render, no aquí
     }
   };
@@ -118,6 +120,12 @@ const Searchbar = () => {
                       onClick={() => {
                         setSelectedProduct(producto);
                         setBusqueda("");
+                        // Evento GA
+                        sendGAEvent("event", "select_item", {
+                          item_id: producto.producto_id,
+                          item_name: producto.nombre,
+                          category: "search",
+                        })
                       }}
                     >
                       <div className="flex-shrink-0">

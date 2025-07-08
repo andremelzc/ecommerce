@@ -8,6 +8,7 @@ import { categorias } from "@/lib/categorias";
 import CategoryGrid from "@/app/components/ui/CategoriaGrid";
 import PriceRange from "@/app/components/products/ProductFilterPrice";
 import { Mina } from "next/font/google";
+import { init } from "next/dist/compiled/webpack/webpack";
 
 
 // Función que trae el nombre de los id's, permite hacer esto:  "Inicio/perifericos/monitor"
@@ -42,6 +43,10 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
   const [selectedVariations, setSelectedVariations] = useState<number[]>([]);
   const [minPrecio, setMinPrecio] = useState<string | null>(null);
   const [maxPrecio, setMaxPrecio] = useState<string | null>(null);
+  const [hasInitializedRange, setHasInitializedRange] = useState(false);
+  const [initialMin, setInitialMin] = useState<number | null>(null);
+  const [initialMax, setInitialMax] = useState<number | null>(null);
+
 
   //Para cambiar dinamicamente el filtro de ProductSection
   const filterType = selectedVariations.length > 0 ? "byVariacion" : "byCategory";
@@ -61,14 +66,14 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
           setSelectedVariations={setSelectedVariations} // Pasamos el setter a VariationBox
         />
         <PriceRange
-          min={Number(minPrecio) || 0}
-          max={Number(maxPrecio) || 1000}
-          onChange={(setMinPrecio, setMaxPrecio) => {
-            console.log("Nuevo rango elegido:", setMinPrecio, setMaxPrecio);
+          min={Number(initialMin ?? 0)}
+          max={Number(initialMax ?? 0)}
+          onChange={(nuevoMin, nuevoMax) => {
+            console.log("Nuevo rango elegido:", nuevoMin, nuevoMax);
             console.log("precio minimo original:", minPrecio);
             console.log("precio maximo original:", maxPrecio);
-            //setMinPrecio(nuevoMin.toString());
-            //setMaxPrecio(nuevoMax.toString());
+            setMinPrecio(nuevoMin.toString());
+            setMaxPrecio(nuevoMax.toString());
           }}
         />
       </div>
@@ -103,7 +108,14 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
           asCarousel={false}
           selectedVariations={selectedVariations} // Pasamos las variaciones seleccionadas
           onPrecioChange={(minPrecio, maxPrecio) => {
-            console.log("Callback en page:", minPrecio, maxPrecio);
+            if (!hasInitializedRange) {
+              console.log("Callback en page:", minPrecio, maxPrecio);
+              setMinPrecio(minPrecio);
+              setMaxPrecio(maxPrecio);
+              setInitialMin(Number(minPrecio));
+              setInitialMax(Number(maxPrecio));
+              setHasInitializedRange(true);
+            }
           }}
         />
       </div>
