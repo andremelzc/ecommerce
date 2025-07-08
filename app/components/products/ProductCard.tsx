@@ -48,7 +48,7 @@ const ProductCard = ({
   });
 
   return (
-    <div className="group flex flex-col bg-white shadow-md hover:shadow-xl w-full max-w-xs mx-auto relative gap-1 rounded-xl transition-all duration-300 overflow-hidden p-2 sm:p-3 lg:p-4">
+    <div className="group flex flex-col bg-white shadow-md hover:shadow-xl w-full mx-auto relative gap-1 rounded-xl transition-all duration-300 overflow-hidden p-2 sm:p-3 lg:p-4">
       {/* Container de la imagen */}
       <div
         className="w-full h-48 sm:h-56 lg:h-64 flex justify-center items-center relative cursor-pointer overflow-hidden p-2 sm:p-3 lg:p-4"

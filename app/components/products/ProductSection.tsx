@@ -19,6 +19,7 @@ const ProductSection = ({
   minPrecio,
   maxPrecio,
   onPrecioChange, // Callback para manejar cambios de precio
+  itemsPage
 }: ProductSectionProps) => {
   const [productos, setProductos] = useState<ProductCardProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -100,6 +101,7 @@ const ProductSection = ({
          }
          */
 
+
           if (data.products.length > 0) {
             setProductos(data.products);
             setMinPrecio(data.minPrecio);     // Nuevo
@@ -122,6 +124,7 @@ const ProductSection = ({
           console.error("Error al obtener productos:", error);
           setError("Error al cargar los productos");
           setProductos([]);
+
         }
       }
     fetchProducts();
@@ -152,7 +155,7 @@ const ProductSection = ({
             <ProductList
               productos={productos}
               horizontal={false}
-              itemsPage={2}
+              itemsPage={itemsPage}
             />
           )}
         </div>
