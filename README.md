@@ -5,14 +5,14 @@ Este proyecto es **CompX**, una aplicación de comercio electrónico donde los u
 ---
 
 ## 📋 Tabla de contenidos
-- [🛠️ Tecnologías](#️Tecnologías)  
-- [🚀 Características](#-Características)  
-- [📸 Vista previa](#-Vista-previa)  
-- [📄 Demo](#-Demo)  
-- [📦 Instalación local](#-Instalación-local)  
-- [📝 Uso](#-Uso)  
-- [🤝 Contribuir](#-Contribuir)  
-- [📄 Licencia](#-Licencia)  
+- [🛠️ Tecnologías](#️tecnologías)  
+- [🚀 Características](#-características)  
+- [📸 Vista previa](#-vista-previa)  
+- [📄 Demo](#-demo)  
+- [📦 Instalación local](#-instalación-local)  
+- [📝 Uso](#-uso)  
+- [🤝 Contribuir](#-contribuir)  
+- [📄 Licencia](#-licencia)  
 
 ---
 
@@ -20,18 +20,13 @@ Este proyecto es **CompX**, una aplicación de comercio electrónico donde los u
 
 <p align="left">
   <img src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
-  <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5" />
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/MySQL-003B57?style=flat-square&logo=mysql&logoColor=white" alt="MySQL" />
 </p>
-
-> **Nota:** Ajusta las tecnologías según lo que realmente uses en CompX.
-
----
 
 ## 🚀 Características
 
@@ -47,22 +42,36 @@ Este proyecto es **CompX**, una aplicación de comercio electrónico donde los u
 
 ## 📸 Vista previa
 
-![Captura de CompX](./frontend/src/assets/compx_preview.png)  
-> Cambia esta ruta por la imagen real de tu proyecto.
-
----
-
-## 📄 Demo
-
-Puedes ver la versión en producción en:  
-🔗 https://tu-dominio-demo.com
-
-*(Sustituye el enlace por la URL real de tu despliegue.)*
-
----
+![Captura de CompX](https://i.imgur.com/2lfa4fs.png)  
 
 ## 📦 Instalación local
 
 1. Clona este repositorio  
    ```bash
    git clone https://github.com/tuusuario/compx.git
+````
+
+2. Entra en la carpeta del proyecto
+
+   ```bash
+   cd compx
+   ```
+3. Instala las dependencias
+
+   ```bash
+   npm install
+   ```
+4. Configura variables de entorno
+
+   ```bash
+   cp .env.example .env
+   # Edita .env con tus credenciales de base de datos y claves de API
+   ```
+5. Inicia la aplicación en modo desarrollo
+
+   ```bash
+   npm run dev
+   ```
+
+
+
