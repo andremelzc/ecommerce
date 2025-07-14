@@ -8,12 +8,7 @@ Este proyecto es **CompX**, una aplicación de comercio electrónico donde los u
 - [🛠️ Tecnologías](#️tecnologías)  
 - [🚀 Características](#-características)  
 - [📸 Vista previa](#-vista-previa)  
-- [📄 Demo](#-demo)  
 - [📦 Instalación local](#-instalación-local)  
-- [📝 Uso](#-uso)  
-- [🤝 Contribuir](#-contribuir)  
-- [📄 Licencia](#-licencia)  
-
 ---
 
 ## 🛠️ Tecnologías
@@ -49,7 +44,7 @@ Este proyecto es **CompX**, una aplicación de comercio electrónico donde los u
 1. Clona este repositorio  
    ```bash
    git clone https://github.com/tuusuario/compx.git
-````
+   ````
 
 2. Entra en la carpeta del proyecto
 
