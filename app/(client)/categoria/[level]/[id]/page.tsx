@@ -14,8 +14,7 @@ import {
   DollarSign, 
   Grid3X3, 
   Package, 
-  Tag,
-  Layers
+  Tag
 } from "lucide-react";
 
 // Función que trae el nombre de los id's, permite hacer esto: "Inicio/perifericos/monitor"
@@ -53,7 +52,6 @@ export default function CategoriaPage({ params }: { params: { level: string; id:
   const [hasInitializedRange, setHasInitializedRange] = useState(false);
   const [initialMin, setInitialMin] = useState<number | null>(null);
   const [initialMax, setInitialMax] = useState<number | null>(null);
-  const [hasUserSetPrice, setHasUserSetPrice] = useState(false);
 
 
   // Para cambiar dinámicamente el filtro de ProductSection

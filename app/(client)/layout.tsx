@@ -1,6 +1,5 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { usePathname } from "next/navigation";
 import ClientLayout from "../components/shared/ClientLayout";
 import "@/app/globals.css";
 // Agregando google analytcis
