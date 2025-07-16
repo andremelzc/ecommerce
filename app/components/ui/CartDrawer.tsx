@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   X,
   Trash2,
-  Plus,
   Minus,
   ShoppingBag,
   ShoppingCart,

@@ -22,10 +22,10 @@ const ProductSection = ({
   itemsPage
 }: ProductSectionProps) => {
   const [productos, setProductos] = useState<ProductCardProps[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [minPrecioState, setMinPrecio] = useState<string | null>(minPrecio || null);
-  const [maxPrecioState, setMaxPrecio] = useState<string | null>(maxPrecio || null);
+  const [, setLoading] = useState<boolean>(true);
+  const [, setError] = useState<string | null>(null);
+  const [, setMinPrecio] = useState<string | null>(minPrecio || null);
+  const [, setMaxPrecio] = useState<string | null>(maxPrecio || null);
 
   useEffect(() => {
     async function fetchProducts() {

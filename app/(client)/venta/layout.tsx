@@ -1,8 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import CheckoutHeader from "../../components/shared/CheckoutHeader";
 import React from "react";
 import { CheckoutProvider } from "@/app/context/CheckoutContext";
@@ -33,9 +31,6 @@ export default function CheckoutLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const currentIndex = steps.findIndex((step) =>
-    pathname.startsWith(step.href)
-  );
 
   return (
     <CheckoutProvider>

@@ -31,7 +31,6 @@ export async function POST(request:Request){
             ]
           );
         // El resultado del SP estará dentro del primer array → primer objeto → 'resultado'
-        const jsonResult = rows[0][0]?.ultimoID;
         console.log(rows[0][0]?.ultimoID);
         return NextResponse.json("Usuario registrado satisfactoriamente")
         

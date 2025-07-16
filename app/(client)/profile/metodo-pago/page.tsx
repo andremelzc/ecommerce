@@ -105,11 +105,11 @@ export default function MisMetodosPagoPage() {
         );
         alert(`Error ${response.status}: ${text}`);
       }
-    } catch (error: any) {
-      console.error("Error en la solicitud:", error.message ?? error);
+    } catch (error: unknown) {
+      console.error("Error en la solicitud:", error);
       alert(
         "Error al establecer el método de pago como principal: " +
-          (error.message ?? error)
+          (error instanceof Error ? error.message : String(error))
       );
     }
   };
@@ -139,8 +139,8 @@ export default function MisMetodosPagoPage() {
         return [saved, ...prev];
       });
       setIsModalOpen(false);
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : String(err));
     }
   };
 

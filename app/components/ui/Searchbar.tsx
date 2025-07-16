@@ -10,13 +10,11 @@ import {
 } from "@headlessui/react";
 import { Search } from "lucide-react";
 import type { Producto } from "@/app/types/producto";
-import Link from "next/link";
 import { sendGAEvent } from "@next/third-parties/google";
 
 const Searchbar = () => {
   const [productos, setProductos] = useState<Producto[]>([]); // Para almacenar los productos obtenidos de la API
   const [isLoading, setIsLoading] = useState(true); // Para manejar el estado de carga
-  const [isError, setIsError] = useState(false); // Para manejar errores al obtener productos
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -117,7 +115,7 @@ const Searchbar = () => {
               /* Cuando hay productos que coinciden con la búsqueda */
               <div className="p-4">
                 <p className="text-ebony-900 text-sm font-bold mb-4 px-2">
-                  Productos para "{busqueda}" ({filteredProductos.length})
+                  Productos para &quot;{busqueda}&quot; ({filteredProductos.length})
                 </p>
                 <div>
                   {filteredProductos.slice(0, 3).map((producto) => (
@@ -146,7 +144,7 @@ const Searchbar = () => {
                     className="w-full text-center text-ebony-600 hover:text-ebony-800 text-sm font-medium py-2 hover:bg-ebony-25 cursor-pointer rounded-lg transition-colors"
                     onClick={() => {}}
                   >
-                    Ver todos los resultados para "{busqueda}"
+                    Ver todos los resultados para &quot;{busqueda}&quot;
                   </button>
                 </div>
               </div>

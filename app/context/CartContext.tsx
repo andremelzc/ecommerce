@@ -81,12 +81,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: 'SET_ITEMS', payload: items });
   };
 
-  // Define el tipo de respuesta de la API de descuentos
-  type DescuentoResponse = {
-    productId: number;
-    descuento: number;
-  };
-
   // Auxiliar para traer los descuentos desde la API
   async function applyDiscounts(items: CartItem[]): Promise<CartItem[]> {
   try {

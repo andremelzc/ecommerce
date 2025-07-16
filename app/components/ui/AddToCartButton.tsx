@@ -25,10 +25,9 @@ export const AddToCartButton = ({
 }: AddToCartButtonProps) => {
   const { cart, addItem } = useCart();
 
-  const { stock, loading } =
-    productId !== undefined
-      ? useStock(productId)
-      : { stock: null, loading: true };
+  // Always call the hook, but handle the conditional logic inside
+  const { stock, loading } = useStock(productId || 0);
+  const isValidProduct = productId !== undefined;
 
   // Buscar el ítem actual en el carrito
   const itemEnCarrito = cart.find((item) => item.productId === productId);

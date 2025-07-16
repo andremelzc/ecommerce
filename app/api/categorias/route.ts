@@ -2,17 +2,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 
-type Data = RowDataPacket & {
-  id_n1: number;
-  nombre_n1: string;
-  id_n2: number | null;
-  nombre_n2: string | null;
-  imagen_n2: string | null;
-  id_n3: number | null;
-  nombre_n3: string | null;
-  imagen_n3: string | null;
-};
-
 interface ResultadoRow extends RowDataPacket {
   resultado: string; // Tu SP retorna JSON como string
 }

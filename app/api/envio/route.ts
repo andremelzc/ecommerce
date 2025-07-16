@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     );
     const data = rows as { costo: number }[];
     return NextResponse.json({ costoEnvio: data[0]?.costo });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Error al calcular el costo de envío' }, { status: 500 });
   }
 }

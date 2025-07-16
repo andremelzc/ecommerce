@@ -12,7 +12,6 @@ import { useState } from 'react';
 import { CreditCard, Wallet, Banknote, Check } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useCheckout } from '@/app/context/CheckoutContext';
 
 

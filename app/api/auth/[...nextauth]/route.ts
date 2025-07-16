@@ -2,9 +2,6 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
 import { RowDataPacket } from "mysql2";
-import { JWT } from "next-auth/jwt";
-import { Session, User } from "next-auth";
-import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcrypt";
 
 
@@ -17,7 +14,7 @@ interface resultadoRow extends RowDataPacket {
     resultado: string // Para que lo arrojado por mi stored tenga un tipo de dato
 }
 
-const authOptions: NextAuthConfig = {
+const authOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -26,7 +23,7 @@ const authOptions: NextAuthConfig = {
                 password: { label: "Password", type: "password", placeholder: "******" }
             },
             //credentials agarra el email y el password colocados
-            async authorize(credentials, req) {
+            async authorize(credentials) {
 
                 console.log("Credenciales recibidas:");
                 console.log(credentials);
@@ -77,19 +74,19 @@ const authOptions: NextAuthConfig = {
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user }: { token: any; user: any }) {
             if (user) {
                 token.id = user.id;
 
-                // ⚠️ Aquí usamos "as any" para acceder a campos extra
-                token.surname = (user as any).surname;
-                token.phone = (user as any).phone;
-                token.typeDocument = (user as any).typeDocument;
-                token.documentId = (user as any).documentId;
+                // ⚠️ Aquí usamos "as unknown" para acceder a campos extra
+                token.surname = (user as unknown as { surname: string }).surname;
+                token.phone = (user as unknown as { phone: string }).phone;
+                token.typeDocument = (user as unknown as { typeDocument: string }).typeDocument;
+                token.documentId = (user as unknown as { documentId: string }).documentId;
             }
             return token;
         },
-        async session({ session, token }: { session: Session; token: JWT }) {
+        async session({ session, token }: { session: any; token: any }) {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.surname = token.surname as string;
@@ -102,8 +99,8 @@ const authOptions: NextAuthConfig = {
     }
 }
 
+// For NextAuth v5 beta - TypeScript workaround
+const handler = (NextAuth as any)(authOptions);
 
-//esto nos arroja una funcion, geneerlmente un handler
-const { handlers: { GET, POST }, auth } = NextAuth(authOptions);
-//depende de que necesitamos se llamaria a la funcion
-export { GET, POST, auth };
+export const GET = handler;
+export const POST = handler;

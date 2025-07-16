@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { ProductCardProps } from "@/app/types/props";
 import { UsePaginationProps, UsePaginationReturn } from "../types/pagination";
 
 export function usePagination<T>({ 
@@ -8,7 +7,7 @@ export function usePagination<T>({
 }: UsePaginationProps<T>): UsePaginationReturn<T> {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const safeData = data ?? [];
+  const safeData = useMemo(() => data ?? [], [data]);
   const totalPages = Math.ceil(safeData.length / itemsPerPage);
   
   const paginatedData = useMemo(() => {

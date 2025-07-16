@@ -1,37 +1,51 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { User } from "lucide-react";
 
+
+// Extend the User type temporarily
+interface ExtendedUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  surname?: string | null;
+  phone?: string | null;
+  typeDocument?: string | null;
+  documentId?: string | null;
+}
 
 export default function MiPerfilPage() {
   const { data: session } = useSession();
   const [toggleEdit, setToggleEdit] = useState(false);
-  // ...existing code...
+  
+  // Cast the user to our extended type
+  const user = session?.user as ExtendedUser;
 
 
   const [formData, setFormData] = useState({
-    name: session?.user?.name || "",
-    surname: session?.user?.surname || "",
-    email: session?.user?.email || "",
-    phone: session?.user?.phone || "",
-    typeDocument: session?.user?.typeDocument || "",
-    documentId: session?.user?.documentId || "",
+    name: user?.name || "",
+    surname: user?.surname || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    typeDocument: user?.typeDocument || "",
+    documentId: user?.documentId || "",
   });
 
   // Actualizar formData cuando session cambie
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       setFormData({
-        name: session.user.name || "",
-        surname: session.user.surname || "",
-        email: session.user.email || "",
-        phone: session.user.phone || "",
-        typeDocument: session.user.typeDocument || "",
-        documentId: session.user.documentId || "",
+        name: user.name || "",
+        surname: user.surname || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        typeDocument: user.typeDocument || "",
+        documentId: user.documentId || "",
       });
     }
-  }, [session]);
+  }, [user]);
 
   // Manejar cambios en los inputs
   const handleInputChange = (field: keyof typeof formData, value: string) => {
@@ -44,14 +58,14 @@ export default function MiPerfilPage() {
   // Manejar cancelar edición
   const handleCancel = () => {
     // Restaurar valores originales
-    if (session?.user) {
+    if (user) {
       setFormData({
-        name: session.user.name || "",
-        surname: session.user.surname || "",
-        email: session.user.email || "",
-        phone: session.user.phone || "",
-        typeDocument: session.user.typeDocument || "",
-        documentId: session.user.documentId || "",
+        name: user.name || "",
+        surname: user.surname || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        typeDocument: user.typeDocument || "",
+        documentId: user.documentId || "",
       });
     }
     setToggleEdit(false);
@@ -114,7 +128,7 @@ export default function MiPerfilPage() {
               }`}
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder={session?.user?.name || "Tu nombre"}
+              placeholder={user?.name || "Tu nombre"}
               disabled={toggleEdit === false}
             />
           </div>
@@ -129,7 +143,7 @@ export default function MiPerfilPage() {
               }`}
               value={formData.surname}
               onChange={(e) => handleInputChange("surname", e.target.value)}
-              placeholder={session?.user?.surname || "Tu apellido"}
+              placeholder={user?.surname || "Tu apellido"}
               disabled={toggleEdit === false}
             />
           </div>
@@ -146,7 +160,7 @@ export default function MiPerfilPage() {
             }`}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
-            placeholder={session?.user?.email || "Tu correo electrónico"}
+            placeholder={user?.email || "Tu correo electrónico"}
             disabled={toggleEdit === false}
           />
         </div>

@@ -13,7 +13,7 @@ import { getUltimoPagoMercadoPago } from "@/app/utils/getUltimoPagoMercadoPago";
 
 export function useBoleta() {
   const { data: session } = useSession();
-  const { cart, clearCart } = useCart();
+  const { cart } = useCart();
   const { orden } = useCheckout();
 
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ export function useBoleta() {
     const costoEnvio = pago.costo_envio ?? 0;
     const total = pago.total ?? subtotal + costoEnvio;
     const items: ItemPayload[] = Array.isArray(pago.cart_resumen)
-      ? pago.cart_resumen.map((item: any) => ({
+      ? pago.cart_resumen.map((item: { nombre: string; cantidad: number; precioOriginal?: number; precio_original?: number }) => ({
           nombre: item.nombre,
           cantidad: item.cantidad,
           precioUnitario: item.precioOriginal ?? item.precio_original ?? 0,
@@ -84,8 +84,8 @@ export function useBoleta() {
       await enviarDatosBoletaApi(payload);
       setSuccess(true);
       //clearCart();
-    } catch (err: any) {
-      setError(err.message || "Error generando boleta");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error generando boleta");
     } finally {
       setLoading(false);
     }

@@ -59,7 +59,7 @@ export default function MisDireccionesPage() {
     if (session?.user?.id) {
       fetchDirections();
     }
-  }, [session]);
+  }, [session, fetchDirections]);
 
   if (loading) {
     return <div>Cargando direcciones...</div>;
@@ -113,11 +113,11 @@ export default function MisDireccionesPage() {
         );
         alert(`Error ${response.status}: ${text}`);
       }
-    } catch (error: any) {
-      console.error("Error en la solicitud:", error.message ?? error);
+    } catch (error: unknown) {
+      console.error("Error en la solicitud:", error);
       alert(
         "Error al establecer la dirección como principal: " +
-          (error.message ?? error)
+          (error instanceof Error ? error.message : String(error))
       );
     }
   };

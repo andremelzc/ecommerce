@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import type { ProductCardProps } from "@/app/types/props";
-import { Search, ShoppingCart } from "lucide-react";
 import Loadingspinner from "../ui/LoadingSpinner";
 import { useCart } from "@/app/context/CartContext";
 import type { CartItem } from "@/app/types/itemCarrito";
@@ -17,10 +16,9 @@ const ProductCard = ({
   precio,
   porcentaje_desc,
 }: ProductCardProps) => {
-  // Manejar los estados de la imagen (hover y errores)
-  const { stock, loading } = id_producto_especifico !== undefined
-  ? useStock(id_producto_especifico)
-  : { stock: null, loading: true };
+  // Always call the hook, but handle the conditional logic inside
+  const { stock } = useStock(id_producto_especifico || 0);
+  const isValidProduct = id_producto_especifico !== undefined;
 
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);

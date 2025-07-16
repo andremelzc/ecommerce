@@ -10,7 +10,6 @@ import {
   ChevronUp,
   ArrowLeft,
 } from "lucide-react";
-import { Button, Transition } from "@headlessui/react";
 import type { CategoriaNivel1 } from "@/app/types/categoria";
 import type { DrawerProps } from "@/app/types/props";
 import LoadingSpinner from "@/app/components/ui/LoadingSpinner";
@@ -83,7 +82,7 @@ const Drawer = ({ isOpen, onClose }: DrawerProps) => {
   }, [isOpen]);
 
   // Estado para animar el panel de subcategorías
-  const [showSubPanel, setShowSubPanel] = useState(false);
+  const [, setShowSubPanel] = useState(false);
   const [isSubPanelAnimating, setIsSubPanelAnimating] = useState(false);
 
   useEffect(() => {

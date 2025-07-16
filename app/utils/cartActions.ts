@@ -66,7 +66,7 @@ export async function updateItemQuantity(productId: number, quantity: number) {
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Error de red o servidor' };
   }
 }

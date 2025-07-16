@@ -1,5 +1,5 @@
 
-import {ItemPayload, GenerarBoletaPayload} from "@/app/types/GenerarBoletaPayload";
+import {GenerarBoletaPayload} from "@/app/types/GenerarBoletaPayload";
 
 export async function enviarDatosBoletaApi(payload: GenerarBoletaPayload) {
   const resp = await fetch('/api/generar-boleta', {

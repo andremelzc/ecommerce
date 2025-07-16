@@ -6,7 +6,7 @@ import Drawer from "../ui/Drawer";
 import CartDrawer from "../ui/CartDrawer";
 import Searchbar from "@/app/components/ui/Searchbar";
 import { useCart } from "@/app/context/CartContext";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import UserMenu from "../ui/UserMenu";
 import { useEffect } from "react";
 

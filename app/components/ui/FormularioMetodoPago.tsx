@@ -2,7 +2,6 @@
 "use client";
 import React, { useState, useEffect, FormEvent } from "react";
 import { SaveTarjetaParams } from "@/app/utils/tarjetaActions";
-import { MetodoPagoRow } from "@/app/types/metodoPago";
 
 interface TipoPagoRow {
   id: number;

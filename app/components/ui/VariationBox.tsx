@@ -3,8 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Filter, X } from "lucide-react";
-import CategoryBox from "@/app/components/ui/CategoryBox"; // Ajusta esta ruta si tu CategoryBox está en otro sitio
-import { Categoria, Variacion, Valor } from "@/app/types/valorVariacion";
+import { Categoria, Variacion } from "@/app/types/valorVariacion";
 
 // Interfaces 
 interface VariationBoxProps {
@@ -83,15 +82,6 @@ const VariationBox: React.FC<VariationBoxProps> = ({ categoryLevel,
 
     setSelectedValues(newSelection);
     setSelectedVariations(newSelection);
-  };
-
-  const clearAllFilters = () => {
-    setSelectedValues([]);
-    setSelectedVariations([]);
-  };
-
-  const getSelectedCount = () => {
-    return selectedValues.length;
   };
 
   // ● Mientras carga, mostramos un skeleton loader

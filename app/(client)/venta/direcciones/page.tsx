@@ -42,7 +42,6 @@ const STORES = [
 ];
 
 export default function DireccionesPage() {
-  const router = useRouter();
   const { data: session } = useSession();
   const { cart } = useCart();
   const { orden, setOrden } = useCheckout();
@@ -97,7 +96,7 @@ export default function DireccionesPage() {
         metodoEnvioId: 2,
       });
     }
-  }, [deliveryMethod, selectedAddress, selectedStore]);
+  }, [deliveryMethod, selectedAddress, selectedStore, orden, setOrden]);
 
   // Consultar costo de envío dinámicamente
   useEffect(() => {
@@ -133,14 +132,14 @@ export default function DireccionesPage() {
     if (!session?.user?.id) return;
     const fetchDirections = async () => {
       try {
-        const res = await fetch(`/api/direccion?usuario_id=${session.user.id}`);
+        const res = await fetch(`/api/direccion?usuario_id=${session.user!.id}`);
         if (!res.ok) throw new Error("Error al obtener las direcciones");
         const data: Direccion[] = await res.json();
         setDirections(data);
         const primary = data.find((d) => d.isPrimary) ?? data[0];
         setSelectedAddress(primary?.id ?? null);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -178,7 +177,7 @@ export default function DireccionesPage() {
   const handleDelete = async (d: Direccion) => {
     if (!d.id || !session?.user?.id) return;
     if (!confirm("¿Eliminar dirección?")) return;
-    const res = await deleteDireccionHandler(d.id, Number(session.user.id));
+    const res = await deleteDireccionHandler(d.id, Number(session.user!.id));
     if (res.ok) {
       setDirections((prev) => prev.filter((x) => x.id !== d.id));
       if (selectedAddress === d.id) setSelectedAddress(null);

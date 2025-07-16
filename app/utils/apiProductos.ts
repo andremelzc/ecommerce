@@ -1,8 +1,8 @@
 // /app/utils/apiProductos.ts
 
 export async function guardarProducto(data: {
-  productoGeneral: any;  // Puedes usar tus interfaces si las tienes
-  productosEspecificos: any[];
+  productoGeneral: Record<string, unknown>;
+  productosEspecificos: Record<string, unknown>[];
 }) {
   try {
     const response = await fetch('/api/productos/guardar', {

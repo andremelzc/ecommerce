@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import AppRouteRouteModule from "next/dist/server/route-modules/app-route/module";
 import { sendGAEvent } from "@next/third-parties/google";
 
 export default function LoginForm() {
