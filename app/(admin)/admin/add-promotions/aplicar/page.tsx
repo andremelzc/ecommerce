@@ -3,11 +3,8 @@
 import React, { useState, useEffect } from "react";
 import {
   Search,
-  Package,
   Tag,
-  X,
   Check,
-  ArrowLeft,
   ChevronDown,
   ChevronRight,
   AlertCircle,
@@ -59,7 +56,6 @@ export default function PromocionProductSelector() {
 
   // 3️⃣ búsquedas y UI
   const [busquedaProducto, setBusquedaProducto] = useState("");
-  const [mostrarExclusiones, setMostrarExclusiones] = useState(false);
 
   // 4️⃣ estado para categorías expandidas
   const [categoriasExpandidas, setCategoriasExpandidas] = useState<Set<number>>(
@@ -162,7 +158,7 @@ export default function PromocionProductSelector() {
     filtrosPrecios.precioMaximo,
     filtrosFecha.fechaDesde,
     filtrosFecha.fechaHasta,
-    Array.from(subcategoriasSeleccionadas).join(","), // para que detecte cambios
+    subcategoriasSeleccionadas, // para que detecte cambios
   ]);
 
   // 8️⃣ Filtrar productos por múltiples criterios
@@ -258,10 +254,7 @@ export default function PromocionProductSelector() {
   };
 
   // Función para renderizar solo subcategorías de nivel 2
-  const renderSubcategorias = (
-    subcategorias: Subcategoria[],
-    categoriaId: number
-  ) => {
+  const renderSubcategorias = (subcategorias: Subcategoria[]) => {
     return subcategorias.map((sub) => {
       return (
         <div key={`sub-${sub.id}`}>
@@ -300,19 +293,13 @@ export default function PromocionProductSelector() {
     return null;
   };
 
-  // productos que caen en las categorías seleccionadas
-  const productosEnCats = productos.filter((p) => {
-    const cat = categorias.find((c) => c.nombre === p.categoria);
-    return cat && destino.ids.includes(cat.id);
-  });
-
   const isValid = () =>
     ["CATEGORIA", "PRODUCTO", "FECHA_LLEGADA", "STOCK", "PRECIO"].includes(
       destino.tipo
     ) && destino.ids.length > 0;
 
   // 🔟 navegación de pasos
-  const [paso, setPaso] = useState(2);
+  const [, setPaso] = useState(2);
   const goBack = () => setPaso(1);
 
   // Función para preparar datos de confirmación
@@ -367,8 +354,7 @@ export default function PromocionProductSelector() {
   const confirmarYEnviar = async () => {
     setEnviando(true);
 
-    const { subcategoriasConNombres, productosSeleccionados } =
-      prepararDatosConfirmacion();
+    const { subcategoriasConNombres } = prepararDatosConfirmacion();
 
     console.log("=== INFORMACIÓN COMPLETA DE LA PROMOCIÓN ===");
     console.log("📝 Datos básicos:");
@@ -565,7 +551,7 @@ export default function PromocionProductSelector() {
                       <h4 className="text-sm font-medium text-gray-600 mb-2">
                         Subcategorías:
                       </h4>
-                      {renderSubcategorias(c.subcategorias, c.id)}
+                      {renderSubcategorias(c.subcategorias)}
                     </div>
                   )}
               </div>

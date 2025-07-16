@@ -35,7 +35,13 @@ export default function UpdateProductPage() {
         marca: data.productoGeneral.marca,
       });
 
-      const especificos = data.productosEspecificos.map((item: any) => ({
+      const especificos = data.productosEspecificos.map((item: {
+        id_especifico: number;
+        SKU: string;
+        stock: number;
+        imagen: string;
+        precio: number;
+      }) => ({
         id_especifico: item.id_especifico,
         SKU: item.SKU,
         cantidad_stock: item.stock,
